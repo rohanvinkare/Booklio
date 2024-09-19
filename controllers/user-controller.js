@@ -6,6 +6,7 @@ const mailer = require("../helpers/mail-helper");
 
 const randomstring = require("randomstring");
 const PasswordReset = require("../models/password-reset");
+const passwordReset = require("../models/password-reset");
 
 const userRegister = async (req, res) => {
   try {
@@ -171,6 +172,7 @@ const sendMailVerification = async (req, res) => {
   }
 };
 
+//----------------- To send forgot Password link  to mail---------------
 const forgotPassword = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -229,9 +231,79 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+//-------------------- To send data to ejs file from token  --------
+
+const resetPassword = async (req, res) => {
+  try {
+    if (req.query.token == undefined) {
+      return res.render("404");
+    }
+
+    const resetData = await PasswordReset.findOne({ token: req.query.token });
+
+    if (!resetData) {
+      return res.render("404");
+    }
+
+    return res.render("reset-password", { resetData });
+  } catch (error) {
+    return res.render("404");
+  }
+};
+
+//------------- To set the new password in DB -----------
+
+const updatePassword = async (req, res) => {
+  try {
+    const { user_id, password, c_password } = req.body;
+
+    const resetData = await PasswordReset.findOne({ user_id });
+
+    if (password != c_password) {
+      return res.render("reset-password", {
+        resetData,
+        error: "Confirm Password Not Matching!",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(c_password, 10);
+
+    await User.findByIdAndUpdate(
+      { _id: user_id },
+      {
+        $set: {
+          password: hashedPassword,
+        },
+      }
+    );
+
+    // deleting the entry from the passwordReset schema
+    await passwordReset.deleteMany({
+      user_id,
+    });
+
+    return res.redirect("/api/v1/reset-success");
+  } catch (error) {
+    return res.render("404");
+  }
+};
+
+//---------------- To render the Success page ------------
+
+const resetSuccess = async (req, res) => {
+  try {
+    return res.render("reset-success");
+  } catch (error) {
+    return res.render("404");
+  }
+};
+
 module.exports = {
   userRegister,
   mailVerification,
   sendMailVerification,
   forgotPassword,
+  resetPassword,
+  updatePassword,
+  resetSuccess,
 };

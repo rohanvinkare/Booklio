@@ -67,4 +67,16 @@ router.post(
   userController.forgotPassword
 );
 
+//------------------ To reset the password
+const bodyParser = require("body-parser");
+
+// to accept data from the form
+router.use(bodyParser.json());
+// to accept data from the URL
+router.use(bodyParser.urlencoded({ extended: true }));
+
+router.get("/api/v1/reset-password", userController.resetPassword);
+router.post("/api/v1/reset-password", userController.updatePassword);
+router.get("/api/v1/reset-success", userController.resetSuccess);
+
 module.exports = router;

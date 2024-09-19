@@ -1,0 +1,18 @@
+**************** For Forgot Password *******************
+
+1) will go to the forgot password route ("/api/v1/forgot-password")
+
+    {
+    "email": "abc@gmail.com"
+    }
+
+2) you Will receive and email link on the entered email
+
+3) link will redirect to the next GET route  to visit a page 
+   ("/api/v1/reset-password?token=")
+   token is attached already with the link in email
+   and extracting the token from there and rendering the data 
+   related to the user in the next file 
+
+4) POST route ("/api/v1/reset-password") is updating the value of password and 
+   forwarding to next success route ("/api/v1/reset-success")
