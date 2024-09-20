@@ -8,6 +8,8 @@ const randomstring = require("randomstring");
 const PasswordReset = require("../models/password-reset");
 const passwordReset = require("../models/password-reset");
 
+const jwt = require("jsonwebtoken");
+
 const userRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -298,6 +300,136 @@ const resetSuccess = async (req, res) => {
   }
 };
 
+//------------------ Login And Token Generation User -----------------
+
+const generateAccessToken = async (user) => {
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "2h",
+  });
+
+  return token;
+};
+
+const loginUser = async (req, res) => {
+  try {
+    const valErrors = validationResult(req);
+
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: "Errors",
+        error: valErrors.array(),
+      });
+    }
+
+    const { email, password } = req.body;
+
+    const userData = await User.findOne({ email });
+
+    if (!userData) {
+      return res.status(401).json({
+        success: false,
+        msg: "Email And Password is Incorrect",
+      });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, userData.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        success: false,
+        msg: "Email And Password is Incorrect",
+      });
+    }
+
+    if (userData.is_verified == 0) {
+      return res.status(401).json({
+        success: false,
+        msg: "please verify your mail",
+      });
+    }
+
+    const accessToken = await generateAccessToken({ user: userData });
+
+    return res.status(200).json({
+      success: true,
+      msg: "Login Successfully",
+      user: userData,
+      accessToken: accessToken,
+      tokenType: "Bearer",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
+//------------------ To get the user Profile ----------------------
+
+const userProfile = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      msg: "User Profile Data",
+      // data: req.user,
+      data: req.user.user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
+//----------------- To update user Profile ----------------------
+
+const updateProfile = async (req, res) => {
+  try {
+    // Validating the req with express validator
+    const valErrors = validationResult(req);
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: "Errors",
+        error: valErrors.array(),
+      });
+    }
+
+    const { name, mobile } = req.body;
+
+    const data = {
+      name,
+      mobile,
+    };
+
+    if (req.file !== undefined) {
+      data.image = "image/" + req.file.filename;
+    }
+
+    const userData = await User.findByIdAndUpdate(
+      { _id: req.user.user._id },
+      {
+        $set: data, 
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      msg: "User Updated Successfully",
+      data: userData,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
 module.exports = {
   userRegister,
   mailVerification,
@@ -306,4 +438,7 @@ module.exports = {
   resetPassword,
   updatePassword,
   resetSuccess,
+  loginUser,
+  userProfile,
+  updateProfile,
 };

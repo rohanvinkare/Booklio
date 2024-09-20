@@ -35,10 +35,14 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 //-------------------------------------------------
 
 const userController = require("../controllers/user-controller");
+const authMiddleware = require("../middleware/auth-middleware");
+
 const {
   registerValidator,
   sendMailVerificationValidator,
   forgotPasswordValidator,
+  loginValidator,
+  updateProfileValidator,
 } = require("../helpers/validation-helper");
 
 //-------------------- Register
@@ -78,5 +82,17 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get("/api/v1/reset-password", userController.resetPassword);
 router.post("/api/v1/reset-password", userController.updatePassword);
 router.get("/api/v1/reset-success", userController.resetSuccess);
+
+router.post("/api/v1/login", loginValidator, userController.loginUser);
+
+router.get("/api/v1/profile", authMiddleware, userController.userProfile);
+
+router.post(
+  "/api/v1/update-profile",
+  authMiddleware,
+  upload.single("image"),
+  updateProfileValidator,
+  userController.updateProfile
+);
 
 module.exports = router;
