@@ -10,6 +10,9 @@ const passwordReset = require("../models/password-reset");
 
 const jwt = require("jsonwebtoken");
 
+const path = require("path");
+const { deleteFile } = require("../helpers/delete-file-helper");
+
 const userRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -310,6 +313,14 @@ const generateAccessToken = async (user) => {
   return token;
 };
 
+const generateRefreshToken = async (user) => {
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "4h",
+  });
+
+  return token;
+};
+
 const loginUser = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -350,12 +361,14 @@ const loginUser = async (req, res) => {
     }
 
     const accessToken = await generateAccessToken({ user: userData });
+    const refreshToken = await generateRefreshToken({ user: userData });
 
     return res.status(200).json({
       success: true,
       msg: "Login Successfully",
       user: userData,
       accessToken: accessToken,
+      refreshToken: refreshToken,
       tokenType: "Bearer",
     });
   } catch (error) {
@@ -405,14 +418,22 @@ const updateProfile = async (req, res) => {
       mobile,
     };
 
+    const user_id = req.user.user._id;
+
     if (req.file !== undefined) {
-      data.image = "image/" + req.file.filename;
+      data.image = "images/" + req.file.filename;
+
+      const oldUser = await User.findOne({ _id: user_id });
+
+      const oldFilePath = path.join(__dirname, "../public/" + oldUser.image);
+
+      deleteFile(oldFilePath);
     }
 
     const userData = await User.findByIdAndUpdate(
       { _id: req.user.user._id },
       {
-        $set: data, 
+        $set: data,
       },
       { new: true }
     );
@@ -421,6 +442,28 @@ const updateProfile = async (req, res) => {
       success: true,
       msg: "User Updated Successfully",
       data: userData,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
+const refreshToken = async (req, res) => {
+  try {
+    const userId = req.user.user._id;
+    const userData = await User.findOne({ _id: userId });
+
+    const accessToken = await generateAccessToken({ user: userData });
+    const refreshToken = await generateRefreshToken({ user: userData });
+
+    return res.status(200).json({
+      success: true,
+      msg: "Token Refreshed!",
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     });
   } catch (error) {
     return res.status(400).json({
@@ -441,4 +484,5 @@ module.exports = {
   loginUser,
   userProfile,
   updateProfile,
+  refreshToken,
 };

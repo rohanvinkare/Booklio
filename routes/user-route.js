@@ -95,4 +95,10 @@ router.post(
   userController.updateProfile
 );
 
+router.get(
+  "/api/v1/refresh-token",
+  authMiddleware,
+  userController.refreshToken
+);
+
 module.exports = router;

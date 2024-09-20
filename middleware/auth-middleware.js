@@ -19,11 +19,9 @@ const verifyToken = (req, res, next) => {
       bearerToken,
       process.env.ACCESS_TOKEN_SECRET
     );
-    
-    // Attaching the data with the req  
+
+    // Attaching the data with the req
     req.user = decodedData;
-
-
   } catch (error) {
     return res.status(401).json({
       success: false,

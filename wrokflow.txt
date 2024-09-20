@@ -18,8 +18,26 @@
    forwarding to next success route ("/api/v1/reset-success")
 
 
-******************* Authentication middleware *********************
+*************** Authentication middleware ************
 
 1) taking token from query,headers and body
 2) After that we are attaching the user data to the req we can access the data
    of the user with (req.user.field)
+
+
+****************** Update Profile ********************
+
+1) While updating profile we are taking name and mobile the image is optional 
+   if we are sending image send through form data 
+
+2) while uploading the image we are finding out the path for old image and deleting
+   it and then we are updating it with the new one 
+
+
+******************* Resfresh Token *******************
+
+1) creating the two token with different expiries 
+2) on calling on the route ( "/api/v1/refresh-token" ) it will again send two
+   tokens to the client side for further process
+3) Need --> we dent want user to login again and again we the help of refresh token
+            we are generating the access token and sending again to the client side 
