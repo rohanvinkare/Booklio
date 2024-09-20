@@ -1,12 +1,13 @@
 const User = require("../models/user-model");
+const Blacklist = require("../models/blacklist-model");
 const bcrypt = require("bcrypt");
 
 const { validationResult } = require("express-validator");
 const mailer = require("../helpers/mail-helper");
 
 const randomstring = require("randomstring");
-const PasswordReset = require("../models/password-reset");
-const passwordReset = require("../models/password-reset");
+const PasswordReset = require("../models/password-reset-model");
+const passwordReset = require("../models/password-reset-model");
 
 const jwt = require("jsonwebtoken");
 
@@ -451,6 +452,8 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// ------------------- To Refresh tokens to the client side ------------------
+
 const refreshToken = async (req, res) => {
   try {
     const userId = req.user.user._id;
@@ -473,6 +476,36 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// ------------------- To Logout the User ------------------
+
+const logoutUser = async (req, res) => {
+  try {
+    const token =
+      req.body.token || req.query.token || req.headers["authorization"];
+
+    const bearer = token.split(" ");
+    const bearerToken = bearer[1];
+
+    const newBlacklist = new Blacklist({
+      token: bearerToken,
+    });
+
+    await newBlacklist.save();
+
+    res.setHeader("Clear-Site-Data", '"cookies","storage"');
+
+    return res.status(200).json({
+      success: true,
+      msg: "Yore logged out!",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   userRegister,
   mailVerification,
@@ -485,4 +518,5 @@ module.exports = {
   userProfile,
   updateProfile,
   refreshToken,
+  logoutUser,
 };

@@ -41,3 +41,9 @@
    tokens to the client side for further process
 3) Need --> we dent want user to login again and again we the help of refresh token
             we are generating the access token and sending again to the client side 
+
+
+************************ Logout ***********************
+
+1) once you generate the JWT token it will be valid until the time of expiration
+2) so on logout we have to blacklist the token 

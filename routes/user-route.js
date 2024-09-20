@@ -101,4 +101,6 @@ router.get(
   userController.refreshToken
 );
 
+router.get("/api/v1/logout", authMiddleware, userController.logoutUser);
+
 module.exports = router;
