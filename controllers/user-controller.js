@@ -12,7 +12,10 @@ const passwordReset = require("../models/password-reset-model");
 const jwt = require("jsonwebtoken");
 
 const path = require("path");
-const { deleteFile } = require("../helpers/delete-file-helper");
+const {
+  deleteFile,
+  deleteCloudSingle,
+} = require("../helpers/delete-file-helper");
 
 const userRegister = async (req, res) => {
   try {
@@ -46,7 +49,8 @@ const userRegister = async (req, res) => {
       email: email,
       mobile: mobile,
       password: hashPassword,
-      image: "images" + req.file.filename,
+      // either image will come by cloud or by normal server method v1 or v2
+      image: req.image || "images" + req.file.filename,
     });
 
     // Save the user in the database
@@ -422,15 +426,26 @@ const updateProfile = async (req, res) => {
     const user_id = req.user.user._id;
 
     if (req.file !== undefined) {
-      data.image = "images/" + req.file.filename;
+      // Step 1: Set the new image URL/path
+      data.image = req.image || "images/" + req.file.filename;
 
+      // Step 2: Retrieve the existing user data to find the old image
       const oldUser = await User.findOne({ _id: user_id });
 
-      const oldFilePath = path.join(__dirname, "../public/" + oldUser.image);
+      if (oldUser && oldUser.image) {
+        const oldFilePath = oldUser.image;
 
-      deleteFile(oldFilePath);
+        // Step 3: Check if the old image is a local file or a Cloudinary URL
+        if (oldFilePath.startsWith("http")) {
+          // It's a Cloudinary URL, delete it from Cloudinary
+          await deleteCloudSingle(oldFilePath);
+        } else {
+          // It's a local file, delete it from the server
+          const localFilePath = path.join(__dirname, "../public/", oldFilePath);
+          await deleteFile(localFilePath);
+        }
+      }
     }
-
     const userData = await User.findByIdAndUpdate(
       { _id: req.user.user._id },
       {

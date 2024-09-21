@@ -1,3 +1,13 @@
+req.user => has user info
+req.image => has image url of cloud
+req.images => has array of images 
+
+
+/api/v1/register ---> for server upload profile image 
+/api/v2/register ---> for cloud upload profile image 
+
+
+
 **************** For Forgot Password *******************
 
 1) will go to the forgot password route ("/api/v1/forgot-password")

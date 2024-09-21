@@ -2,39 +2,11 @@ const express = require("express");
 const router = express();
 
 router.use(express.json());
-
-//----------------Setup For Multer------------
-
-const path = require("path");
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-      cb(null, path.join(__dirname, "../public/images"));
-      // cb --> call back
-    }
-  },
-
-  filename: function (req, file, cb) {
-    const name = Date.now() + "-" + file.originalname;
-    cb(null, name);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-const upload = multer({ storage: storage, fileFilter: fileFilter });
-
-//-------------------------------------------------
-
 const userController = require("../controllers/user-controller");
+
+const uploadServer = require("../middleware/multer/multer-server-middleware");
+const uploadCloud = require("../middleware/multer/multer-cloud-middleware");
+
 const authMiddleware = require("../middleware/auth-middleware");
 
 const {
@@ -45,10 +17,35 @@ const {
   updateProfileValidator,
 } = require("../helpers/validation-helper");
 
-//-------------------- Register
+//------------------------------------ Register
+
+//--------- img will be uploaded to server
 router.post(
   "/api/v1/register",
-  upload.single("image"),
+  uploadServer.single("image"),
+  registerValidator,
+  userController.userRegister
+);
+
+const {
+  uploadCloudMultiple,
+  uploadCloudSingle,
+} = require("../middleware/multer/multer-cloud-setup");
+
+//--------- single img will be uploaded at cloud
+router.post(
+  "/api/v2/register",
+  uploadCloud.single("image"),
+  registerValidator,
+  uploadCloudSingle,
+  userController.userRegister
+);
+
+//-------- multiple images will be uploaded at cloud
+//-------- not to use not set up in db and controller
+router.post(
+  "/api/v3/register",
+  uploadCloud.array("images"),
   registerValidator,
   userController.userRegister
 );
@@ -90,8 +87,18 @@ router.get("/api/v1/profile", authMiddleware, userController.userProfile);
 router.post(
   "/api/v1/update-profile",
   authMiddleware,
-  upload.single("image"),
+  uploadServer.single("image"),
   updateProfileValidator,
+  userController.updateProfile
+);
+
+// cloud update for the user
+router.post(
+  "/api/v2/update-profile",
+  authMiddleware,
+  uploadCloud.single("image"),
+  updateProfileValidator,
+  uploadCloudSingle,
   userController.updateProfile
 );
 
