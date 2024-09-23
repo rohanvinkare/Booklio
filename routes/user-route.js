@@ -15,7 +15,7 @@ const {
   forgotPasswordValidator,
   loginValidator,
   updateProfileValidator,
-} = require("../helpers/validation-helper");
+} = require("../helpers/user-validation-helper");
 
 //------------------------------------ Register
 

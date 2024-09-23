@@ -57,7 +57,6 @@ const uploadCloudSingle = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 //------------------------- To delete
 
 module.exports = { uploadCloudMultiple, uploadCloudSingle };
