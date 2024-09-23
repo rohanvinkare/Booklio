@@ -12,4 +12,7 @@ const sellerPasswordResetSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("SellerPasswordReset", sellerPasswordResetSchema);
+module.exports = mongoose.model(
+  "SellerPasswordReset",
+  sellerPasswordResetSchema
+);

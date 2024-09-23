@@ -31,7 +31,7 @@ const verifyToken = async (req, res, next) => {
     );
 
     // Attaching the data with the req
-    req.user = decodedData;
+    req.cred = decodedData;
   } catch (error) {
     return res.status(401).json({
       success: false,

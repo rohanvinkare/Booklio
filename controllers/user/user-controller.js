@@ -1,20 +1,20 @@
 // ---------------  Models Used
-const User = require("../models/user-model");
-const Blacklist = require("../models/blacklist-model");
-const PasswordReset = require("../models/password-reset-user-model");
+const User = require("../../models/user/user-model");
+const Blacklist = require("../../models/blacklist-model");
+const PasswordReset = require("../../models/user/password-reset-user-model");
 
 //-------------- External Libraries
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
-const mailer = require("../helpers/mail-helper");
+const mailer = require("../../helpers/mail-helper");
 const randomstring = require("randomstring");
 const path = require("path");
 
 const {
   deleteFile,
   deleteCloudSingle,
-} = require("../helpers/delete-file-helper");
+} = require("../../helpers/delete-file-helper");
 
 //----------------- for user registration
 const userRegister = async (req, res) => {
@@ -57,14 +57,32 @@ const userRegister = async (req, res) => {
     const userData = await user.save();
 
     // Also redirecting the user on mail verification link
-    const msg =
-      `<p>Hi ` +
-      name +
-      `, Please <a href="` +
-      process.env.MAIL_VERIFICATION +
-      `/api/v1/mail-verification?id=` +
-      userData._id +
-      `">Verify</a> your mail</p>`;
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Booklio Email Verification</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Please verify your email by clicking the button below:
+        </p>
+        <p style="text-align: center;">
+          <a href="${process.env.MAIL_VERIFICATION}/api/v1/mail-verification?id=${userData._id}" 
+             style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
+             Verify Your Email
+          </a>
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you did not sign up, please ignore this email.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
 
     // Sending mail to the user
     mailer.sendMail(email, "Mail Verification", msg);
@@ -156,14 +174,32 @@ const sendMailVerification = async (req, res) => {
       });
     }
 
-    const msg =
-      `<p>Hi ` +
-      userData.name +
-      `, Please <a href="` +
-      process.env.MAIL_VERIFICATION +
-      `/api/v1/mail-verification?id=` +
-      userData._id +
-      `">Verify</a> your mail</p>`;
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Booklio Email Verification</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${userData.name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Please verify your email by clicking the button below:
+        </p>
+        <p style="text-align: center;">
+          <a href="${process.env.MAIL_VERIFICATION}/api/v1/mail-verification?id=${userData._id}" 
+             style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
+             Verify Your Email
+          </a>
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you did not sign up, please ignore this email.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
 
     // Sending mail to the user
     mailer.sendMail(userData.email, "Mail Verification", msg);
@@ -207,14 +243,35 @@ const forgotPassword = async (req, res) => {
 
     const randomString = randomstring.generate();
 
-    const msg =
-      `<p>Hii ` +
-      userData.name +
-      `, Please click ,<a href="` +
-      process.env.FORGOT_URL +
-      `/api/v1/reset-password?token=` +
-      randomString +
-      `">here</a> to reset your password</p>`;
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Password Reset Request</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${userData.name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          We received a request to reset your password. If you did not make this request, please ignore this email.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          To reset your password, please click the link below:
+        </p>
+        <p style="text-align: center;">
+          <a href="${process.env.FORGOT_URL}/api/v1/reset-password?token=${randomString}" 
+             style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
+             Reset Your Password
+          </a>
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you did not request this change, you can safely ignore this email.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
 
     // Deleting the pre existing token if present  for the same user
     await PasswordReset.deleteMany({ user_id: userData._id });
@@ -308,7 +365,7 @@ const resetSuccess = async (req, res) => {
   }
 };
 
-//------------------ Login And Token Generation User -----------------
+//----- Login And Token Generation User -------
 
 const generateAccessToken = async (user) => {
   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -384,15 +441,15 @@ const loginUser = async (req, res) => {
   }
 };
 
-//------------------ To get the user Profile ----------------------
+//--------- To get the user Profile --------------
 
 const userProfile = async (req, res) => {
   try {
     return res.status(200).json({
       success: true,
       msg: "User Profile Data",
-      // data: req.user,
-      data: req.user.user,
+      // data: req.cred,
+      data: req.cred.user,
     });
   } catch (error) {
     return res.status(400).json({
@@ -402,7 +459,7 @@ const userProfile = async (req, res) => {
   }
 };
 
-//----------------- To update user Profile ----------------------
+//--------- To update user Profile ---------------
 
 const updateProfile = async (req, res) => {
   try {
@@ -423,7 +480,7 @@ const updateProfile = async (req, res) => {
       mobile,
     };
 
-    const user_id = req.user.user._id;
+    const user_id = req.cred.user._id;
 
     if (req.file !== undefined) {
       // Step 1: Set the new image URL/path
@@ -447,7 +504,7 @@ const updateProfile = async (req, res) => {
       }
     }
     const userData = await User.findByIdAndUpdate(
-      { _id: req.user.user._id },
+      { _id: req.cred.user._id },
       {
         $set: data,
       },
@@ -457,7 +514,7 @@ const updateProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       msg: "User Updated Successfully",
-      data: userData,
+      userdata: userData,
     });
   } catch (error) {
     return res.status(400).json({
@@ -467,11 +524,11 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// ------------------- To Refresh tokens to the client side ------------------
+// ------ To Refresh tokens to the client side -------
 
 const refreshToken = async (req, res) => {
   try {
-    const userId = req.user.user._id;
+    const userId = req.cred.user._id;
     const userData = await User.findOne({ _id: userId });
 
     const accessToken = await generateAccessToken({ user: userData });
@@ -491,7 +548,7 @@ const refreshToken = async (req, res) => {
   }
 };
 
-// ------------------- To Logout the User ------------------
+// ------------ To Logout the User --------------
 
 const logoutUser = async (req, res) => {
   try {

@@ -75,6 +75,7 @@ const sellerSchema = new mongoose.Schema({
     type: Number,
     default: 0, // 1--> verified
   },
+
   role: {
     type: String,
     default: "seller",

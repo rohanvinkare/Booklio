@@ -18,8 +18,11 @@ const {
   registerSellerValidator,
   sendMailVerificationValidator,
   forgotPasswordValidator,
+  loginValidator,
+  updateSellerProfileValidator,
 } = require("../helpers/seller-validation-helper");
-const sellerController = require("../controllers/seller-controller");
+
+const sellerController = require("../controllers/seller/seller-controller");
 
 //-------------- Seller registration
 router.post(
@@ -58,5 +61,41 @@ router.post("/api/v1/seller/reset-password", sellerController.updatePassword);
 
 //-----------to render success page
 router.get("/api/v1/seller/reset-success", sellerController.resetSuccess);
+
+//-------------------- Login
+router.post(
+  "/api/v1/seller/login",
+  loginValidator,
+  sellerController.loginSeller
+);
+
+//--------------------Seller Profile
+router.get(
+  "/api/v1/seller/profile",
+  authMiddleware,
+  sellerController.sellerProfile
+);
+
+//-------------------- Cloud update for the user
+router.post(
+  "/api/v1/seller/update-profile",
+  authMiddleware,
+  uploadCloud.single("image"),
+  updateSellerProfileValidator,
+  uploadCloudSingle,
+  sellerController.updateSellerProfile
+);
+
+router.get(
+  "/api/v1/seller/refresh-token",
+  authMiddleware,
+  sellerController.refreshToken
+);
+
+router.get(
+  "/api/v1/seller/logout",
+  authMiddleware,
+  sellerController.logoutSeller
+);
 
 module.exports = router;

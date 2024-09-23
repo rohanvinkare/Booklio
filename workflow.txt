@@ -1,4 +1,4 @@
-req.user => has user info
+req.cred => has user cred info
 req.image => has image url of cloud
 req.images => has array of images 
 
@@ -7,6 +7,9 @@ req.images => has array of images
 /api/v2/register ---> for cloud upload profile image 
 
 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      The Process for user and seller is same 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 **************** For Forgot Password *******************
 
@@ -44,7 +47,7 @@ req.images => has array of images
    it and then we are updating it with the new one 
 
 
-******************* Resfresh Token *******************
+******************* Refresh Token *******************
 
 1) creating the two token with different expiries 
 2) on calling on the route ( "/api/v1/refresh-token" ) it will again send two

@@ -10,9 +10,7 @@ router.use(bodyParser.json());
 // to accept data from the URL
 router.use(bodyParser.urlencoded({ extended: true }));
 
-
-
-const userController = require("../controllers/user-controller");
+const userController = require("../controllers/user/user-controller");
 
 const uploadServer = require("../middleware/multer/multer-server-middleware");
 const uploadCloud = require("../middleware/multer/multer-cloud-middleware");
@@ -78,7 +76,7 @@ router.post(
   userController.forgotPassword
 );
 
-//------------ To render reset password page 
+//------------ To render reset password page
 router.get("/api/v1/reset-password", userController.resetPassword);
 
 //----------- To update new Password in Db
@@ -87,10 +85,13 @@ router.post("/api/v1/reset-password", userController.updatePassword);
 //----------- to render success page
 router.get("/api/v1/reset-success", userController.resetSuccess);
 
+//-------------------- Login
 router.post("/api/v1/login", loginValidator, userController.loginUser);
 
+//--------------------User Profile
 router.get("/api/v1/profile", authMiddleware, userController.userProfile);
 
+//------------------- Update Profile
 router.post(
   "/api/v1/update-profile",
   authMiddleware,
