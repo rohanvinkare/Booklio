@@ -16,9 +16,12 @@ const {
 
 const {
   registerSellerValidator,
+  sendMailVerificationValidator,
+  forgotPasswordValidator,
 } = require("../helpers/seller-validation-helper");
 const sellerController = require("../controllers/seller-controller");
 
+//-------------- Seller registration
 router.post(
   "/api/v1/seller/register",
   uploadCloud.single("image"),
@@ -32,5 +35,28 @@ router.get(
   "/api/v1/seller/mail-verification",
   sellerController.mailVerification
 );
+
+//------- Mail Verification After Registering if he missed at the time of registration
+router.post(
+  "/api/v1/seller/send-mail-verification",
+  sendMailVerificationValidator,
+  sellerController.sendMailVerification
+);
+
+//--------------------- Forget Password for Seller
+router.post(
+  "/api/v1/seller/forgot-password",
+  forgotPasswordValidator,
+  sellerController.forgotPassword
+);
+
+//------------ To render reset password page
+router.get("/api/v1/seller/reset-password", sellerController.resetPassword);
+
+//----------- To update new Password in Db
+router.post("/api/v1/seller/reset-password", sellerController.updatePassword);
+
+//-----------to render success page
+router.get("/api/v1/seller/reset-success", sellerController.resetSuccess);
 
 module.exports = router;

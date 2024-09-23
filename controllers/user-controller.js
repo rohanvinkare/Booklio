@@ -1,22 +1,22 @@
+// ---------------  Models Used
 const User = require("../models/user-model");
 const Blacklist = require("../models/blacklist-model");
-const bcrypt = require("bcrypt");
+const PasswordReset = require("../models/password-reset-user-model");
 
+//-------------- External Libraries
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const mailer = require("../helpers/mail-helper");
-
 const randomstring = require("randomstring");
-const PasswordReset = require("../models/password-reset-model");
-const passwordReset = require("../models/password-reset-model");
-
-const jwt = require("jsonwebtoken");
-
 const path = require("path");
+
 const {
   deleteFile,
   deleteCloudSingle,
 } = require("../helpers/delete-file-helper");
 
+//----------------- for user registration
 const userRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -125,7 +125,7 @@ const mailVerification = async (req, res) => {
   }
 };
 
-// ------------ verifying the mail after the registration --------------
+// ---verifying the mail after the registration if he missed at the time of registration -------
 
 const sendMailVerification = async (req, res) => {
   try {
@@ -288,7 +288,7 @@ const updatePassword = async (req, res) => {
     );
 
     // deleting the entry from the passwordReset schema
-    await passwordReset.deleteMany({
+    await PasswordReset.deleteMany({
       user_id,
     });
 

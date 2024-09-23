@@ -72,6 +72,18 @@ exports.updateSellerProfileValidator = [
   check("address.zipCode", "Zip code is required").not().isEmpty(),
 ];
 
+exports.sendMailVerificationValidator = [
+  check("email", "Please include a valid email").isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+];
+
+exports.forgotPasswordValidator = [
+  check("email", "Please include a valid email").isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+];
+
 exports.updateSellerUpiValidator = [
   check("upiId", "UPI ID is required").not().isEmpty(),
 ];

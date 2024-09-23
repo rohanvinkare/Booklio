@@ -2,6 +2,16 @@ const express = require("express");
 const router = express();
 
 router.use(express.json());
+//------------------ To reset the password
+const bodyParser = require("body-parser");
+
+// to accept data from the form
+router.use(bodyParser.json());
+// to accept data from the URL
+router.use(bodyParser.urlencoded({ extended: true }));
+
+
+
 const userController = require("../controllers/user-controller");
 
 const uploadServer = require("../middleware/multer/multer-server-middleware");
@@ -53,7 +63,7 @@ router.post(
 //-------------------- Mail Verification While Registering
 router.get("/api/v1/mail-verification", userController.mailVerification);
 
-//-------------------- Mail Verification After Registering
+//------- Mail Verification After Registering if he missed at the time of registration
 router.post(
   "/api/v1/send-mail-verification",
   sendMailVerificationValidator,
@@ -68,16 +78,13 @@ router.post(
   userController.forgotPassword
 );
 
-//------------------ To reset the password
-const bodyParser = require("body-parser");
-
-// to accept data from the form
-router.use(bodyParser.json());
-// to accept data from the URL
-router.use(bodyParser.urlencoded({ extended: true }));
-
+//------------ To render reset password page 
 router.get("/api/v1/reset-password", userController.resetPassword);
+
+//----------- To update new Password in Db
 router.post("/api/v1/reset-password", userController.updatePassword);
+
+//----------- to render success page
 router.get("/api/v1/reset-success", userController.resetSuccess);
 
 router.post("/api/v1/login", loginValidator, userController.loginUser);
