@@ -339,7 +339,7 @@ const resetPassword = async (req, res) => {
       return res.render("404");
     }
 
-    return res.render("reset-password", { resetData });
+    return res.render("reset-password-seller", { resetData });
   } catch (error) {
     return res.render("404");
   }

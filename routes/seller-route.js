@@ -20,7 +20,7 @@ const {
   forgotPasswordValidator,
   loginValidator,
   updateSellerProfileValidator,
-} = require("../helpers/seller-validation-helper");
+} = require("../helpers/validation/seller-validation-helper");
 
 const sellerController = require("../controllers/seller/seller-controller");
 

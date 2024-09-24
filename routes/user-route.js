@@ -23,7 +23,7 @@ const {
   forgotPasswordValidator,
   loginValidator,
   updateProfileValidator,
-} = require("../helpers/user-validation-helper");
+} = require("../helpers/validation/user-validation-helper");
 
 //------------------------------------ Register
 
