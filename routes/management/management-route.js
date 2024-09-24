@@ -10,29 +10,35 @@ router.use(bodyParser.json());
 // to accept data from the URL
 router.use(bodyParser.urlencoded({ extended: true }));
 
+//-------------management controller
 const managementController = require("../../controllers/management/management-controller");
+
+//--------------cloud image upload
 const uploadCloud = require("../../middleware/multer/multer-cloud-middleware");
 const {
   uploadCloudSingle,
 } = require("../../middleware/multer/multer-cloud-setup");
 
+//-----------validator and authentication
 const {
   registerMemberValidator,
   loginMemberValidator,
   updateMemberProfileValidator,
   forgotMemberPasswordValidator,
-} = require("../../helpers/validation/admin-validation-helper");
+} = require("../../helpers/validation/management-validation-helper");
 
 const authMiddleware = require("../../middleware/auth-middleware");
 
+//********************* Routes**************************/
+
 //------------ single img will be uploaded at cloud
-router.post(
-  "/api/v1/management/member-register",
-  uploadCloud.single("image"),
-  registerMemberValidator,
-  uploadCloudSingle,
-  managementController.memberRegister
-);
+// router.post(
+//   "/api/v1/management/member-register",
+//   uploadCloud.single("image"),
+//   registerMemberValidator,
+//   uploadCloudSingle,
+//   managementController.memberRegister
+// );
 
 //--------------------- Forget Password
 

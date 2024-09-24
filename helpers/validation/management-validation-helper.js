@@ -1,8 +1,5 @@
 const { check } = require("express-validator");
 
-/**
- * check for adding new member
- */
 exports.registerMemberValidator = [
   // Validate name
   check("name", "Name is required").not().isEmpty(),
@@ -29,35 +26,38 @@ exports.registerMemberValidator = [
     minNumbers: 1,
     minSymbols: 1, // Ensure at least one special character
   }),
+
+  // Validate image
+  check("image").custom((value, { req }) => {
+    if (!req.file) {
+      throw new Error("Image file is required");
+    }
+    const validMimeTypes = ["image/jpeg", "image/png"];
+    if (!validMimeTypes.includes(req.file.mimetype)) {
+      throw new Error("Please upload a valid image (jpeg or png)");
+    }
+    return true;
+  }),
 ];
 
-exports.deleteUserValidator = [
-  check("userId", "userId is required").not().isEmpty(),
-];
-
-exports.deleteSellerValidator = [
-  check("sellerId", "sellerId is required").not().isEmpty(),
-];
-
-exports.deleteMemberValidator = [
-  check("memberId", "memberId is required").not().isEmpty(),
-];
-
-/**
- * check for role updation and {role =! admin}
- */
-
-exports.updateMemberRoleValidator = [
+exports.loginMemberValidator = [
   check("email", "Please include a valid email").isEmail().normalizeEmail({
     gmail_remove_dots: true,
   }),
-  check("role", "Role is required").not().isEmpty(),
-  check("role").custom((value) => {
-    if (value === "admin") {
-      throw new Error("Role cannot be updated to admin");
-    }
-    return true; // Indicates the value is valid
+
+  check("password", "Password is required!").not().isEmpty(),
+];
+
+exports.updateMemberProfileValidator = [
+  check("name", "Name is requierd").not().isEmpty(),
+  check("mobile", "Mobile Should Conation 10 digits").isLength({
+    min: 10,
+    max: 10,
   }),
 ];
 
-
+exports.forgotMemberPasswordValidator = [
+  check("email", "Please include a valid email").isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+];

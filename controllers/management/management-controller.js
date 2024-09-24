@@ -15,101 +15,101 @@ const {
   deleteCloudSingle,
 } = require("../../helpers/delete-file-helper");
 
-//----------------- for user registration
-const memberRegister = async (req, res) => {
-  try {
-    // Validating the req with express validator
-    const valErrors = validationResult(req);
-    if (!valErrors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Errors",
-        error: valErrors.array(),
-      });
-    }
+// //----------------- for user registration
+// const memberRegister = async (req, res) => {
+//   try {
+//     // Validating the req with express validator
+//     const valErrors = validationResult(req);
+//     if (!valErrors.isEmpty()) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Errors",
+//         error: valErrors.array(),
+//       });
+//     }
 
-    const { name, email, mobile, password, role } = req.body;
+//     const { name, email, mobile, password, role } = req.body;
 
-    if (role === "admin") {
-      return res.status(400).json({
-        success: false,
-        msg: `You Cannot Create Admin!`,
-      });
-    }
+//     if (role === "admin") {
+//       return res.status(400).json({
+//         success: false,
+//         msg: `You Cannot Create Admin!`,
+//       });
+//     }
 
-    // Check if the user already exists by email
-    const isExists = await Management.findOne({ email: email });
-    if (isExists) {
-      return res.status(400).json({
-        success: false,
-        msg: `Email : ${email} already registered!`,
-      });
-    }
+//     // Check if the user already exists by email
+//     const isExists = await Management.findOne({ email: email });
+//     if (isExists) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: `Email : ${email} already registered!`,
+//       });
+//     }
 
-    // Hash the password before saving
-    const hashPassword = await bcrypt.hash(password, 10);
+//     // Hash the password before saving
+//     const hashPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user instance
-    const member = new Management({
-      name: name,
-      email: email,
-      mobile: mobile,
-      password: hashPassword,
-      // either image will come by cloud or by normal server method v1 or v2
-      image: req.image,
-      role: role,
-    });
+//     // Create a new user instance
+//     const member = new Management({
+//       name: name,
+//       email: email,
+//       mobile: mobile,
+//       password: hashPassword,
+//       // either image will come by cloud or by normal server method v1 or v2
+//       image: req.image,
+//       role: role,
+//     });
 
-    // Save the user in the database
-    const memberData = await member.save();
+//     // Save the user in the database
+//     const memberData = await member.save();
 
-    const msg = `
-  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
-      <h1 style="color: #fff; margin: 0; font-size: 24px;">Welcome to Booklio!</h1>
-    </div>
-    <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
-      <p style="font-size: 18px;">Hi ${memberData.name},</p>
-      <p style="font-size: 16px; line-height: 1.6;">
-        Welcome to the Booklio organization! We are excited to have you on board as a <strong>${memberData.role}</strong>.
-      </p>
-      <p style="font-size: 16px; line-height: 1.6;">
-        Here are your login credentials:
-      </p>
-      <ul style="font-size: 16px;">
-        <li><strong>Email:</strong> ${email}</li>
-        <li><strong>Password:</strong> ${password}</li>
-      </ul>
-      <p style="font-size: 16px; line-height: 1.6;">
-        Please remember to keep your credentials safe and do not share them with anyone.
-      </p>
-      <p style="font-size: 16px; line-height: 1.6;">
-        If you have any questions or need assistance, feel free to reach out to our support team.
-      </p>
-    </div>
-    <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
-      <p>© 2024 Booklio. All rights reserved.</p>
-      <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
-    </div>
-  </div>
-`;
+//     const msg = `
+//   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+//     <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+//       <h1 style="color: #fff; margin: 0; font-size: 24px;">Welcome to Booklio!</h1>
+//     </div>
+//     <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+//       <p style="font-size: 18px;">Hi ${memberData.name},</p>
+//       <p style="font-size: 16px; line-height: 1.6;">
+//         Welcome to the Booklio organization! We are excited to have you on board as a <strong>${memberData.role}</strong>.
+//       </p>
+//       <p style="font-size: 16px; line-height: 1.6;">
+//         Here are your login credentials:
+//       </p>
+//       <ul style="font-size: 16px;">
+//         <li><strong>Email:</strong> ${email}</li>
+//         <li><strong>Password:</strong> ${password}</li>
+//       </ul>
+//       <p style="font-size: 16px; line-height: 1.6;">
+//         Please remember to keep your credentials safe and do not share them with anyone.
+//       </p>
+//       <p style="font-size: 16px; line-height: 1.6;">
+//         If you have any questions or need assistance, feel free to reach out to our support team.
+//       </p>
+//     </div>
+//     <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+//       <p>© 2024 Booklio. All rights reserved.</p>
+//       <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+//     </div>
+//   </div>
+// `;
 
-    // Sending mail to the user
-    mailer.sendMail(email, "Mail Verification", msg);
+//     // Sending mail to the user
+//     mailer.sendMail(email, "Mail Verification", msg);
 
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      msg: `${email} registered Successfully as Member of Booklio.`,
-      memberData: memberData,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      msg: error.message || "An error occurred",
-    });
-  }
-};
+//     // Return success response
+//     return res.status(200).json({
+//       success: true,
+//       msg: `${email} registered Successfully as Member of Booklio.`,
+//       memberData: memberData,
+//     });
+//   } catch (error) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: error.message || "An error occurred",
+//     });
+//   }
+// };
 
 //----------------- To send forgot Password link  to mail---------------
 const forgotMemberPassword = async (req, res) => {
@@ -477,7 +477,6 @@ const logoutUser = async (req, res) => {
 };
 
 module.exports = {
-  memberRegister,
   loginMember,
   memberProfile,
   forgotMemberPassword,
