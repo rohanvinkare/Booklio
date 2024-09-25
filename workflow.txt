@@ -16,9 +16,9 @@ req.images => has array of images
     "email": "abc@gmail.com"
     }
 
-2) you Will receive and email link on the entered email
+2) you will receive a link on the entered email
 
-3) link will redirect to the next GET route  to visit a page 
+3) link will redirect to the next GET route to visit a page 
    ("/api/v1/reset-password?token=")
    token is attached already with the link in email
    and extracting the token from there and rendering the data 
@@ -37,23 +37,23 @@ req.images => has array of images
 
 ****************** Update Profile ********************
 
-1) While updating profile we are taking name and mobile the image is optional 
+1) While updating profile we are taking name and mobile, the image is optional 
    if we are sending image send through form data 
 
 2) while uploading the image we are finding out the path for old image and deleting
    it and then we are updating it with the new one 
 
 
-******************* Resfresh Token *******************
+******************* Refresh Token *******************
 
-1) creating the two token with different expiries 
+1) creating two tokens with different expiries 
 2) on calling on the route ( "/api/v1/refresh-token" ) it will again send two
    tokens to the client side for further process
-3) Need --> we dent want user to login again and again we the help of refresh token
+3) Need --> we don't want user to login again and again with the help of refresh token
             we are generating the access token and sending again to the client side 
 
 
 ************************ Logout ***********************
 
-1) once you generate the JWT token it will be valid until the time of expiration
+1) once you generated the JWT token it will be valid until the time of expiration
 2) so on logout we have to blacklist the token 

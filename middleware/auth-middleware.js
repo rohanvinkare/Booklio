@@ -8,7 +8,7 @@ const verifyToken = async (req, res, next) => {
   if (!token) {
     return res.status(403).json({
       success: false,
-      msg: "A Token is requierd for Authentication ",
+      msg: "A Token is required for Authentication ",
     });
   }
 

@@ -4,7 +4,7 @@ const blacklistSchema = new mongoose.Schema(
   {
     token: {
       type: String,
-      requierd: true,
+      required: true,
     },
   },
   {

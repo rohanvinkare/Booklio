@@ -7,7 +7,6 @@ const mailer = require("../helpers/mail-helper");
 
 const randomstring = require("randomstring");
 const PasswordReset = require("../models/password-reset-model");
-const passwordReset = require("../models/password-reset-model");
 
 const jwt = require("jsonwebtoken");
 
