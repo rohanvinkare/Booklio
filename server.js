@@ -22,6 +22,10 @@ app.use("/", adminRoute);
 app.use("/", bookRoute);
 app.use("/", orderRoute);
 
+app.get("/", (req, res) => {
+  res.send("Booklio Successfully running ");
+});
+
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server is Running on ${process.env.PORT}`);
 });
