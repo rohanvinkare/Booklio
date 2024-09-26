@@ -394,16 +394,16 @@ const resetSuccess = async (req, res) => {
 
 //----- Login And Token Generation User -------
 
-const generateAccessToken = async (user) => {
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+const generateAccessToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "2h",
   });
 
   return token;
 };
 
-const generateRefreshToken = async (user) => {
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+const generateRefreshToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "4h",
   });
 
@@ -449,8 +449,8 @@ const loginSeller = async (req, res) => {
       });
     }
 
-    const accessToken = await generateAccessToken({ user: sellerData });
-    const refreshToken = await generateRefreshToken({ user: sellerData });
+    const accessToken = await generateAccessToken({ credDecode: sellerData });
+    const refreshToken = await generateRefreshToken({ credDecode: sellerData });
 
     return res.status(200).json({
       success: true,
@@ -475,7 +475,7 @@ const sellerProfile = async (req, res) => {
       success: true,
       msg: "Seller Profile Data",
       // data: req.cred,
-      data: req.cred.user,
+      data: req.cred.credDecode,
     });
   } catch (error) {
     return res.status(400).json({
@@ -533,7 +533,7 @@ const updateSellerProfile = async (req, res) => {
       },
     };
     //------------------Working but need to fix latter here seller
-    const seller_id = req.cred.user._id;
+    const seller_id = req.cred.credDecode._id;
 
     if (req.file !== undefined) {
       // Step 1: Set the new image URL/path
@@ -558,7 +558,7 @@ const updateSellerProfile = async (req, res) => {
     }
 
     const sellerData = await Seller.findByIdAndUpdate(
-      { _id: req.cred.user._id },
+      { _id: req.cred.credDecode._id },
       {
         $set: data,
       },
@@ -583,11 +583,11 @@ const updateSellerProfile = async (req, res) => {
 const refreshToken = async (req, res) => {
   try {
     //------------------Working but need to fix latter here seller
-    const sellerId = req.cred.user._id;
+    const sellerId = req.cred.credDecode._id;
     const sellerData = await Seller.findOne({ _id: sellerId });
 
-    const accessToken = await generateAccessToken({ user: sellerData });
-    const refreshToken = await generateRefreshToken({ user: sellerData });
+    const accessToken = await generateAccessToken({ credDecode: sellerData });
+    const refreshToken = await generateRefreshToken({ credDecode: sellerData });
 
     return res.status(200).json({
       success: true,

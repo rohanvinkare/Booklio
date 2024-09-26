@@ -264,16 +264,16 @@ const resetSuccess = async (req, res) => {
 
 //----- Login And Token Generation User -------
 
-const generateAccessToken = async (member) => {
-  const token = jwt.sign(member, process.env.ACCESS_TOKEN_SECRET, {
+const generateAccessToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "2h",
   });
 
   return token;
 };
 
-const generateRefreshToken = async (member) => {
-  const token = jwt.sign(member, process.env.ACCESS_TOKEN_SECRET, {
+const generateRefreshToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "4h",
   });
 
@@ -320,8 +320,8 @@ const loginMember = async (req, res) => {
     //   });
     // }
 
-    const accessToken = await generateAccessToken({ member: memberData });
-    const refreshToken = await generateRefreshToken({ member: memberData });
+    const accessToken = await generateAccessToken({ credDecode: memberData });
+    const refreshToken = await generateRefreshToken({ credDecode: memberData });
 
     return res.status(200).json({
       success: true,
@@ -346,7 +346,7 @@ const memberProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       msg: "Member Profile Data",
-      data: req.cred.member,
+      data: req.cred.credDecode,
       //   data: req.cred.user,
     });
   } catch (error) {
@@ -378,7 +378,7 @@ const updateMemberProfile = async (req, res) => {
       mobile,
     };
 
-    const member_id = req.cred.member._id;
+    const member_id = req.cred.credDecode._id;
 
     if (req.file !== undefined) {
       // Step 1: Set the new image URL/path
@@ -402,7 +402,7 @@ const updateMemberProfile = async (req, res) => {
       }
     }
     const memberData = await Management.findByIdAndUpdate(
-      { _id: req.cred.member._id },
+      { _id: req.cred.credDecode._id },
       {
         $set: data,
       },
@@ -426,7 +426,7 @@ const updateMemberProfile = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-    const memberId = req.cred.member._id;
+    const memberId = req.cred.credDecode._id;
     const memberData = await Management.findOne({ _id: memberId });
 
     const accessToken = await generateAccessToken({ member: memberData });

@@ -1,4 +1,11 @@
-req.cred => has user cred info
+req.cred => has user info in credDecode
+
+         cred:{
+            creating{
+               name:"",etc
+            }
+         }
+
 req.image => has image url of cloud
 req.images => has array of images 
 
@@ -8,10 +15,16 @@ req.images => has array of images
 
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''
-      The Process for user and seller is same 
+      The Process for user seller and Management is same 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-**************** For Forgot Password *******************
+******************** For Forgot Password *********************
+
+ For Seller and User the login page is on home page  
+ For Management team the login url already sended on the mail 
+
+
+******************** For Forgot Password ************************
 
 1) will go to the forgot password route ("/api/v1/forgot-password")
 
@@ -35,7 +48,7 @@ req.images => has array of images
 
 1) taking token from query,headers and body
 2) After that we are attaching the user data to the req we can access the data
-   of the user with (req.user.field)
+   of the user with (req.cred.credDecode)
 
 
 ****************** Update Profile ********************
@@ -60,3 +73,30 @@ req.images => has array of images
 
 1) once you generate the JWT token it will be valid until the time of expiration
 2) so on logout we have to blacklist the token 
+
+
+############################## Management #####################################
+
+ Admin Is the head of Booklio Management team
+
+*********************** Admin ************************
+
+ Admin have below permissions 
+   
+    1) Member/Role creation (exclude admin)
+       ---> The mail with the login credentials and the login link will be sent 
+       to the register member
+       ---> The candidate can chen or update there password by using forgot password 
+    
+    2) Role updation 
+
+    3) Deletion
+       ---> Delete member/Role 
+        ---> Delete user
+         ---> Delete seller
+
+     4) Data 
+       ---> can Get all member data or specific 
+         ---> can Get all user data or specific 
+           ---> can Get all seller data or specific  
+             ---> can get Batch Data of all

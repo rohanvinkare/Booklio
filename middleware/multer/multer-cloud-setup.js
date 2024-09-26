@@ -43,13 +43,6 @@ const uploadCloudSingle = asyncHandler(async (req, res, next) => {
     const image = req.file;
     console.log(image);
 
-    // //--------------- To avoid if any one want to Create admin or other things
-    // if (req.body.role === "admin") {
-    //   return res.status(400).json({
-    //     success: false,
-    //     msg: `Role can't be Admin!`,
-    //   });
-    // }
 
     const result = await cloudinary.uploader.upload(image.path, {
       resource_type: "auto",

@@ -367,16 +367,16 @@ const resetSuccess = async (req, res) => {
 
 //----- Login And Token Generation User -------
 
-const generateAccessToken = async (user) => {
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+const generateAccessToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "2h",
   });
 
   return token;
 };
 
-const generateRefreshToken = async (user) => {
-  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+const generateRefreshToken = async (credDecode) => {
+  const token = jwt.sign(credDecode, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "4h",
   });
 
@@ -422,8 +422,8 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const accessToken = await generateAccessToken({ user: userData });
-    const refreshToken = await generateRefreshToken({ user: userData });
+    const accessToken = await generateAccessToken({ credDecode: userData });
+    const refreshToken = await generateRefreshToken({ credDecode: userData });
 
     return res.status(200).json({
       success: true,
@@ -445,11 +445,13 @@ const loginUser = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
+    console.log(req.cred);
+    console.log(req.cred.credDecode);
     return res.status(200).json({
       success: true,
       msg: "User Profile Data",
       // data: req.cred,
-      data: req.cred.user,
+      data: req.cred.credDecode,
     });
   } catch (error) {
     return res.status(400).json({
@@ -480,7 +482,7 @@ const updateProfile = async (req, res) => {
       mobile,
     };
 
-    const user_id = req.cred.user._id;
+    const user_id = req.cred.credDecode._id;
 
     if (req.file !== undefined) {
       // Step 1: Set the new image URL/path
@@ -504,7 +506,7 @@ const updateProfile = async (req, res) => {
       }
     }
     const userData = await User.findByIdAndUpdate(
-      { _id: req.cred.user._id },
+      { _id: req.cred.credDecode._id },
       {
         $set: data,
       },
@@ -528,11 +530,11 @@ const updateProfile = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   try {
-    const userId = req.cred.user._id;
+    const userId = req.cred.credDecode._id;
     const userData = await User.findOne({ _id: userId });
 
-    const accessToken = await generateAccessToken({ user: userData });
-    const refreshToken = await generateRefreshToken({ user: userData });
+    const accessToken = await generateAccessToken({ credDecode: userData });
+    const refreshToken = await generateRefreshToken({ credDecode: userData });
 
     return res.status(200).json({
       success: true,

@@ -32,13 +32,16 @@ const {
 } = require("../../../helpers/validation/admin-validation-helper");
 
 const authMiddleware = require("../../../middleware/auth-middleware");
+const {
+  checkAbility,
+} = require("../../../middleware/casl-rbac/casl-abilities-check-middleware");
 
 //********************* Routes**************************/
-
 //------------ single img will be uploaded at cloud
 router.post(
   "/api/v1/management/member-register",
   authMiddleware,
+  checkAbility("create", "member"),
   uploadCloud.single("image"),
   registerMemberValidator,
   uploadCloudSingle,
@@ -49,6 +52,7 @@ router.post(
 router.post(
   "/api/v1/delete-user",
   authMiddleware,
+  checkAbility("delete", "user"),
   deleteUserValidator,
   adminController.deleteUser
 );
@@ -57,6 +61,7 @@ router.post(
 router.post(
   "/api/v1/delete-seller",
   authMiddleware,
+  checkAbility("delete", "seller"),
   deleteSellerValidator,
   adminController.deleteSeller
 );
@@ -65,6 +70,7 @@ router.post(
 router.post(
   "/api/v1/delete-member",
   authMiddleware,
+  checkAbility("delete", "member"),
   deleteMemberValidator,
   adminController.deleteMember
 );
@@ -73,6 +79,7 @@ router.post(
 router.post(
   "/api/v1/update-member-role",
   authMiddleware,
+  checkAbility("update", "member"),
   updateMemberRoleValidator,
   adminController.updateMemberRole
 );
@@ -81,6 +88,7 @@ router.post(
 router.get(
   "/api/v1/get-member-data/:memberId?",
   authMiddleware,
+  checkAbility("read", "members"),
   adminController.getMemberData
 );
 
@@ -88,6 +96,7 @@ router.get(
 router.get(
   "/api/v1/get-user-data/:userId?",
   authMiddleware,
+  checkAbility("read", "users"),
   adminController.getUserData
 );
 
@@ -95,13 +104,15 @@ router.get(
 router.get(
   "/api/v1/get-seller-data/:sellerId?",
   authMiddleware,
+  checkAbility("read", "sellers"),
   adminController.getSellerData
 );
 
-//----------- To get All the Sellers of the website
+//----------- To get All the folks of the website
 router.get(
   "/api/v1/get-batch-data",
   authMiddleware,
+  checkAbility("read", "Batch-Data"),
   adminController.getAllData
 );
 

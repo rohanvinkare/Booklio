@@ -25,11 +25,15 @@ const {
   updateProfileValidator,
 } = require("../helpers/validation/user-validation-helper");
 
+const {
+  checkAbility,
+} = require("../middleware/casl-rbac/casl-abilities-check-middleware");
+
 //------------------------------------ Register
 
 //--------- img will be uploaded to server
 router.post(
-  "/api/v1/register",
+  "/api/v2/register",
   uploadServer.single("image"),
   registerValidator,
   userController.userRegister
@@ -42,7 +46,7 @@ const {
 
 //--------- single img will be uploaded at cloud
 router.post(
-  "/api/v2/register",
+  "/api/v1/register",
   uploadCloud.single("image"),
   registerValidator,
   uploadCloudSingle,
@@ -89,12 +93,18 @@ router.get("/api/v1/reset-success", userController.resetSuccess);
 router.post("/api/v1/login", loginValidator, userController.loginUser);
 
 //--------------------User Profile
-router.get("/api/v1/profile", authMiddleware, userController.userProfile);
+router.get(
+  "/api/v1/profile",
+  authMiddleware,
+  checkAbility("read", "uer-profile"),
+  userController.userProfile
+);
 
 //------------------- Update Profile
 router.post(
-  "/api/v1/update-profile",
+  "/api/v2/update-profile",
   authMiddleware,
+  checkAbility("update", "user-profile"),
   uploadServer.single("image"),
   updateProfileValidator,
   userController.updateProfile
@@ -102,8 +112,9 @@ router.post(
 
 // cloud update for the user
 router.post(
-  "/api/v2/update-profile",
+  "/api/v1/update-profile",
   authMiddleware,
+  checkAbility("update", "user-profile"),
   uploadCloud.single("image"),
   updateProfileValidator,
   uploadCloudSingle,
@@ -116,6 +127,11 @@ router.get(
   userController.refreshToken
 );
 
-router.get("/api/v1/logout", authMiddleware, userController.logoutUser);
+router.get(
+  "/api/v1/logout",
+  authMiddleware,
+  checkAbility("logout", "user-logout"),
+  userController.logoutUser
+);
 
 module.exports = router;

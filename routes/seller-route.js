@@ -11,6 +11,10 @@ const authMiddleware = require("../middleware/auth-middleware");
 const uploadCloud = require("../middleware/multer/multer-cloud-middleware");
 
 const {
+  checkAbility,
+} = require("../middleware/casl-rbac/casl-abilities-check-middleware");
+
+const {
   uploadCloudSingle,
 } = require("../middleware/multer/multer-cloud-setup");
 
@@ -73,6 +77,7 @@ router.post(
 router.get(
   "/api/v1/seller/profile",
   authMiddleware,
+  checkAbility("read", "seller-profile"),
   sellerController.sellerProfile
 );
 
@@ -80,6 +85,7 @@ router.get(
 router.post(
   "/api/v1/seller/update-profile",
   authMiddleware,
+  checkAbility("update", "seller-profile"),
   uploadCloud.single("image"),
   updateSellerProfileValidator,
   uploadCloudSingle,
@@ -95,6 +101,7 @@ router.get(
 router.get(
   "/api/v1/seller/logout",
   authMiddleware,
+  checkAbility("logout", "seller-logout"),
   sellerController.logoutSeller
 );
 

@@ -1,6 +1,14 @@
 const jwt = require("jsonwebtoken");
 const Blacklist = require("../models/blacklist-model");
 
+const {
+  defineAbilitiesFor,
+} = require("../controllers/casl-rbac/casl-abilities");
+
+/**
+ * Token
+ */
+
 const verifyToken = async (req, res, next) => {
   const token =
     req.body.token || req.query.token || req.headers["authorization"];
@@ -11,6 +19,8 @@ const verifyToken = async (req, res, next) => {
       msg: "A Token is requierd for Authentication ",
     });
   }
+
+  //*************** For Token Decode *********
 
   try {
     const bearer = token.split(" ");
@@ -36,6 +46,27 @@ const verifyToken = async (req, res, next) => {
     return res.status(401).json({
       success: false,
       msg: "Invalid token",
+    });
+  }
+
+  //*************** For attaching the ability's to req *********
+
+  try {
+    // Ensure req.cred is set by the auth middleware (token decoding)
+    if (!req.cred) {
+      return res.status(401).json({
+        success: false,
+        msg: "Credentials not found. Authentication required.",
+      });
+    }
+
+    // Define and attach abilities based on the user role
+    req.ability = defineAbilitiesFor(req.cred.credDecode);
+    console.log(req.ability);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: error.message || "An error occurred while processing abilities.",
     });
   }
 
