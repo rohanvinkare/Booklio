@@ -445,8 +445,6 @@ const loginUser = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
-    console.log(req.cred);
-    console.log(req.cred.credDecode);
     return res.status(200).json({
       success: true,
       msg: "User Profile Data",

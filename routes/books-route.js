@@ -1,0 +1,66 @@
+const express = require("express");
+const router = express();
+
+router.use(express.json());
+//------------------ To reset the password
+const bodyParser = require("body-parser");
+
+// to accept data from the form
+router.use(bodyParser.json());
+// to accept data from the URL
+router.use(bodyParser.urlencoded({ extended: true }));
+
+const bookController = require("../controllers/book/book-controller");
+
+const authMiddleware = require("../middleware/auth-middleware");
+
+const {
+  addBookValidator,
+  removeBookValidator,
+} = require("../helpers/validation/book-validation-helper");
+
+const {
+  checkAbility,
+} = require("../middleware/casl-rbac/casl-abilities-check-middleware");
+
+//================================== For Seller ==================================
+
+//------------------------------------ Book Add And Delete
+router.post(
+  "/api/v1/add-book",
+  authMiddleware,
+  addBookValidator,
+  bookController.addBook
+);
+
+router.post(
+  "/api/v1/remove-book",
+  authMiddleware,
+  removeBookValidator,
+  bookController.removeBook
+);
+
+//---------------------------------  Get all Books that  Seller has in Stock
+router.get(
+  "/api/v1/seller-stock-book",
+  authMiddleware,
+  bookController.stockBook
+);
+
+//------------------------------- Get all Books For the user or gest
+
+router.get("/api/v1/all-genre-book", bookController.bookAllGenre);
+
+//--------- Get all books in the genre
+router.get("/api/v1/genre-book/:genre", bookController.bookByGenre);
+
+//----------Get all the sellers
+router.get("/api/v1/all-seller", bookController.allSeller);
+
+//-----------Get the specific seller info and the book he is selling
+router.get("/api/v1/books-by-seller/:sellerId", bookController.booksBySeller);
+
+//----------Get the all the sellers selling the book
+router.get("/api/v1/sellers-by-book/:isbn", bookController.sellersByBook);
+
+module.exports = router;

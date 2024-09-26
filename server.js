@@ -12,11 +12,13 @@ const userRoute = require("./routes/user-route.js");
 const sellerRoute = require("./routes/seller-route.js");
 const managementRoute = require("./routes/management/management-route.js");
 const adminRoute = require("./routes/management/admin/admin-route.js");
+const bookRoute = require("./routes/books-route.js");
 
 app.use("/", userRoute);
 app.use("/", sellerRoute);
 app.use("/", managementRoute);
 app.use("/", adminRoute);
+app.use("/", bookRoute);
 
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server is Running on ${process.env.PORT}`);
