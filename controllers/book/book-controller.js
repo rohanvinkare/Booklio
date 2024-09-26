@@ -19,7 +19,7 @@ const addBook = async (req, res) => {
       });
     }
 
-    const { genre, isbn } = req.body;
+    const { genre, isbn, price } = req.body;
     const sellerId = req.cred.credDecode.sellerId;
 
     // Check if the user already exists by email
@@ -35,6 +35,7 @@ const addBook = async (req, res) => {
     const book = new Book({
       genre: genre,
       isbn: isbn,
+      price: price,
       bookLink: `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=AIzaSyCCMhOfeT0EauL_FCQM--9076QzrNoru58`,
       sellerId: sellerId,
     });

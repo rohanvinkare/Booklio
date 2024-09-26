@@ -1,22 +1,29 @@
 const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid"); // Importing the uuid function
 
 const orderSchema = new mongoose.Schema({
-  // The ISBN of the book being ordered
+  // Unique order ID
+  orderId: {
+    type: String,
+    default: uuidv4, // Generate a new UUID by default
+    unique: true, // Ensure the orderId is unique
+  },
+
   isbn: {
     type: String,
     required: true,
-    ref: "Book", // Reference to the Book model
+    ref: "Book",
   },
   price: {
     type: Number,
     required: true,
     ref: "Book",
   },
-  // The user who placed the order
+
   userId: {
     type: String,
     required: true,
-    ref: "User", // Reference to the User model
+    ref: "User",
   },
   // The seller who is selling the book
   sellerId: {
@@ -26,10 +33,6 @@ const orderSchema = new mongoose.Schema({
   },
   // Full shipping address for the order
   shippingAddress: {
-    fullName: {
-      type: String,
-      required: true,
-    },
     street: {
       type: String,
       required: true,

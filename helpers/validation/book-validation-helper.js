@@ -14,6 +14,12 @@ exports.addBookValidator = [
     .withMessage("ISBN must be a valid string.")
     .isLength({ min: 10, max: 13 })
     .withMessage("ISBN must be 10 or 13 characters long."),
+
+  check("price")
+    .notEmpty()
+    .withMessage("Price is required.")
+    .isString()
+    .withMessage("Genre must be a string."),
 ];
 
 exports.removeBookValidator = [

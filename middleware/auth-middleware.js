@@ -62,7 +62,8 @@ const verifyToken = async (req, res, next) => {
 
     // Define and attach abilities based on the user role
     req.ability = defineAbilitiesFor(req.cred.credDecode);
-    console.log(req.ability);
+
+    // console.log(req.ability);
   } catch (error) {
     return res.status(500).json({
       success: false,
