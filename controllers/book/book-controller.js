@@ -36,7 +36,6 @@ const addBook = async (req, res) => {
       genre: genre,
       isbn: isbn,
       price: price,
-      bookLink: `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=AIzaSyCCMhOfeT0EauL_FCQM--9076QzrNoru58`,
       sellerId: sellerId,
     });
 

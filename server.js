@@ -1,9 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db-config.js");
+const cors = require("cors");
 
 const app = express();
 connectDB();
+
+app.use(cors());
 
 app.set("view engine", "ejs");
 app.set("views", "./views");

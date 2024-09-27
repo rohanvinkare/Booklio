@@ -14,10 +14,6 @@ const bookSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  bookLink: {
-    type: String,
-    required: true,
-  },
   sellerId: {
     type: String,
     required: true,
