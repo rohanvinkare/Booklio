@@ -27,15 +27,9 @@ const {
 //================================== For Seller ==================================
 
 //------------------------------------ Book Add And Delete
-router.post(
-  "/api/v1/add-book",
-  authMiddleware,
-  addBookValidator,
-  bookController.addBook
-);
 
 router.post(
-  "/api/v2/add-book",
+  "/api/v1/add-book",
   authMiddleware,
   addBookValidatorGoogleAPI,
   bookController.addBookGoogleAPI
@@ -45,39 +39,24 @@ router.post(
   "/api/v1/remove-book",
   authMiddleware,
   removeBookValidator,
-  bookController.removeBook
-);
-
-router.post(
-  "/api/v2/remove-book",
-  authMiddleware,
-  removeBookValidator,
   bookController.removeSellerFromBook
 );
 
 //-------------------------  Get all Books that  Seller has in Stock
-router.get(
-  "/api/v1/seller-stock-book",
-  authMiddleware,
-  bookController.stockBook
-);
 
 router.get(
-  "/api/v2/seller-stock-book",
+  "/api/v1/seller-stock-book",
   authMiddleware,
   bookController.sellerStockBook
 );
 
 //------------------------------- Get all Books For the user or gest
 
-router.get("/api/v1/all-genre-book", bookController.bookAllGenre);
-
-router.get("/api/v2/all-genre-book", bookController.bookAllGenreGoogleAPI);
+router.get("/api/v1/all-genre-book", bookController.bookAllGenreGoogleAPI);
 
 //--------- Get all books in the genre
-router.get("/api/v1/genre-book/:genre", bookController.bookByGenre);
 
-router.get("/api/v2/genre-book/:genre", bookController.bookByGenreGoogleAPI);
+router.get("/api/v1/genre-book/:genre", bookController.bookByGenreGoogleAPI);
 
 //----------Get all the sellers
 router.get("/api/v1/all-seller", bookController.allSeller);

@@ -87,7 +87,7 @@ router.post(
   authMiddleware,
   checkAbility("update", "seller-profile"),
   uploadCloud.single("image"),
-  updateSellerProfileValidator,
+  updateSellerProfileValidator,             
   uploadCloudSingle,
   sellerController.updateSellerProfile
 );

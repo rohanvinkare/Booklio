@@ -5,57 +5,7 @@ const Seller = require("../../models/seller/seller-model");
 const { getCache, setCache, delCache } = require("../../cache/node-cache");
 
 //--------------------------  Add Book -----------------------
-/**
- * For adding Book To the seller Stock
- */
-const addBook = async (req, res) => {
-  try {
-    // Validating the req with express validator
-    const valErrors = validationResult(req);
-    if (!valErrors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Errors",
-        error: valErrors.array(),
-      });
-    }
 
-    const { genre, isbn, price } = req.body;
-    const sellerId = req.cred.credDecode.sellerId;
-
-    // Check if the user already exists by email
-    const isExists = await Seller.findOne({ sellerId: sellerId });
-    if (!isExists) {
-      return res.status(400).json({
-        success: false,
-        msg: `Seller : ${sellerId} dose Not Exists!`,
-      });
-    }
-
-    // Create a new user instance
-    const book = new Book({
-      genre: genre,
-      isbn: isbn,
-      price: price,
-      sellerId: sellerId,
-    });
-
-    // Save the user in the database
-    const bookData = await book.save();
-
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      msg: `Book with ISBN ${isbn} added Successfully`,
-      bookData: bookData,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      msg: error.message || "An error occurred",
-    });
-  }
-};
 
 //--------------------------  Add Book From Google-----------------------
 /**
@@ -162,49 +112,6 @@ const addBookGoogleAPI = async (req, res) => {
 };
 
 //------------------------ Delete Book -----------------------
-/**
- * For Removing from seller Stock
- */
-const removeBook = async (req, res) => {
-  try {
-    // Validating the req with express validator
-    const valErrors = validationResult(req);
-    if (!valErrors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Errors",
-        error: valErrors.array(),
-      });
-    }
-
-    const { isbn } = req.body;
-    const sellerId = req.cred.credDecode.sellerId;
-
-    // Find the book based on sellerId and isbn and delete it
-    const deletedBook = await Book.findOneAndDelete({
-      sellerId: sellerId,
-      isbn: isbn,
-    });
-
-    if (!deletedBook) {
-      return res.status(404).json({
-        success: false,
-        msg: `Book with ISBN: ${isbn} by Seller: ${sellerId} does not exist!`,
-      });
-    }
-
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      msg: `Book with ISBN ${isbn} Deleted Successfully`,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      msg: error.message || "An error occurred",
-    });
-  }
-};
 
 /**
  * For Removing the book from the sellers stock
@@ -285,48 +192,7 @@ const removeSellerFromBook = async (req, res) => {
 };
 
 //--------------------------  Stock Book -----------------------
-/**
- * For all Book that seller have in stock
- */
-const stockBook = async (req, res) => {
-  try {
-    const sellerId = req.cred.credDecode.sellerId;
 
-    // Check if the user already exists by email
-    const isExists = await Seller.findOne({ sellerId: sellerId });
-    if (!isExists) {
-      return res.status(400).json({
-        success: false,
-        msg: `Seller : ${sellerId} dose Not Exists!`,
-      });
-    }
-
-    // If the seller exists, find all books associated with the sellerId
-    const booksData = await Book.find({ sellerId: sellerId });
-    const sellerInfo = await Seller.findOne({ sellerId: sellerId });
-
-    // Check if any books were found
-    if (booksData.length === 0) {
-      return res.status(404).json({
-        success: false,
-        msg: `No books found for Seller: ${sellerId}!`,
-      });
-    }
-
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      msg: `All Books From The Seller Stock`,
-      sellerInfo: sellerInfo,
-      booksData: booksData,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      msg: error.message || "An error occurred",
-    });
-  }
-};
 
 /**
  * For all Book that seller have in stock
@@ -385,47 +251,7 @@ const sellerStockBook = async (req, res) => {
   }
 };
 
-/**
- * Get all book ISBN from the Db  w.r.t there Genre
- */
-const bookAllGenre = async (req, res) => {
-  try {
-    const genres = {
-      horror: [],
-      action: [],
-      adventure: [],
-      mystery: [],
-      documentaries: [],
-      comedy: [],
-      drama: [],
-      mythology: [],
-      fantasy: [],
-    };
 
-    // Fetch all books from the database
-    const books = await Book.find({}, { genre: 1, isbn: 1 }); // Only fetching genre and isbn for efficiency
-
-    // Populate the genre arrays
-    books.forEach((book) => {
-      const { genre, isbn } = book;
-      if (genres[genre.toLowerCase()]) {
-        genres[genre.toLowerCase()].push(isbn);
-      }
-    });
-
-    // Return success response with organized genre data
-    return res.status(200).json({
-      success: true,
-      msg: "Books grouped by genre successfully",
-      bookData: genres,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      msg: error.message || "An error occurred",
-    });
-  }
-};
 
 /**
  * Get all book Data from the Db  w.r.t there Genre APi
@@ -481,38 +307,6 @@ const bookAllGenreGoogleAPI = async (req, res) => {
   }
 };
 
-/**
- * Get all book ISBN from the Db Sorted by the specific  genre
- */
-const bookByGenre = async (req, res) => {
-  try {
-    const genre = req.params.genre; // Extract genre from the route parameter
-
-    // Query the database for books with the specified genre
-    const books = await Book.find({ genre: genre });
-
-    // Check if books were found
-    if (!books || books.length === 0) {
-      return res.status(404).json({
-        success: false,
-        msg: `No books found for genre: ${genre}`,
-      });
-    }
-
-    // Return success response with the list of books for the genre
-    return res.status(200).json({
-      success: true,
-      msg: `Books found for genre: ${genre}`,
-      data: books, // Return the array of books
-    });
-  } catch (error) {
-    // Handle any errors
-    return res.status(500).json({
-      success: false,
-      msg: error.message || "An error occurred while fetching books by genre",
-    });
-  }
-};
 
 /**
  * Get all book Data from the Db Sorted by the specific  genre
@@ -688,11 +482,7 @@ const sellersByBook = async (req, res) => {
 };
 
 module.exports = {
-  addBook,
-  removeBook,
-  stockBook,
-  bookAllGenre,
-  bookByGenre,
+
   allSeller,
   booksBySeller,
   sellersByBook,
