@@ -2,22 +2,30 @@ const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema({
   genre: {
-    type: String,
+    // type: String,
+    type: Array,
     required: true,
   },
   isbn: {
     type: String,
     required: true,
   },
-  // Total price for the order
-  price: {
-    type: Number,
-    required: true,
+  spCluster: [
+    {
+      sellerId: {
+        type: String,
+        required: true,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+  data: {
+    type: mongoose.Schema.Types.Mixed, // This will allow any type of data (flexible schema)
+    default: {},
   },
-  sellerId: {
-    type: String,
-    required: true,
-  }, // Linking to the seller
 });
 
 // Compound unique index on sellerId and isbn
