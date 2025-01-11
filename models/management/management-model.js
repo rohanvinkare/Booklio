@@ -31,7 +31,6 @@ const managementSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   dateCreated: {
     type: Date,

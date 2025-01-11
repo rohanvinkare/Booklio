@@ -12,7 +12,7 @@ const bookSchema = new mongoose.Schema({
   },
   spCluster: [
     {
-      sellerId: {
+      sellerId: { 
         type: String,
         required: true,
       },

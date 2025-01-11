@@ -1,4 +1,4 @@
-const { check } = require("express-validator");
+const { check, param } = require("express-validator");
 
 exports.orderBookValidator = [
   check("sellerId")
@@ -34,4 +34,21 @@ exports.cancelOrderValidator = [
     .withMessage("Order ID is required")
     .isString()
     .withMessage("Order ID must be a string"),
+];
+
+
+exports.sellerOrderListCheckValidator = [
+  check("sellerId", "Seller ID is required in params")
+    .exists({ checkNull: true })
+    .isString()
+    .withMessage("Seller ID must be a string"),
+];
+
+
+exports.userOrderListCheckValidator = [
+  check("userId", "User ID is required in params")
+    .exists({ checkNull: true })
+    .withMessage("User ID is required")
+    .isString()
+    .withMessage("User ID must be a string"),
 ];

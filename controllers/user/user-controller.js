@@ -101,6 +101,94 @@ const userRegister = async (req, res) => {
   }
 };
 
+const userRegisterV4 = async (req, res) => {
+  try {
+
+   
+    // Validating the req with express validator
+    const valErrors = validationResult(req);
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: "Errors",
+        error: valErrors.array(),
+      });
+    }
+
+    const { name, email, mobile, password } = req.body;
+
+    console.log(req.body)
+
+    // Check if the user already exists by email
+    const isExists = await User.findOne({ email: email });
+    if (isExists) {
+      return res.status(400).json({
+        success: false,
+        msg: `Email : ${email} already registered!`,
+      });
+    }
+    
+    // Hash the password before saving
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user instance
+    const user = new User({
+      name: name,
+      email: email,
+      mobile: mobile,
+      password: hashPassword,
+      // either image will come by cloud or by normal server method v1 or v2
+      // image: req.image || "images" + req.file.filename,
+    });
+
+    // Save the user in the database
+    const userData = await user.save();
+
+    // Also redirecting the user on mail verification link
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Booklio Email Verification</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Please verify your email by clicking the button below:
+        </p>
+        <p style="text-align: center;">
+          <a href="${process.env.MAIL_VERIFICATION}/api/v1/mail-verification?id=${userData._id}" 
+             style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
+             Verify Your Email
+          </a>
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you did not sign up, please ignore this email.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
+
+    // Sending mail to the user
+    mailer.sendMail(email, "Mail Verification", msg);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      msg: `${email} registered Successfully`,
+      userData: userData,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
 //------------------------ Mail Verification while registration---------------
 
 const mailVerification = async (req, res) => {
@@ -418,7 +506,7 @@ const loginUser = async (req, res) => {
     if (userData.is_verified == 0) {
       return res.status(401).json({
         success: false,
-        msg: "please verify your mail",
+        msg: "Please verify your mail ! \n Check your mail box",
       });
     }
 
@@ -580,6 +668,7 @@ const logoutUser = async (req, res) => {
 
 module.exports = {
   userRegister,
+  userRegisterV4,
   mailVerification,
   sendMailVerification,
   forgotPassword,

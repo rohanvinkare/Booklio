@@ -33,7 +33,7 @@ const authMiddleware = require("../../middleware/auth-middleware");
 
 //------------ single img will be uploaded at cloud
 // router.post(
-//   "/api/v1/management/member-register",
+//   "/management/api/v1/management/member-register",
 //   uploadCloud.single("image"),
 //   registerMemberValidator,
 //   uploadCloudSingle,
@@ -43,46 +43,46 @@ const authMiddleware = require("../../middleware/auth-middleware");
 //--------------------- Forget Password
 
 router.post(
-  "/api/v1/management/forgot-password",
+  "/management/api/v1/management/forgot-password",
   forgotMemberPasswordValidator,
   managementController.forgotMemberPassword
 );
 
 //------------ To render reset password page
 router.get(
-  "/api/v1/management/reset-password",
+  "/management/api/v1/management/reset-password",
   managementController.resetMemberPassword
 );
 
 //----------- To update new Password in Db
 router.post(
-  "/api/v1/management/reset-password",
+  "/management/api/v1/management/reset-password",
   managementController.updateMemberPassword
 );
 
 //----------- to render success page
 router.get(
-  "/api/v1/management/reset-success",
+  "/management/api/v1/management/reset-success",
   managementController.resetSuccess
 );
 
 //-------------------- Login
 router.post(
-  "/api/v1/management/member-login",
+  "/management/api/v1/management/member-login",
   loginMemberValidator,
   managementController.loginMember
 );
 
 //-------------------- User Profile
 router.get(
-  "/api/v1/management/member-profile",
+  "/management/api/v1/management/member-profile",
   authMiddleware,
   managementController.memberProfile
 );
 
 //------------------- Update Profile
 router.post(
-  "/api/v1/management/update-member-profile",
+  "/management/api/v1/management/update-member-profile",
   authMiddleware,
   uploadCloud.single("image"),
   updateMemberProfileValidator,
@@ -90,13 +90,13 @@ router.post(
 );
 
 router.get(
-  "/api/v1/management/refresh-token",
+  "/management/api/v1/management/refresh-token",
   authMiddleware,
   managementController.refreshToken
 );
 
 router.get(
-  "/api/v1/management/logout-member",
+  "/management/api/v1/management/logout-member",
   authMiddleware,
   managementController.logoutUser
 );

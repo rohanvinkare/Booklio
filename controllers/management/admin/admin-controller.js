@@ -1,7 +1,9 @@
 const Management = require("../../../models/management/management-model");
 const User = require("../../../models/user/user-model");
 const Seller = require("../../../models/seller/seller-model");
+const PayCut = require("../../../models/paycut/paycut-model")
 const Blacklist = require("../../../models/blacklist-model");
+const Book = require("../../../models/books/books-model");
 const MemberPasswordReset = require("../../../models/management/password-reset-management-model");
 
 //-------------- External Libraries
@@ -16,6 +18,7 @@ const {
   deleteFile,
   deleteCloudSingle,
 } = require("../../../helpers/delete-file-helper");
+const { stringify } = require("querystring");
 
 /**
  * For creating the new member role in Management and sending the mail with Account credentials
@@ -63,6 +66,107 @@ const memberRegister = async (req, res) => {
       // either image will come by cloud or by normal server method v1 or v2
       image: req.image,
       role: role,
+    });
+
+    // Save the user in the database
+    const memberData = await member.save();
+
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Welcome to Booklio!</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${memberData.name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Welcome to the Booklio organization! We are excited to have you on board as a <strong>${memberData.role}</strong>.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Here are your login credentials:
+        </p>
+        <ul style="font-size: 16px;">
+          <li><strong>Email:</strong> ${email}</li>
+          <li><strong>Password:</strong> ${password}</li>
+        </ul>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Please remember to keep your credentials safe and do not share them with anyone.
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you have any questions or need assistance, feel free to reach out to our support team.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
+
+    // Sending mail to the user
+    mailer.sendMail(email, "Mail Verification", msg);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      msg: `${email} registered Successfully as Member of Booklio.`,
+      memberData: memberData,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
+//-------------  Register Without the image 
+
+const memberRegisterV4 = async (req, res) => {
+  try {
+    // Validating the req with express validator
+    const valErrors = validationResult(req);
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: valErrors.array(),
+      });
+    }
+
+    const { name, email, mobile, password, role } = req.body;
+
+
+
+    if (role === "admin") {
+      return res.status(400).json({
+        success: false,
+        msg: `You Cannot Create Admin!`,
+      });
+    }
+
+    // Check if the user already exists by email
+    const user = await Management.findOne({ email: email });
+    if (user) {
+      return res.status(400).json({
+        success: false,
+        msg: `Email : ${email} \nAlready registered!`,
+      });
+    }
+
+    // Hash the password before saving
+    const hashPassword = await bcrypt.hash(password, 10);
+
+
+    const Role = role.toLowerCase()
+
+    // Create a new user instance
+    const member = new Management({
+      name: name,
+      email: email,
+      mobile: mobile,
+      password: hashPassword,
+      // either image will come by cloud or by normal server method v1 or v2
+      // image: req.image,
+      role: Role,
     });
 
     // Save the user in the database
@@ -466,31 +570,117 @@ const getUserData = async (req, res) => {
  * For deleting the seller with sellerId and sending the mail of seller Account Deletion
  */
 //---------------- For deleting the seller
+// const deleteSeller = async (req, res) => {
+//   try {
+//     // Validating the req with express validator
+//     const valErrors = validationResult(req);
+//     if (!valErrors.isEmpty()) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Errors",
+//         error: valErrors.array(),
+//       });
+//     }
+
+//     const { sellerId } = req.body;
+
+//     // Check if the user already exists by email
+//     const sellerData = await Seller.findOne({ sellerId: sellerId });
+//     if (!sellerData) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: `Seller Not Found!`,
+//       });
+//     }
+
+//     await Seller.findOneAndDelete({ sellerId: sellerId });
+
+//     const msg = `
+//     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+//       <div style="background-color: #f44336; padding: 20px; text-align: center;">
+//         <h1 style="color: #fff; margin: 0; font-size: 24px;">Account Deletion Notice</h1>
+//       </div>
+//       <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+//         <p style="font-size: 18px;">Dear ${sellerData.name},</p>
+//         <p style="font-size: 16px; line-height: 1.6;">
+//           We regret to inform you that your Booklio account with the email ${sellerData.email} has been deleted as per the request from our management team.
+//         </p>
+//         <p style="font-size: 16px; line-height: 1.6;">
+//           As a valued member of our community, we would like to thank you for your contributions and support over the years. Your participation has been greatly appreciated.
+//         </p>
+//         <p style="font-size: 16px; line-height: 1.6;">
+//           If you believe this action was taken in error or if you have any questions regarding this decision, please do not hesitate to reach out to our support team at support@booklio.com. We will be more than happy to assist you.
+//         </p>
+//         <p style="font-size: 16px; line-height: 1.6;">
+//           We wish you all the best in your future endeavors and hope that you will continue to support the literary community in your own way.
+//         </p>
+//       </div>
+//       <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+//         <p>© 2024 Booklio. All rights reserved.</p>
+//         <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+//       </div>
+//     </div>
+// `;
+//     // Sending mail to the user
+//     mailer.sendMail(sellerData.email, "Account Deletion", msg);
+
+//     // Return success response
+//     return res.status(200).json({
+//       success: true,
+//       msg: `Account Deleted Successfully a Seller of Booklio.`,
+//     });
+//   } catch (error) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: error.message || "An error occurred",
+//     });
+//   }
+// };
+
 const deleteSeller = async (req, res) => {
   try {
+
+
     // Validating the req with express validator
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: "Errors",
+        msg: "Validation errors",
         error: valErrors.array(),
       });
     }
 
+
     const { sellerId } = req.body;
 
-    // Check if the user already exists by email
-    const sellerData = await Seller.findOne({ sellerId: sellerId });
+    // Check if the seller exists
+    const sellerData = await Seller.findOne({ sellerId });
+
+
     if (!sellerData) {
       return res.status(400).json({
         success: false,
-        msg: `Seller Not Found!`,
+        msg: "Seller Not Found!",
       });
     }
 
-    await Seller.findOneAndDelete({ sellerId: sellerId });
 
+
+    // Remove the seller's data from the Book schema
+    await Book.updateMany(
+      {},
+      { $pull: { spCluster: { sellerId: sellerId } } } // Remove matching sellerId from spCluster
+    );
+
+
+
+    // Delete the seller
+    await Seller.findOneAndDelete({ sellerId });
+
+
+
+    // Email content
     const msg = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
       <div style="background-color: #f44336; padding: 20px; text-align: center;">
@@ -516,22 +706,25 @@ const deleteSeller = async (req, res) => {
         <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
       </div>
     </div>
-`;
-    // Sending mail to the user
+    `;
+
+    // Sending mail to the seller
     mailer.sendMail(sellerData.email, "Account Deletion", msg);
 
     // Return success response
     return res.status(200).json({
       success: true,
-      msg: `Account Deleted Successfully a Seller of Booklio.`,
+      msg: `Account and associated book data deleted successfully for the seller of Booklio.`,
     });
   } catch (error) {
-    return res.status(400).json({
+    console.error("Error in deleteSeller: ", error.message);
+    return res.status(500).json({
       success: false,
-      msg: error.message || "An error occurred",
+      msg: error.message || "An error occurred.",
     });
   }
 };
+
 
 /**
  * For fetching Seller Data
@@ -558,7 +751,7 @@ const getSellerData = async (req, res) => {
 
     // If userId is provided, fetch the specific
     if (sellerId) {
-      sellerData = await Seller.find({ sellerId: sellerId });
+      sellerData = await Seller.findOne({ sellerId: sellerId });
 
       // If no member found with the given ID, return an error
       if (sellerData.length === 0) {
@@ -619,8 +812,108 @@ const getAllData = async (req, res) => {
   }
 };
 
+/**
+ * Batch call for all data of the folks
+ */
+// Controller function to fetch all data
+
+const paycutFunc = async (req, res) => {
+  try {
+    // Perform aggregation to get pay cuts with lookup and totals
+    const payCuts = await PayCut.aggregate([
+      {
+        // Lookup Order details
+        $lookup: {
+          from: "orders",
+          localField: "orderId",
+          foreignField: "orderId",
+          as: "orderDetails",
+        },
+      },
+      {
+        // Unwind the orderDetails array
+        $unwind: {
+          path: "$orderDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        // Lookup User details
+        $lookup: {
+          from: "users",
+          localField: "orderDetails.userId",
+          foreignField: "userId",
+          as: "userDetails",
+        },
+      },
+      {
+        // Unwind the userDetails array
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        // Lookup Seller details
+        $lookup: {
+          from: "sellers",
+          localField: "orderDetails.sellerId",
+          foreignField: "sellerId",
+          as: "sellerDetails",
+        },
+      },
+      {
+        // Unwind the sellerDetails array
+        $unwind: {
+          path: "$sellerDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        // Group pay cuts by status and calculate total for each status
+        $group: {
+          _id: "$status", // Group by status
+          totalPayCut: { $sum: "$payCut" }, // Calculate total payCut for the group
+          details: { $push: "$$ROOT" }, // Include all details in the group
+        },
+      },
+      {
+        // Sort results for better readability (optional)
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    // Extract totals for each status
+    const pendingPayCut = payCuts.find((entry) => entry._id === "pending");
+    const canceledPayCut = payCuts.find((entry) => entry._id === "canceled");
+    const completedPayCut = payCuts.find((entry) => entry._id === "delivered");
+
+    // Return the response
+    return res.status(200).json({
+      success: true,
+      msg: "Paycuts retrieved successfully",
+      data: {
+        totalPendingPayCut: pendingPayCut?.totalPayCut || 0,
+        totalCanceledPayCut: canceledPayCut?.totalPayCut || 0,
+        totalCompletedPayCut: completedPayCut?.totalPayCut || 0,
+        payCuts: payCuts, // Optional: Include full details
+      },
+    });
+  } catch (error) {
+    console.error("Error retrieving paycuts:", error);
+    return res.status(500).json({
+      success: false,
+      msg: error.message || "An error occurred while retrieving paycuts",
+    });
+  }
+};
+
+
+
+
 module.exports = {
   memberRegister,
+  memberRegisterV4,
   deleteUser,
   deleteMember,
   deleteSeller,
@@ -629,4 +922,5 @@ module.exports = {
   getUserData,
   getSellerData,
   getAllData,
+  paycutFunc
 };

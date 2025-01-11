@@ -6,25 +6,27 @@ const { getCache, setCache, delCache } = require("../../cache/node-cache");
 
 //--------------------------  Add Book -----------------------
 
-
 //--------------------------  Add Book From Google-----------------------
 /**
  * For adding Book To the seller Stock by google Api With ISBN
  */
 const addBookGoogleAPI = async (req, res) => {
   try {
+
     // Validating the req with express validator
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: "Errors",
-        error: valErrors.array(),
+        msg: valErrors.array()
+        // msg: "Errors",
+        // error: valErrors.array(),
       });
     }
 
     const sellerId = req.cred.credDecode.sellerId;
     const { isbn, price } = req.body;
+
 
     // Check if seller exists in the DB
     const sellerExists = await Seller.findOne({ sellerId: sellerId });
@@ -35,6 +37,7 @@ const addBookGoogleAPI = async (req, res) => {
       });
     }
 
+
     // Check if the book already exists in the database
     let bookExists = await Book.findOne({ isbn: isbn });
 
@@ -44,16 +47,20 @@ const addBookGoogleAPI = async (req, res) => {
         (coast) => coast.sellerId === sellerId
       );
 
+
       if (sellerFound) {
         return res.status(200).json({
           success: true,
           msg: `Seller ID ${sellerId} is already associated with the book having ISBN ${isbn}.`,
           bookData: bookExists,
         });
+
+
       } else {
         // Add the sellerId and price to the spCluster array if seller doesn't exist
         bookExists.spCluster.push({ sellerId: sellerId, price: price });
         const updatedBook = await bookExists.save();
+
 
         // Deleting all cache for consistency
         delCache("all_genre_books");
@@ -82,6 +89,7 @@ const addBookGoogleAPI = async (req, res) => {
     // Extract genre (categories) from the API response
     let genre = bookDataFromApi.volumeInfo.categories || ["Unknown"];
 
+
     // Store the new book in the database
     const newBook = new Book({
       isbn: isbn,
@@ -89,7 +97,6 @@ const addBookGoogleAPI = async (req, res) => {
       spCluster: [{ sellerId: sellerId, price: price }],
       data: bookDataFromApi,
     });
-
     const savedBook = await newBook.save();
 
     // Deleting all cache for consistency
@@ -118,6 +125,8 @@ const addBookGoogleAPI = async (req, res) => {
  */
 const removeSellerFromBook = async (req, res) => {
   try {
+
+
     // Validate the request
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
@@ -131,6 +140,7 @@ const removeSellerFromBook = async (req, res) => {
     const sellerId = req.cred.credDecode.sellerId;
     const { isbn } = req.body;
 
+
     // Find the book by ISBN
     const bookExists = await Book.findOne({ isbn: isbn });
     if (!bookExists) {
@@ -139,6 +149,8 @@ const removeSellerFromBook = async (req, res) => {
         msg: `Book with ISBN ${isbn} not found.`,
       });
     }
+
+
 
     // Check if the seller exists in the spCluster
     const sellerIndex = bookExists.spCluster.findIndex(
@@ -152,13 +164,17 @@ const removeSellerFromBook = async (req, res) => {
       });
     }
 
+
+
     // Remove the seller from spCluster array
     bookExists.spCluster.splice(sellerIndex, 1);
+
 
     // Check if the spCluster array is empty after removal
     if (bookExists.spCluster.length === 0) {
       // No sellers left, delete the book
       await Book.deleteOne({ isbn: isbn });
+
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
@@ -171,6 +187,8 @@ const removeSellerFromBook = async (req, res) => {
     } else {
       // Sellers remain, update the book without the removed seller
       const updatedBook = await bookExists.save();
+
+
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
@@ -192,7 +210,6 @@ const removeSellerFromBook = async (req, res) => {
 };
 
 //--------------------------  Stock Book -----------------------
-
 
 /**
  * For all Book that seller have in stock
@@ -251,8 +268,6 @@ const sellerStockBook = async (req, res) => {
   }
 };
 
-
-
 /**
  * Get all book Data from the Db  w.r.t there Genre APi
  * it is heavy task so better if you cache the data as soon as app is started so Work on this
@@ -306,7 +321,6 @@ const bookAllGenreGoogleAPI = async (req, res) => {
     });
   }
 };
-
 
 /**
  * Get all book Data from the Db Sorted by the specific  genre
@@ -441,6 +455,7 @@ const sellersByBook = async (req, res) => {
     // Query to find the book by ISBN
     const books = await Book.find({ isbn });
 
+    // Edge case: No books found for the given ISBN
     if (books.length === 0) {
       return res.status(404).json({
         success: false,
@@ -448,18 +463,20 @@ const sellersByBook = async (req, res) => {
       });
     }
 
-    // Extract all sellerIds from the spCluster arrays in the found books
+    // Extract unique seller IDs from the `spCluster` array
     const sellerIds = [];
     books.forEach((book) => {
       book.spCluster.forEach((cluster) => {
-        if (!sellerIds.includes(cluster.sellerId)) {
-          sellerIds.push(cluster.sellerId); // Ensure unique sellerIds
+        if (cluster.sellerId && !sellerIds.includes(cluster.sellerId)) {
+          sellerIds.push(cluster.sellerId);
         }
       });
     });
 
+    // Query to find sellers by the extracted seller IDs
     const sellers = await Seller.find({ sellerId: { $in: sellerIds } });
 
+    // Edge case: No sellers found for the given book
     if (sellers.length === 0) {
       return res.status(404).json({
         success: false,
@@ -467,13 +484,26 @@ const sellersByBook = async (req, res) => {
       });
     }
 
+    // Query to get book data (only `data` field)
+    const bookData = await Book.findOne({ isbn }).select("data");
+
+    // Edge case: Book data is null or undefined (shouldn't happen if `books` query was successful)
+    if (!bookData) {
+      return res.status(404).json({
+        success: false,
+        msg: `Book data not found for ISBN ${isbn}`,
+      });
+    }
+
+    // Success response with both sellers and book data
     return res.status(200).json({
       success: true,
-      msg: `Sellers selling the book with ISBN ${isbn}`,
+      msg: `Sellers and book data fetched successfully for ISBN ${isbn}`,
+      book: bookData.data,
       sellers,
     });
   } catch (error) {
-    // Handle any errors
+    // Handle any unexpected errors
     return res.status(500).json({
       success: false,
       msg: error.message || "An error occurred while fetching sellers by book",
@@ -481,8 +511,40 @@ const sellersByBook = async (req, res) => {
   }
 };
 
-module.exports = {
 
+const sellerById = async (req, res) => {
+  try {
+    const { sellerId } = req.params;
+
+    // Query to find the seller by sellerId
+    const seller = await Seller.findOne({ sellerId });
+
+    // Edge case: No seller found for the given sellerId
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        msg: `No seller found with ID ${sellerId}`,
+      });
+    }
+
+    // Success response with the seller information
+    return res.status(200).json({
+      success: true,
+      msg: `Seller information fetched successfully for seller ID ${sellerId}`,
+      seller,
+    });
+  } catch (error) {
+    // Handle any unexpected errors
+    return res.status(500).json({
+      success: false,
+      msg: error.message || "An error occurred while fetching seller by ID",
+    });
+  }
+};
+
+
+
+module.exports = {
   allSeller,
   booksBySeller,
   sellersByBook,
@@ -492,4 +554,5 @@ module.exports = {
   sellerStockBook,
   bookAllGenreGoogleAPI,
   bookByGenreGoogleAPI,
+  sellerById
 };

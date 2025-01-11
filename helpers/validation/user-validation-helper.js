@@ -32,6 +32,19 @@ exports.registerValidator = [
     .withMessage("Please upload valid image jpeg, png"),
 ];
 
+
+exports.registerValidatorV4 = [
+  check("name", "Name is requierd").not().isEmpty(),
+  check("email", "Please include a valid email").isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+  check("mobile", "Mobile Should Conation 10 digits").isLength({
+    min: 10,
+    max: 10,
+  }),
+  check("password", "Password is requierd").not().isEmpty(),
+];
+
 exports.sendMailVerificationValidator = [
   check("email", "Please include a valid email").isEmail().normalizeEmail({
     gmail_remove_dots: true,

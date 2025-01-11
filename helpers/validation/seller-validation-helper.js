@@ -42,6 +42,36 @@ exports.registerSellerValidator = [
   check("address.zipCode", "Zip code is required").not().isEmpty(),
 ];
 
+
+exports.registerSellerValidatorV4 = [
+  check(
+    "password",
+    "Password must be greater than 6 characters, and contains at least one uppercase letter, one lowercase letter,and one number,and one special character "
+  ).isStrongPassword({
+    minLength: 6,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+  }),
+  check("name", "Name is requierd").not().isEmpty(),
+  check("email", "Please include a valid email").isEmail().normalizeEmail({
+    gmail_remove_dots: true,
+  }),
+  check("storeName", "Store name is required").not().isEmpty(),
+  check("storeDescription", "Store description is required").not().isEmpty(),
+  check("upiId", "UPI ID is required").not().isEmpty(),
+  check("mobile", "Mobile Should Conation 10 digits").isLength({
+    min: 10,
+    max: 10,
+  }),
+  check("gstNumber", "GST number is required").not().isEmpty(),
+  check("address.street", "Street address is required").not().isEmpty(),
+  check("address.city", "City is required").not().isEmpty(),
+  check("address.state", "State is required").not().isEmpty(),
+  check("address.country", "Country is required").not().isEmpty(),
+  check("address.zipCode", "Zip code is required").not().isEmpty(),
+];
+
 exports.updateSellerProfileValidator = [
   check("storeName", "Store name is required").not().isEmpty(),
   check("storeDescription", "Store description is required").not().isEmpty(),

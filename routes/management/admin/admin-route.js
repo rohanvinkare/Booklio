@@ -29,6 +29,7 @@ const {
   deleteMemberValidator,
   deleteSellerValidator,
   updateMemberRoleValidator,
+  registerMemberValidatorV4,
 } = require("../../../helpers/validation/admin-validation-helper");
 
 const authMiddleware = require("../../../middleware/auth-middleware");
@@ -39,7 +40,7 @@ const {
 //********************* Routes**************************/
 //------------ single img will be uploaded at cloud
 router.post(
-  "/api/v1/management/member-register",
+  "/admin/api/v1/management/member-register",
   authMiddleware,
   checkAbility("create", "member"),
   uploadCloud.single("image"),
@@ -48,9 +49,16 @@ router.post(
   adminController.memberRegister
 );
 
+router.post(
+  "/admin/api/v4/management/member-register",
+  authMiddleware,
+  // checkAbility("create", "member"),
+  registerMemberValidatorV4,
+  adminController.memberRegisterV4
+);
 //------------ To delete the user
 router.post(
-  "/api/v1/delete-user",
+  "/admin/api/v1/delete-user",
   authMiddleware,
   checkAbility("delete", "user"),
   deleteUserValidator,
@@ -59,25 +67,25 @@ router.post(
 
 //------------ To delete the Seller
 router.post(
-  "/api/v1/delete-seller",
+  "/admin/api/v1/delete-seller",
   authMiddleware,
-  checkAbility("delete", "seller"),
-  deleteSellerValidator,
+  // checkAbility("delete", "seller"),
+  // deleteSellerValidator,
   adminController.deleteSeller
 );
 
 //------------ To delete the Member
 router.post(
-  "/api/v1/delete-member",
+  "/admin/api/v1/delete-member",
   authMiddleware,
-  checkAbility("delete", "member"),
-  deleteMemberValidator,
+  // checkAbility("delete", "member"),
+  // deleteMemberValidator,
   adminController.deleteMember
 );
 
 //------------ To update the Member role
 router.post(
-  "/api/v1/update-member-role",
+  "/admin/api/v1/update-member-role",
   authMiddleware,
   checkAbility("update", "member"),
   updateMemberRoleValidator,
@@ -86,34 +94,41 @@ router.post(
 
 //----------- To All Member or member by memberId
 router.get(
-  "/api/v1/get-member-data/:memberId?",
-  authMiddleware,
-  checkAbility("read", "members"),
+  "/admin/api/v1/get-member-data/:memberId?",
+  // authMiddleware,
+  // checkAbility("read", "members"),
   adminController.getMemberData
 );
 
 //----------- To get All the Users of the website
 router.get(
-  "/api/v1/get-user-data/:userId?",
-  authMiddleware,
-  checkAbility("read", "users"),
+  "/admin/api/v1/get-user-data/:userId?",
+  // authMiddleware,
+  // checkAbility("read", "users"),
   adminController.getUserData
 );
 
 //----------- To get All the Sellers of the website
 router.get(
-  "/api/v1/get-seller-data/:sellerId?",
-  authMiddleware,
-  checkAbility("read", "sellers"),
+  "/admin/api/v1/get-seller-data/:sellerId?",
+  // authMiddleware,
+  // checkAbility("read", "sellers"),
   adminController.getSellerData
 );
 
 //----------- To get All the folks of the website
 router.get(
-  "/api/v1/get-batch-data",
-  authMiddleware,
-  checkAbility("read", "Batch-Data"),
+  "/admin/api/v1/get-batch-data",
+  // authMiddleware,
+  // checkAbility("read", "Batch-Data"),
   adminController.getAllData
 );
+
+
+//-----------  To get all Paycut data for Admin
+
+router.get("/admin/api/v1/paycut",
+adminController.paycutFunc
+)
 
 module.exports = router;

@@ -288,7 +288,7 @@ const loginMember = async (req, res) => {
     if (!valErrors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        msg: "Errors",
+        // msg: "Errors",
         error: valErrors.array(),
       });
     }

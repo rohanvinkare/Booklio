@@ -100,3 +100,26 @@ req.images => has array of images
          ---> can Get all user data or specific 
            ---> can Get all seller data or specific  
              ---> can get Batch Data of all
+
+
+
+
+
+
+
+User-password;- Password123!
+admin-Password:- {
+    "email": "rohanvinkare2022@gmail.com",
+    "password":"Rohan123#XYZ"
+}
+
+
+
+
+//================ users
+
+
+{
+  "email": "aarav.sharma@example.com",
+  "password": "Password123!"
+}

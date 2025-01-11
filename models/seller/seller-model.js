@@ -33,7 +33,6 @@ const sellerSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   upiId: {
     type: String,

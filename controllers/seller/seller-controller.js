@@ -126,6 +126,121 @@ const sellerRegister = async (req, res) => {
   }
 };
 
+//--------- without image 
+const sellerRegisterV4 = async (req, res) => {
+  try {
+    // Validating the req with express validator
+    const valErrors = validationResult(req);
+    console.log(valErrors.array());
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        // msg: "Errors",
+        error: valErrors.array(),
+      });
+    }
+
+
+    const {
+      name,
+      email,
+      mobile,
+      password,
+      storeName,
+      storeDescription,
+      upiId,
+      gstNumber,
+      socialMediaLinks,
+      address,
+    } = req.body;
+
+    // Check if the user already exists by email
+    const isExists = await Seller.findOne({ email: email });
+    if (isExists) {
+      return res.status(400).json({
+        success: false,
+        msg: `Email : ${email} \nAlready registered!`,
+      });
+    }
+
+    // Hash the password before saving
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    // Create a new seller instance
+    const seller = new Seller({
+      name,
+      email,
+      mobile,
+      password: hashPassword,
+      storeName,
+      storeDescription, // either image will come by cloud or by normal server method v1 or v2
+      // image: req.image, // taking it from cloud
+      upiId,
+      address: {
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        zipCode: address.zipCode,
+      },
+      gstNumber,
+      socialMediaLinks: {
+        facebook: socialMediaLinks.facebook,
+        instagram: socialMediaLinks.instagram,
+        linkedin: socialMediaLinks.linkedin,
+      },
+    });
+
+    // Save the user in the database
+    const sellerData = await seller.save();
+
+    // Also redirecting the user on mail verification link
+    const msg = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <div style="background-color: #4CAF50; padding: 20px; text-align: center;">
+        <h1 style="color: #fff; margin: 0; font-size: 24px;">Booklio Email Verification</h1>
+      </div>
+      <div style="padding: 20px; background-color: #f9f9f9; color: #333;">
+        <p style="font-size: 18px;">Hi ${name},</p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          Please verify your email to activate your <b>seller account</b> on <b>Booklio</b>.
+        </p>
+        <p style="text-align: center;">
+          <a href="${process.env.MAIL_VERIFICATION}/api/v1/seller/mail-verification?id=${sellerData._id}" 
+             style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
+             Verify Your Email
+          </a>
+        </p>
+        <p style="font-size: 16px; line-height: 1.6;">
+          If you did not sign up for a seller account, please ignore this email.
+        </p>
+      </div>
+      <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
+        <p>© 2024 Booklio. All rights reserved.</p>
+        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+      </div>
+    </div>
+  `;
+
+    // Sending mail to the user
+    mailer.sendMail(email, "Mail Verification", msg);
+
+    // Return success response
+    return res.status(200).json({
+      success: true,
+      msg: `${email} registered Successfully`,
+      sellerData: sellerData,
+    });
+  } catch (error) {
+
+    return res.status(400).json({
+      success: false,
+      msg: error.message || "An error occurred",
+    });
+  }
+};
+
+
 //--------- Mail Verification while registering seller-----------
 
 const mailVerification = async (req, res) => {
@@ -471,6 +586,11 @@ const loginSeller = async (req, res) => {
 //--------- To get the user Profile --------------
 const sellerProfile = async (req, res) => {
   try {
+
+
+
+
+    
     return res.status(200).json({
       success: true,
       msg: "Seller Profile Data",
@@ -648,4 +768,5 @@ module.exports = {
   updateSellerProfile,
   refreshToken,
   logoutSeller,
+  sellerRegisterV4
 };

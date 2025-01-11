@@ -24,58 +24,66 @@ const {
   forgotPasswordValidator,
   loginValidator,
   updateSellerProfileValidator,
+  registerSellerValidatorV4
 } = require("../helpers/validation/seller-validation-helper");
 
 const sellerController = require("../controllers/seller/seller-controller");
 
 //-------------- Seller registration
 router.post(
-  "/api/v1/seller/register",
+  "/seller/api/v1/register",
   uploadCloud.single("image"),
   registerSellerValidator,
   uploadCloudSingle,
   sellerController.sellerRegister
 );
 
+//---------- No Image 
+router.post(
+  "/seller/api/v4/register",
+  registerSellerValidatorV4,
+  sellerController.sellerRegisterV4
+);
+
 //-------------------- Mail Verification While Registering seller
 router.get(
-  "/api/v1/seller/mail-verification",
+  "/seller/api/v1/mail-verification",
   sellerController.mailVerification
 );
 
 //------- Mail Verification After Registering if he missed at the time of registration
 router.post(
-  "/api/v1/seller/send-mail-verification",
+  "/seller/api/v1/send-mail-verification",
   sendMailVerificationValidator,
   sellerController.sendMailVerification
 );
 
 //--------------------- Forget Password for Seller
 router.post(
-  "/api/v1/seller/forgot-password",
+  "/seller/api/v1/forgot-password",
   forgotPasswordValidator,
   sellerController.forgotPassword
 );
 
 //------------ To render reset password page
-router.get("/api/v1/seller/reset-password", sellerController.resetPassword);
+router.get("/seller/api/v1/reset-password", sellerController.resetPassword);
 
 //----------- To update new Password in Db
-router.post("/api/v1/seller/reset-password", sellerController.updatePassword);
+router.post("/seller/api/v1/reset-password", sellerController.updatePassword);
 
 //-----------to render success page
-router.get("/api/v1/seller/reset-success", sellerController.resetSuccess);
+router.get("/seller/api/v1/reset-success", sellerController.resetSuccess);
 
 //-------------------- Login
 router.post(
-  "/api/v1/seller/login",
+  "/seller/api/v1/login",
   loginValidator,
   sellerController.loginSeller
 );
 
 //--------------------Seller Profile
 router.get(
-  "/api/v1/seller/profile",
+  "/seller/api/v1/profile",
   authMiddleware,
   checkAbility("read", "seller-profile"),
   sellerController.sellerProfile
@@ -83,23 +91,23 @@ router.get(
 
 //-------------------- Cloud update for the user
 router.post(
-  "/api/v1/seller/update-profile",
+  "/seller/api/v1/update-profile",
   authMiddleware,
   checkAbility("update", "seller-profile"),
   uploadCloud.single("image"),
-  updateSellerProfileValidator,             
+  updateSellerProfileValidator,
   uploadCloudSingle,
   sellerController.updateSellerProfile
 );
 
 router.get(
-  "/api/v1/seller/refresh-token",
+  "/seller/api/v1/refresh-token",
   authMiddleware,
   sellerController.refreshToken
 );
 
 router.get(
-  "/api/v1/seller/logout",
+  "/seller/api/v1/logout",
   authMiddleware,
   checkAbility("logout", "seller-logout"),
   sellerController.logoutSeller

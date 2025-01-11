@@ -1,5 +1,7 @@
+
 const express = require("express");
 const router = express();
+
 
 router.use(express.json());
 //------------------ To reset the password
@@ -23,17 +25,22 @@ const {
   forgotPasswordValidator,
   loginValidator,
   updateProfileValidator,
+  registerValidatorV4
 } = require("../helpers/validation/user-validation-helper");
 
 const {
   checkAbility,
 } = require("../middleware/casl-rbac/casl-abilities-check-middleware");
 
+
 //------------------------------------ Register
 
 //--------- img will be uploaded to server
+
+
+
 router.post(
-  "/api/v2/register",
+  "/user/api/v2/register",
   uploadServer.single("image"),
   registerValidator,
   userController.userRegister
@@ -46,28 +53,36 @@ const {
 
 //--------- single img will be uploaded at cloud
 router.post(
-  "/api/v1/register",
+  "/user/api/v1/register",
   uploadCloud.single("image"),
   registerValidator,
   uploadCloudSingle,
   userController.userRegister
 );
 
+//--------- Without Image Upload 
+router.post(
+  "/user/api/v4/register",
+  registerValidatorV4,
+  userController.userRegisterV4
+);
+
+
 //-------- multiple images will be uploaded at cloud
 //-------- not to use not set up in db and controller
 router.post(
-  "/api/v3/register",
+  "/user/api/v3/register",
   uploadCloud.array("images"),
   registerValidator,
   userController.userRegister
 );
 
 //-------------------- Mail Verification While Registering
-router.get("/api/v1/mail-verification", userController.mailVerification);
+router.get("/user/api/v1/mail-verification", userController.mailVerification);
 
 //------- Mail Verification After Registering if he missed at the time of registration
 router.post(
-  "/api/v1/send-mail-verification",
+  "/user/api/v1/send-mail-verification",
   sendMailVerificationValidator,
   userController.sendMailVerification
 );
@@ -75,26 +90,26 @@ router.post(
 //--------------------- Forget Password
 
 router.post(
-  "/api/v1/forgot-password",
+  "/user/api/v1/forgot-password",
   forgotPasswordValidator,
   userController.forgotPassword
 );
 
 //------------ To render reset password page
-router.get("/api/v1/reset-password", userController.resetPassword);
+router.get("/user/api/v1/reset-password", userController.resetPassword);
 
 //----------- To update new Password in Db
-router.post("/api/v1/reset-password", userController.updatePassword);
+router.post("/user/api/v1/reset-password", userController.updatePassword);
 
 //----------- to render success page
-router.get("/api/v1/reset-success", userController.resetSuccess);
+router.get("/user/api/v1/reset-success", userController.resetSuccess);
 
 //-------------------- Login
-router.post("/api/v1/login", loginValidator, userController.loginUser);
+router.post("/user/api/v1/login", loginValidator, userController.loginUser);
 
 //--------------------User Profile
 router.get(
-  "/api/v1/profile",
+  "/user/api/v1/profile",
   authMiddleware,
   checkAbility("read", "uer-profile"),
   userController.userProfile
@@ -102,7 +117,7 @@ router.get(
 
 //------------------- Update Profile
 router.post(
-  "/api/v2/update-profile",
+  "/user/api/v2/update-profile",
   authMiddleware,
   checkAbility("update", "user-profile"),
   uploadServer.single("image"),
@@ -112,7 +127,7 @@ router.post(
 
 // cloud update for the user
 router.post(
-  "/api/v1/update-profile",
+  "/user/api/v1/update-profile",
   authMiddleware,
   checkAbility("update", "user-profile"),
   uploadCloud.single("image"),
@@ -122,13 +137,13 @@ router.post(
 );
 
 router.get(
-  "/api/v1/refresh-token",
+  "/user/api/v1/refresh-token",
   authMiddleware,
   userController.refreshToken
 );
 
 router.get(
-  "/api/v1/logout",
+  "/user/api/v1/logout",
   authMiddleware,
   checkAbility("logout", "user-logout"),
   userController.logoutUser

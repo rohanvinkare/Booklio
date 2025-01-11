@@ -17,6 +17,8 @@ const orderController = require("../controllers/order/order-controller");
 const {
   orderBookValidator,
   cancelOrderValidator,
+  sellerOrderListCheckValidator,
+  userOrderListCheckValidator,
 } = require("../helpers/validation/order-validation-helper");
 
 const {
@@ -27,17 +29,30 @@ const {
 
 //------------------------------------ Book Add And Delete
 router.post(
-  "/api/v1/order-book",
+  "/order/api/v1/order-book",
   authMiddleware,
-  orderBookValidator,
+  // orderBookValidator,
   orderController.placeOrder
 );
 
 router.post(
-  "/api/v1/cancel-order",
+  "/order/api/v1/cancel-order",
   authMiddleware,
-  cancelOrderValidator,
+  // cancelOrderValidator,
   orderController.cancelOrder
 );
+
+//----------- Get all orders for seller from users 
+router.get("/order/seller-order-list/:sellerId",
+  sellerOrderListCheckValidator,
+  orderController.sellerOrderList);
+
+
+  //---------- Get all orders of the user from sellers  where they order
+router.get("/order/user-order-list/:userId",
+  userOrderListCheckValidator,
+  orderController.userOrderList
+);
+
 
 module.exports = router;
