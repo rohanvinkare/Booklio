@@ -67,7 +67,47 @@ app.use("/", orderRoute);
 app.use("/", tokenRoute);
 
 app.get("/", (req, res) => {
-  res.send("Booklio Successfully running ");
+  res.send(`
+    <html>
+      <head>
+        <style>
+          body {
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            font-size: 2rem;
+            text-align: center;
+          }
+          a {
+            margin-top: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border: 2px solid #4CAF50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.3s;
+          }
+          a:hover {
+            background-color: #4CAF50;
+            color: black;
+          }
+        </style>
+      </head>
+      <body>
+        <div>
+          <h1>Welcome to Booklio</h1>
+          <p>Your go-to platform for book lovers</p>
+          <a href="/api-docs">View API Documentation</a>
+        </div>
+      </body>
+    </html>
+  `);
 });
 
 
