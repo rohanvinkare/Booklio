@@ -585,8 +585,6 @@ const userOrderList = async (req, res) => {
 
     const userId = req.params.userId;
 
-
-
     // Check if the user exists
     const userExists = await User.findOne({ userId });
     if (!userExists) {
@@ -644,6 +642,20 @@ const userOrderList = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "books", // Ensure this matches the actual collection name
+          localField: "isbn", // Field in Order collection
+          foreignField: "isbn", // Field in Book collection
+          as: "bookInfo",
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookInfo",
+          preserveNullAndEmptyArrays: true, // Keep the order even if no book is found
+        },
+      },
+      {
         $group: {
           _id: "$userId", // Group by userId
           orders: {
@@ -652,6 +664,19 @@ const userOrderList = async (req, res) => {
               isbn: "$isbn",
               price: "$price",
               quantity: "$quantity",
+              bookInfo: {
+                $cond: {
+                  if: { $not: ["$bookInfo"] }, // Check if bookInfo is null or empty
+                  then: {
+                    message: "Book details not found",
+                  },
+                  else: {
+                    data: "$bookInfo.data",
+                    genre: "$bookInfo.genre",
+                    isbn: "$bookInfo.isbn",
+                  },
+                },
+              },
               seller: {
                 $cond: {
                   if: { $not: ["$sellerData"] }, // Check if sellerData is null or empty
@@ -723,13 +748,8 @@ const userOrderList = async (req, res) => {
   }
 };
 
-/**
- * All order For the User
- */
 
 // const userOrderList = async (req, res) => {
-
-
 //   try {
 //     // Validate the request
 //     const valErrors = validationResult(req);
@@ -743,7 +763,7 @@ const userOrderList = async (req, res) => {
 
 //     const userId = req.params.userId;
 
-//     console.log(userId)
+
 
 //     // Check if the user exists
 //     const userExists = await User.findOne({ userId });
@@ -754,66 +774,115 @@ const userOrderList = async (req, res) => {
 //       });
 //     }
 
-
-
-//     // Fetch orders and user data
+//     // Fetch orders, user data, and seller data
 //     const result = await Order.aggregate([
 //       {
-//         $match: { userId: userId }  // Match the specific userId
+//         $match: { userId: userId }, // Match the specific userId
 //       },
 //       {
 //         $lookup: {
-//           from: "users",               // Ensure this matches the actual collection name
-//           localField: "userId",        // Field in Order collection
-//           foreignField: "userId",      // Field in users collection
-//           as: "orderData"                // Alias for joined seller data
-//         }
+//           from: "users", // Ensure this matches the actual collection name
+//           localField: "userId", // Field in Order collection
+//           foreignField: "userId", // Field in User collection
+//           as: "userData", // Alias for joined user data
+//         },
 //       },
 //       {
-//         $unwind: "$orderData"           // Flatten the orderData array (since $lookup creates an array)
+//         $unwind: "$userData", // Flatten the userData array
+//       },
+//       {
+//         $lookup: {
+//           from: "sellers", // Ensure this matches the actual collection name
+//           let: { sellerId: "$sellerId" },
+//           pipeline: [
+//             { $match: { $expr: { $eq: ["$sellerId", "$$sellerId"] } } },
+//             {
+//               $project: {
+//                 sellerId: 1,
+//                 name: 1,
+//                 email: 1,
+//                 mobile: 1,
+//                 storeName: 1,
+//                 storeDescription: 1,
+//                 image: 1,
+//                 address: 1,
+//                 gstNumber: 1,
+//                 socialMediaLinks: 1,
+//                 is_verified: 1,
+//               },
+//             },
+//           ],
+//           as: "sellerData", // Alias for joined seller data
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$sellerData",
+//           preserveNullAndEmptyArrays: true, // Keep the order even if no seller is found
+//         },
 //       },
 //       {
 //         $group: {
-//           _id: "$userId",              // Group by userId
+//           _id: "$userId", // Group by userId
 //           orders: {
-//             $push: {             // Push all order data into an array
+//             $push: {
 //               orderId: "$orderId",
 //               isbn: "$isbn",
 //               price: "$price",
-//               sellerId: "$sellerId",
+//               quantity: "$quantity",
+//               seller: {
+//                 $cond: {
+//                   if: { $not: ["$sellerData"] }, // Check if sellerData is null or empty
+//                   then: {
+//                     message: "Seller is no longer on the Booklio platform",
+//                   },
+//                   else: {
+//                     sellerId: "$sellerData.sellerId",
+//                     name: "$sellerData.name",
+//                     email: "$sellerData.email",
+//                     mobile: "$sellerData.mobile",
+//                     storeName: "$sellerData.storeName",
+//                     storeDescription: "$sellerData.storeDescription",
+//                     image: "$sellerData.image",
+//                     address: "$sellerData.address",
+//                     gstNumber: "$sellerData.gstNumber",
+//                     socialMediaLinks: "$sellerData.socialMediaLinks",
+//                     is_verified: "$sellerData.is_verified",
+//                   },
+//                 },
+//               },
 //               shippingAddress: "$shippingAddress",
 //               status: "$status",
 //               createdAt: "$createdAt",
-//               updatedAt: "$updatedAt"
-//             }
+//               updatedAt: "$updatedAt",
+//             },
 //           },
 //           userInfo: {
-//             $first: { // Get the first matching seller's info
-//               userId: "$orderData.userId",
-//               name: "$orderData.name",
-//               email: "$orderData.email",
-//               mobile: "$orderData.mobile",
-//               createdAt: "$orderData.createdAt"
-//             }
+//             $first: {
+//               userId: "$userData.userId",
+//               name: "$userData.name",
+//               email: "$userData.email",
+//               mobile: "$userData.mobile",
+//               createdAt: "$userData.createdAt",
+//             },
 //           },
-//         }
+//         },
 //       },
 //       {
-//         $project: {                     // Customize the final output format
-//           _id: 0,                        // Remove the _id field
-//           userId: "$_id",              // Rename _id to sellerId
-//           orders: 1,                     // Include orders array
-//           userInfo: 1                  // Include seller info
-//         }
-//       }
+//         $project: {
+//           _id: 0, // Remove the _id field
+//           userId: "$_id", // Rename _id to userId
+//           orders: 1, // Include orders array
+//           userInfo: 1, // Include user info
+//         },
+//       },
 //     ]);
 
-
-//     // If no orders found for the seller
+//     // If no orders found for the user
 //     if (!result || result.length === 0) {
 //       return res.status(404).json({
 //         success: false,
-//         msg: "No orders found for this User.",
+//         msg: "No orders found for this user.",
 //       });
 //     }
 
@@ -821,9 +890,8 @@ const userOrderList = async (req, res) => {
 //     return res.status(200).json({
 //       success: true,
 //       msg: `Order list for the user.`,
-//       orderData: result
+//       orderData: result,
 //     });
-
 //   } catch (error) {
 //     console.error("Error in userOrderList: ", error.message);
 //     return res.status(500).json({
@@ -831,10 +899,9 @@ const userOrderList = async (req, res) => {
 //       msg: error.message || "An error occurred while fetching the user's order list.",
 //     });
 //   }
+// };
 
 
-
-// }
 
 
 
