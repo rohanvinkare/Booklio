@@ -155,7 +155,7 @@ const userRegister = async (req, res) => {
  * @swagger
  * /user/api/v4/register:
  *   post:
- *     summary: Register a new user without image upload
+ *     summary: use this  Register a new user without image upload
  *     description: Registers a user, hashes the password, and sends a verification email. No image upload required.
  *     tags:
  *       - User 
@@ -241,7 +241,7 @@ const userRegisterV4 = async (req, res) => {
           Please verify your email by clicking the button below:
         </p>
         <p style="text-align: center;">
-          <a href="${process.env.MAIL_VERIFICATION}/api/v1/mail-verification?id=${userData._id}" 
+          <a href="${process.env.MAIL_VERIFICATION}/user/api/v1/mail-verification?id=${userData._id}" 
              style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
              Verify Your Email
           </a>

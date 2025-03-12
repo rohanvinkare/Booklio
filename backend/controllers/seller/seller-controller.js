@@ -331,7 +331,7 @@ const sellerRegisterV4 = async (req, res) => {
           Please verify your email to activate your <b>seller account</b> on <b>Booklio</b>.
         </p>
         <p style="text-align: center;">
-          <a href="${process.env.MAIL_VERIFICATION}/api/v1/seller/mail-verification?id=${sellerData._id}" 
+          <a href="${process.env.MAIL_VERIFICATION}/seller/api/v1/mail-verification?id=${sellerData._id}" 
              style="display: inline-block; padding: 15px 30px; margin: 20px 0; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 30px; font-size: 16px;">
              Verify Your Email
           </a>
