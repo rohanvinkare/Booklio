@@ -429,6 +429,124 @@ const cancelOrder = async (req, res) => {
  *         description: Server error
  */
 
+// const sellerOrderList = async (req, res) => {
+//   try {
+//     // Validate the request
+//     const valErrors = validationResult(req);
+//     if (!valErrors.isEmpty()) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Validation errors",
+//         errors: valErrors.array(),
+//       });
+//     }
+
+//     const sellerId = req.params.sellerId;
+
+//     // Check if the seller exists
+//     const userExists = await Seller.findOne({ sellerId });
+//     if (!userExists) {
+//       return res.status(404).json({
+//         success: false,
+//         msg: "Seller not found.",
+//       });
+//     }
+
+//     // Fetch orders, seller data, and user data
+//     const result = await Order.aggregate([
+//       {
+//         $match: { sellerId: sellerId }, // Match the specific sellerId
+//       },
+//       {
+//         $lookup: {
+//           from: "sellers", // Ensure this matches the actual collection name
+//           localField: "sellerId", // Field in Order collection
+//           foreignField: "sellerId", // Field in Seller collection
+//           as: "orderData", // Alias for joined seller data
+//         },
+//       },
+//       {
+//         $unwind: "$orderData", // Flatten the orderData array
+//       },
+//       {
+//         $lookup: {
+//           from: "users", // Users collection
+//           localField: "userId", // Field in Order collection
+//           foreignField: "userId", // Field in User collection
+//           as: "userData", // Alias for joined user data
+//         },
+//       },
+//       {
+//         $unwind: "$userData", // Flatten the userData array
+//       },
+//       {
+//         $group: {
+//           _id: "$sellerId", // Group by sellerId
+//           orders: {
+//             $push: {
+//               orderId: "$orderId",
+//               isbn: "$isbn",
+//               price: "$price",
+//               quantity: "$quantity",
+//               user: { // Include full user details instead of userId
+//                 userId: "$userData.userId",
+//                 name: "$userData.name",
+//                 email: "$userData.email",
+//                 mobile: "$userData.mobile",
+//                 address: "$userData.address",
+//               },
+//               shippingAddress: "$shippingAddress",
+//               status: "$status",
+//               createdAt: "$createdAt",
+//               updatedAt: "$updatedAt",
+//             },
+//           },
+//           sellerInfo: {
+//             $first: {
+//               email: "$orderData.email",
+//               name: "$orderData.name",
+//               mobile: "$orderData.mobile",
+//               storeName: "$orderData.storeName",
+//               storeDescription: "$orderData.storeDescription",
+//               image: "$orderData.image",
+//               upiId: "$orderData.upiId",
+//               address: "$orderData.address",
+//               gstNumber: "$orderData.gstNumber",
+//               socialMediaLinks: "$orderData.socialMediaLinks",
+//               is_verified: "$orderData.is_verified",
+//               role: "$orderData.role",
+//               createdAt: "$orderData.createdAt",
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0, // Remove the _id field
+//           sellerId: "$_id", // Rename _id to sellerId
+//           orders: 1, // Include orders array
+//           sellerInfo: 1, // Include seller info
+//         },
+//       },
+//     ]);
+
+//     res.status(200).json({
+//       success: true,
+//       data: result,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       msg: "Server error",
+//     });
+//   }
+// };
+
+
+
+//=========================== User Order List
+
 const sellerOrderList = async (req, res) => {
   try {
     // Validate the request
@@ -444,15 +562,15 @@ const sellerOrderList = async (req, res) => {
     const sellerId = req.params.sellerId;
 
     // Check if the seller exists
-    const userExists = await Seller.findOne({ sellerId });
-    if (!userExists) {
+    const sellerExists = await Seller.findOne({ sellerId });
+    if (!sellerExists) {
       return res.status(404).json({
         success: false,
         msg: "Seller not found.",
       });
     }
 
-    // Fetch orders, seller data, and user data
+    // Fetch orders, seller data, user data, and book info
     const result = await Order.aggregate([
       {
         $match: { sellerId: sellerId }, // Match the specific sellerId
@@ -480,6 +598,20 @@ const sellerOrderList = async (req, res) => {
         $unwind: "$userData", // Flatten the userData array
       },
       {
+        $lookup: {
+          from: "books", // Books collection
+          localField: "isbn", // Field in Order collection
+          foreignField: "isbn", // Field in Book collection
+          as: "bookData", // Alias for joined book data
+        },
+      },
+      {
+        $unwind: {
+          path: "$bookData",
+          preserveNullAndEmptyArrays: true, // Keep order even if book not found
+        },
+      },
+      {
         $group: {
           _id: "$sellerId", // Group by sellerId
           orders: {
@@ -488,12 +620,17 @@ const sellerOrderList = async (req, res) => {
               isbn: "$isbn",
               price: "$price",
               quantity: "$quantity",
-              user: { // Include full user details instead of userId
+              user: { // Include full user details
                 userId: "$userData.userId",
                 name: "$userData.name",
                 email: "$userData.email",
                 mobile: "$userData.mobile",
                 address: "$userData.address",
+              },
+              bookInfo: { // Include book details
+                data: "$bookData.data",
+                genre: "$bookData.genre",
+                spCluster: "$bookData.spCluster",
               },
               shippingAddress: "$shippingAddress",
               status: "$status",
@@ -544,8 +681,6 @@ const sellerOrderList = async (req, res) => {
 };
 
 
-
-//=========================== User Order List
 
 /**
  * @swagger
