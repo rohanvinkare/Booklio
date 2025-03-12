@@ -1,5 +1,39 @@
 const jwt = require("jsonwebtoken");
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Token
+ *     description: Operations related to Token
+ */
+
+/**
+ * @swagger
+ * /token-check:
+ *   post:
+ *     tags:
+ *       - Token
+ *     summary: Validate JWT token
+ *     description: Checks if the provided JWT token is valid.
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: JWT access token
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *       400:
+ *         description: Invalid or missing token
+ */
+
 const checkToken = async (req, res) => {
     try {
         // Extract the token from headers, body, or query parameters

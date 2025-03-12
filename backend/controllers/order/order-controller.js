@@ -7,13 +7,196 @@ const PayCut = require("../../models/paycut/paycut-model")
 const { find } = require("../../models/blacklist-model");
 require("dotenv").config();
 
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Order
+ *     description: Operations related to Orders
+ */
+
+
 //----------------------------------- To Place The Order
 /**
  * To place the order
  */
+
+// /**
+//  * @swagger
+//  * /order/api/v1/order-book:
+//  *   post:
+//  *     summary: Place an order for a book
+//  *     description: Allows users to place an order by providing seller ID, book ISBN, and shipping address.
+//  *     tags: [Order]
+//  *     security:
+//  *       - BearerAuth: []
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             type: object
+//  *             properties:
+//  *               sellerId:
+//  *                 type: string
+//  *                 description: ID of the seller
+//  *               isbn:
+//  *                 type: string
+//  *                 description: ISBN of the book
+//  *               shippingAddress:
+//  *                 type: string
+//  *                 description: Shipping address for the order
+//  *     responses:
+//  *       201:
+//  *         description: Order placed successfully
+//  *       400:
+//  *         description: Validation errors
+//  *       404:
+//  *         description: Book or seller not found
+//  *       500:
+//  *         description: Server error
+//  */
+// // const placeOrder = async (req, res) => {
+// //   try {
+
+// //     // Validating the request with express-validator
+// //     const valErrors = validationResult(req);
+// //     if (!valErrors.isEmpty()) {
+// //       return res.status(400).json({
+// //         success: false,
+// //         msg: "Validation errors",
+// //         error: valErrors.array(),
+// //       });
+// //     }
+
+// //     // Decode userId from the token
+// //     const userId = req.cred.credDecode.userId;
+
+// //     // Extracting sellerId, isbn, and shippingAddress from request body
+// //     const { sellerId, isbn, shippingAddress } = req.body;
+
+// //     // Find the book by ISBN
+// //     const book = await Book.findOne({ isbn });
+// //     if (!book) {
+// //       return res.status(404).json({
+// //         success: false,
+// //         msg: "Book not found",
+// //       });
+// //     }
+
+// //     // Find the book price for the given seller
+// //     const bookPrice = book.spCluster.find((element) => element.sellerId === sellerId);
+// //     if (!bookPrice) {
+// //       return res.status(404).json({
+// //         success: false,
+// //         msg: "Price not found for the given seller",
+// //       });
+// //     }
+
+// //     // Create a new order
+// //     const newOrder = new Order({
+// //       isbn: book.isbn,
+// //       price: bookPrice.price,
+// //       userId: userId,
+// //       sellerId: sellerId,
+// //       shippingAddress: shippingAddress,
+// //     });
+
+// //     // Save the order to the database
+// //     const savedOrder = await newOrder.save();
+
+// //     // Calculate the 5% payCut from the order price
+// //     const payCutAmount = (bookPrice.price * process.env.PAY_CUT_PERCENTAGE) / 100;
+
+// //     // Create a new payCut entry
+// //     const newPayCut = new PayCut({
+// //       orderId: savedOrder.orderId,
+// //       payCut: payCutAmount,
+// //       status: savedOrder.status,
+// //     });
+
+// //     // Save the payCut entry to the database
+// //     await newPayCut.save();
+
+// //     // Return success response
+// //     return res.status(201).json({
+// //       success: true,
+// //       msg: "Order placed successfully",
+// //       order: savedOrder,
+// //     });
+// //   } catch (error) {
+// //     console.error("Error placing order:", error);
+// //     return res.status(500).json({
+// //       success: false,
+// //       msg: error.message || "An error occurred while placing the order",
+// //     });
+// //   }
+// // };
+
+
+
+/**
+ * @swagger
+ * /order/api/v1/order-book:
+ *   post:
+ *     summary: Place an order for a book
+ *     description: Allows users to place an order by providing seller ID, book ISBN, quantity, and shipping address.
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - sellerId
+ *               - isbn
+ *               - quantity
+ *               - shippingAddress
+ *             properties:
+ *               sellerId:
+ *                 type: string
+ *                 description: ID of the seller
+ *               isbn:
+ *                 type: string
+ *                 description: ISBN of the book
+ *               quantity:
+ *                 type: integer
+ *                 minimum: 1
+ *                 description: Number of copies to order
+ *               shippingAddress:
+ *                 type: string
+ *                 description: Shipping address for the order
+ *     responses:
+ *       201:
+ *         description: Order placed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 msg:
+ *                   type: string
+ *                 order:
+ *                   type: object
+ *                   description: Details of the placed order
+ *                 remainingStock:
+ *                   type: integer
+ *                   description: Remaining stock after the order is placed
+ *       400:
+ *         description: Validation errors or insufficient stock
+ *       404:
+ *         description: Book or seller not found
+ *       500:
+ *         description: Server error
+ */
+
 const placeOrder = async (req, res) => {
   try {
-
     // Validating the request with express-validator
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
@@ -27,8 +210,16 @@ const placeOrder = async (req, res) => {
     // Decode userId from the token
     const userId = req.cred.credDecode.userId;
 
-    // Extracting sellerId, isbn, and shippingAddress from request body
-    const { sellerId, isbn, shippingAddress } = req.body;
+    // Extract sellerId, isbn, quantity, and shippingAddress from request body
+    const { sellerId, isbn, quantity, shippingAddress } = req.body;
+
+    // Validate quantity (must be at least 1)
+    if (!quantity || quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid quantity. Must be at least 1.",
+      });
+    }
 
     // Find the book by ISBN
     const book = await Book.findOne({ isbn });
@@ -39,29 +230,52 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // Find the book price for the given seller
-    const bookPrice = book.spCluster.find((element) => element.sellerId === sellerId);
-    if (!bookPrice) {
+    // Find the book price and stock for the given seller
+    const sellerEntry = book.spCluster.find((element) => element.sellerId === sellerId);
+    if (!sellerEntry) {
       return res.status(404).json({
         success: false,
-        msg: "Price not found for the given seller",
+        msg: "Seller not found for this book",
+      });
+    }
+
+    // Check stock availability for the requested quantity
+    if (sellerEntry.stock < quantity) {
+      return res.status(400).json({
+        success: false,
+        msg: `Only ${sellerEntry.stock} copies available, but ${quantity} requested.`,
+      });
+    }
+
+    // Reduce stock count atomically
+    const updatedBook = await Book.findOneAndUpdate(
+      { isbn, "spCluster.sellerId": sellerId },
+      { $inc: { "spCluster.$.stock": -quantity } }, // Reduce stock by requested quantity
+      { new: true }
+    );
+
+    if (!updatedBook) {
+      return res.status(500).json({
+        success: false,
+        msg: "Error updating stock. Try again later.",
       });
     }
 
     // Create a new order
     const newOrder = new Order({
       isbn: book.isbn,
-      price: bookPrice.price,
+      price: sellerEntry.price * quantity, // Calculate total price
       userId: userId,
       sellerId: sellerId,
+      quantity: quantity,
       shippingAddress: shippingAddress,
     });
 
     // Save the order to the database
     const savedOrder = await newOrder.save();
 
-    // Calculate the 5% payCut from the order price
-    const payCutAmount = (bookPrice.price * process.env.PAY_CUT_PERCENTAGE) / 100;
+    // Calculate the 5% payCut from the total order price
+    const payCutAmount = (savedOrder.price * process.env.PAY_CUT_PERCENTAGE) / 100;
 
     // Create a new payCut entry
     const newPayCut = new PayCut({
@@ -78,20 +292,52 @@ const placeOrder = async (req, res) => {
       success: true,
       msg: "Order placed successfully",
       order: savedOrder,
+      remainingStock: updatedBook.spCluster.find((el) => el.sellerId === sellerId).stock, // Return updated stock count
     });
   } catch (error) {
     console.error("Error placing order:", error);
     return res.status(500).json({
       success: false,
-      msg: error.message || "An error occurred while placing the order",
+      msg: error.message || "An error occurred while placing the order.",
     });
   }
 };
 
 
+
 //----------------------------------- To Cancel The Order
 /**
  * To Cancel the order means changing the status to canceled entry will not be deleted
+ */
+
+/**
+ * @swagger
+ * /order/api/v1/cancel-order:
+ *   post:
+ *     summary: Cancel an order
+ *     description: Updates the order status to "canceled" without deleting the entry.
+ *     tags: [Order]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               orderId:
+ *                 type: string
+ *                 description: ID of the order to cancel
+ *     responses:
+ *       200:
+ *         description: Order successfully canceled
+ *       400:
+ *         description: Order already canceled or validation error
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Server error
  */
 const cancelOrder = async (req, res) => {
   try {
@@ -158,6 +404,30 @@ const cancelOrder = async (req, res) => {
 /**
  * All order For the seller  
  */
+/**
+ * @swagger
+ * /order/seller-order-list/{sellerId}:
+ *   get:
+ *     summary: Get all orders for a specific seller
+ *     description: Fetches all orders placed with a particular seller.
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: sellerId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The seller's ID
+ *     responses:
+ *       200:
+ *         description: Orders retrieved successfully
+ *       400:
+ *         description: Validation errors
+ *       404:
+ *         description: Seller not found
+ *       500:
+ *         description: Server error
+ */
 
 const sellerOrderList = async (req, res) => {
   try {
@@ -217,6 +487,7 @@ const sellerOrderList = async (req, res) => {
               orderId: "$orderId",
               isbn: "$isbn",
               price: "$price",
+              quantity: "$quantity",
               user: { // Include full user details instead of userId
                 userId: "$userData.userId",
                 name: "$userData.name",
@@ -275,6 +546,183 @@ const sellerOrderList = async (req, res) => {
 
 
 //=========================== User Order List
+
+/**
+ * @swagger
+ * /order/user-order-list/{userId}:
+ *   get:
+ *     summary: Get all orders placed by a specific user
+ *     description: Fetches all orders that a user has placed with different sellers.
+ *     tags: [Order]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user's ID
+ *     responses:
+ *       200:
+ *         description: Orders retrieved successfully
+ *       400:
+ *         description: Validation errors
+ *       404:
+ *         description: User not found or no orders available
+ *       500:
+ *         description: Server error
+ */
+const userOrderList = async (req, res) => {
+  try {
+    // Validate the request
+    const valErrors = validationResult(req);
+    if (!valErrors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        msg: "Validation errors",
+        errors: valErrors.array(),
+      });
+    }
+
+    const userId = req.params.userId;
+
+
+
+    // Check if the user exists
+    const userExists = await User.findOne({ userId });
+    if (!userExists) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found.",
+      });
+    }
+
+    // Fetch orders, user data, and seller data
+    const result = await Order.aggregate([
+      {
+        $match: { userId: userId }, // Match the specific userId
+      },
+      {
+        $lookup: {
+          from: "users", // Ensure this matches the actual collection name
+          localField: "userId", // Field in Order collection
+          foreignField: "userId", // Field in User collection
+          as: "userData", // Alias for joined user data
+        },
+      },
+      {
+        $unwind: "$userData", // Flatten the userData array
+      },
+      {
+        $lookup: {
+          from: "sellers", // Ensure this matches the actual collection name
+          let: { sellerId: "$sellerId" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$sellerId", "$$sellerId"] } } },
+            {
+              $project: {
+                sellerId: 1,
+                name: 1,
+                email: 1,
+                mobile: 1,
+                storeName: 1,
+                storeDescription: 1,
+                image: 1,
+                address: 1,
+                gstNumber: 1,
+                socialMediaLinks: 1,
+                is_verified: 1,
+              },
+            },
+          ],
+          as: "sellerData", // Alias for joined seller data
+        },
+      },
+      {
+        $unwind: {
+          path: "$sellerData",
+          preserveNullAndEmptyArrays: true, // Keep the order even if no seller is found
+        },
+      },
+      {
+        $group: {
+          _id: "$userId", // Group by userId
+          orders: {
+            $push: {
+              orderId: "$orderId",
+              isbn: "$isbn",
+              price: "$price",
+              quantity: "$quantity",
+              seller: {
+                $cond: {
+                  if: { $not: ["$sellerData"] }, // Check if sellerData is null or empty
+                  then: {
+                    message: "Seller is no longer on the Booklio platform",
+                  },
+                  else: {
+                    sellerId: "$sellerData.sellerId",
+                    name: "$sellerData.name",
+                    email: "$sellerData.email",
+                    mobile: "$sellerData.mobile",
+                    storeName: "$sellerData.storeName",
+                    storeDescription: "$sellerData.storeDescription",
+                    image: "$sellerData.image",
+                    address: "$sellerData.address",
+                    gstNumber: "$sellerData.gstNumber",
+                    socialMediaLinks: "$sellerData.socialMediaLinks",
+                    is_verified: "$sellerData.is_verified",
+                  },
+                },
+              },
+              shippingAddress: "$shippingAddress",
+              status: "$status",
+              createdAt: "$createdAt",
+              updatedAt: "$updatedAt",
+            },
+          },
+          userInfo: {
+            $first: {
+              userId: "$userData.userId",
+              name: "$userData.name",
+              email: "$userData.email",
+              mobile: "$userData.mobile",
+              createdAt: "$userData.createdAt",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Remove the _id field
+          userId: "$_id", // Rename _id to userId
+          orders: 1, // Include orders array
+          userInfo: 1, // Include user info
+        },
+      },
+    ]);
+
+    // If no orders found for the user
+    if (!result || result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        msg: "No orders found for this user.",
+      });
+    }
+
+    // Return success response with order data
+    return res.status(200).json({
+      success: true,
+      msg: `Order list for the user.`,
+      orderData: result,
+    });
+  } catch (error) {
+    console.error("Error in userOrderList: ", error.message);
+    return res.status(500).json({
+      success: false,
+      msg: error.message || "An error occurred while fetching the user's order list.",
+    });
+  }
+};
+
 /**
  * All order For the User
  */
@@ -388,155 +836,6 @@ const sellerOrderList = async (req, res) => {
 
 // }
 
-const userOrderList = async (req, res) => {
-  try {
-    // Validate the request
-    const valErrors = validationResult(req);
-    if (!valErrors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        msg: "Validation errors",
-        errors: valErrors.array(),
-      });
-    }
 
-    const userId = req.params.userId;
-
-
-
-    // Check if the user exists
-    const userExists = await User.findOne({ userId });
-    if (!userExists) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found.",
-      });
-    }
-
-    // Fetch orders, user data, and seller data
-    const result = await Order.aggregate([
-      {
-        $match: { userId: userId }, // Match the specific userId
-      },
-      {
-        $lookup: {
-          from: "users", // Ensure this matches the actual collection name
-          localField: "userId", // Field in Order collection
-          foreignField: "userId", // Field in User collection
-          as: "userData", // Alias for joined user data
-        },
-      },
-      {
-        $unwind: "$userData", // Flatten the userData array
-      },
-      {
-        $lookup: {
-          from: "sellers", // Ensure this matches the actual collection name
-          let: { sellerId: "$sellerId" },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$sellerId", "$$sellerId"] } } },
-            {
-              $project: {
-                sellerId: 1,
-                name: 1,
-                email: 1,
-                mobile: 1,
-                storeName: 1,
-                storeDescription: 1,
-                image: 1,
-                address: 1,
-                gstNumber: 1,
-                socialMediaLinks: 1,
-                is_verified: 1,
-              },
-            },
-          ],
-          as: "sellerData", // Alias for joined seller data
-        },
-      },
-      {
-        $unwind: {
-          path: "$sellerData",
-          preserveNullAndEmptyArrays: true, // Keep the order even if no seller is found
-        },
-      },
-      {
-        $group: {
-          _id: "$userId", // Group by userId
-          orders: {
-            $push: {
-              orderId: "$orderId",
-              isbn: "$isbn",
-              price: "$price",
-              seller: {
-                $cond: {
-                  if: { $not: ["$sellerData"] }, // Check if sellerData is null or empty
-                  then: {
-                    message: "Seller is no longer on the Booklio platform",
-                  },
-                  else: {
-                    sellerId: "$sellerData.sellerId",
-                    name: "$sellerData.name",
-                    email: "$sellerData.email",
-                    mobile: "$sellerData.mobile",
-                    storeName: "$sellerData.storeName",
-                    storeDescription: "$sellerData.storeDescription",
-                    image: "$sellerData.image",
-                    address: "$sellerData.address",
-                    gstNumber: "$sellerData.gstNumber",
-                    socialMediaLinks: "$sellerData.socialMediaLinks",
-                    is_verified: "$sellerData.is_verified",
-                  },
-                },
-              },
-              shippingAddress: "$shippingAddress",
-              status: "$status",
-              createdAt: "$createdAt",
-              updatedAt: "$updatedAt",
-            },
-          },
-          userInfo: {
-            $first: {
-              userId: "$userData.userId",
-              name: "$userData.name",
-              email: "$userData.email",
-              mobile: "$userData.mobile",
-              createdAt: "$userData.createdAt",
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0, // Remove the _id field
-          userId: "$_id", // Rename _id to userId
-          orders: 1, // Include orders array
-          userInfo: 1, // Include user info
-        },
-      },
-    ]);
-
-    // If no orders found for the user
-    if (!result || result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        msg: "No orders found for this user.",
-      });
-    }
-
-    // Return success response with order data
-    return res.status(200).json({
-      success: true,
-      msg: `Order list for the user.`,
-      orderData: result,
-    });
-  } catch (error) {
-    console.error("Error in userOrderList: ", error.message);
-    return res.status(500).json({
-      success: false,
-      msg: error.message || "An error occurred while fetching the user's order list.",
-    });
-  }
-};
 
 module.exports = { placeOrder, cancelOrder, sellerOrderList, userOrderList };

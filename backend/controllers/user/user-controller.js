@@ -11,12 +11,62 @@ const mailer = require("../../helpers/mail-helper");
 const randomstring = require("randomstring");
 const path = require("path");
 
+
 const {
   deleteFile,
   deleteCloudSingle,
 } = require("../../helpers/delete-file-helper");
 
+
+
+/**
+ * @swagger
+ * tags:
+ *   - name: User
+ *     description: Operations related to Seller
+ */
+
+
 //----------------- for user registration
+/**
+ * @swagger
+ * /user/api/v2/register:
+ *   post:
+ *     summary: Register a new user with optional image upload
+ *     description: Registers a user, hashes the password, saves the user in the database, and sends a verification email. The image URL should be provided in the request body.
+ *     tags:
+ *       - User 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 example: johndoe@example.com
+ *               mobile:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "StrongPassword123!"
+ *               image:
+ *                 type: string
+ *                 example: "https://yourcdn.com/uploads/profile.jpg"
+ *                 description: URL of the uploaded profile image
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error or email already registered
+ */
+
 const userRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -101,10 +151,45 @@ const userRegister = async (req, res) => {
   }
 };
 
+/**
+ * @swagger
+ * /user/api/v4/register:
+ *   post:
+ *     summary: Register a new user without image upload
+ *     description: Registers a user, hashes the password, and sends a verification email. No image upload required.
+ *     tags:
+ *       - User 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 example: johndoe@example.com
+ *               mobile:
+ *                 type: string
+ *                 example: "+1234567890"
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "StrongPassword123!"
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error or email already registered
+ */
+
 const userRegisterV4 = async (req, res) => {
   try {
 
-   
+
     // Validating the req with express validator
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
@@ -127,7 +212,7 @@ const userRegisterV4 = async (req, res) => {
         msg: `Email : ${email} already registered!`,
       });
     }
-    
+
     // Hash the password before saving
     const hashPassword = await bcrypt.hash(password, 10);
 
@@ -190,7 +275,29 @@ const userRegisterV4 = async (req, res) => {
 };
 
 //------------------------ Mail Verification while registration---------------
-
+/**
+ * @swagger
+ * /user/api/v1/mail-verification:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Verify user email
+ *     description: Verifies the user's email based on the provided user ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: User ID for email verification
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Email successfully verified
+ *       400:
+ *         description: User not found or already verified
+ *       500:
+ *         description: Internal server error
+ */
 const mailVerification = async (req, res) => {
   try {
     //----- Id is there or not in parameters
@@ -232,7 +339,33 @@ const mailVerification = async (req, res) => {
 };
 
 // ---verifying the mail after the registration if he missed at the time of registration -------
-
+/**
+ * @swagger
+ * /user/api/v1/send-mail-verification:
+ *   post:
+ *     tags:
+ *       - User   
+ *     summary: Send email verification link
+ *     description: Sends a verification email to the user if not already verified.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *     responses:
+ *       200:
+ *         description: Verification email sent successfully
+ *       400:
+ *         description: Email doesn't exist or is already verified
+ *       500:
+ *         description: Internal server error
+ */
 const sendMailVerification = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -307,6 +440,33 @@ const sendMailVerification = async (req, res) => {
 };
 
 //----------------- To send forgot Password link  to mail---------------
+/**
+ * @swagger
+ * /user/api/v1/forgot-password:
+ *   post:
+ *     tags: 
+ *      - User
+ *     summary: Send forgot password link
+ *     description: Sends a password reset link to the user's email.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "user@example.com"
+ *     responses:
+ *       201:
+ *         description: Reset password link sent successfully
+ *       400:
+ *         description: Email doesn't exist
+ *       500:
+ *         description: Internal server error
+ */
 const forgotPassword = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -387,7 +547,25 @@ const forgotPassword = async (req, res) => {
 };
 
 //-------------------- To send data to ejs file from token  --------
-
+/**
+ * @swagger
+ * /user/api/v1/reset-password:
+ *   get:
+ *     summary: Renders the password reset page based on a valid reset token.
+ *     tags: [User]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Token received for password reset verification.
+ *     responses:
+ *       200:
+ *         description: Renders the reset password page with reset data.
+ *       404:
+ *         description: Token is invalid or missing, rendering the 404 page.
+ */
 const resetPassword = async (req, res) => {
   try {
     if (req.query.token == undefined) {
@@ -407,6 +585,42 @@ const resetPassword = async (req, res) => {
 };
 
 //------------- To set the new password in DB -----------
+/**
+ * @swagger
+ * /user/api/v1/update-password:
+ *   post:
+ *     summary: Updates the user password in the database.
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - user_id
+ *               - password
+ *               - c_password
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: The unique ID of the user.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: The new password to be set.
+ *               c_password:
+ *                 type: string
+ *                 format: password
+ *                 description: Confirmation password (must match 'password').
+ *     responses:
+ *       302:
+ *         description: Password updated successfully, redirects to success page.
+ *       400:
+ *         description: Passwords do not match or invalid request data.
+ *       404:
+ *         description: User not found or token missing, rendering the 404 page.
+ */
 
 const updatePassword = async (req, res) => {
   try {
@@ -471,6 +685,39 @@ const generateRefreshToken = async (credDecode) => {
   return token;
 };
 
+/**
+ * @swagger
+ * /user/api/v1/login:
+ *   post:
+ *     summary: Authenticates a user and returns access and refresh tokens.
+ *     tags: [Login]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Registered email of the user.
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password.
+ *     responses:
+ *       200:
+ *         description: Login successful, returns user data and tokens.
+ *       400:
+ *         description: Validation errors or request issues.
+ *       401:
+ *         description: Incorrect email/password or email not verified.
+ */
+
 const loginUser = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -531,6 +778,20 @@ const loginUser = async (req, res) => {
 
 //--------- To get the user Profile --------------
 
+/**
+ * @swagger
+ * /user/api/v1/user-profile:
+ *   get:
+ *     summary: Retrieves the authenticated user's profile data.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user profile data.
+ *       400:
+ *         description: An error occurred while fetching profile data.
+ */
 const userProfile = async (req, res) => {
   try {
     return res.status(200).json({
@@ -547,8 +808,39 @@ const userProfile = async (req, res) => {
   }
 };
 
-//--------- To update user Profile ---------------
 
+//--------- To update user Profile ---------------
+/**
+ * @swagger
+ * /user/api/v1/update-profile:
+ *   put:
+ *     summary: Updates the user's profile information.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Updated name of the user.
+ *               mobile:
+ *                 type: string
+ *                 description: Updated mobile number of the user.
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile image to be uploaded.
+ *     responses:
+ *       200:
+ *         description: User profile updated successfully.
+ *       400:
+ *         description: Validation errors or update failure.
+ */
 const updateProfile = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -613,7 +905,20 @@ const updateProfile = async (req, res) => {
 };
 
 // ------ To Refresh tokens to the client side -------
-
+/**
+ * @swagger
+ * /user/api/v1/refresh-token:
+ *   post:
+ *     summary: Refreshes the authentication tokens.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Tokens refreshed successfully.
+ *       400:
+ *         description: An error occurred while refreshing tokens.
+ */
 const refreshToken = async (req, res) => {
   try {
     const userId = req.cred.credDecode._id;
@@ -637,7 +942,30 @@ const refreshToken = async (req, res) => {
 };
 
 // ------------ To Logout the User --------------
-
+/**
+ * @swagger
+ * /user/api/v1/logout:
+ *   post:
+ *     summary: Logs out the user and invalidates the token.
+ *     tags: [User]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token to be invalidated.
+ *     responses:
+ *       200:
+ *         description: User logged out successfully.
+ *       400:
+ *         description: An error occurred while logging out.
+ */
 const logoutUser = async (req, res) => {
   try {
     const token =

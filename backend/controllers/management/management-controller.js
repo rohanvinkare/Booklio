@@ -10,6 +10,24 @@ const mailer = require("../../helpers/mail-helper");
 const randomstring = require("randomstring");
 const path = require("path");
 
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Management
+ *     description: Operations for management members including authentication and profile management
+ */
+
+
 const {
   deleteFile,
   deleteCloudSingle,
@@ -112,6 +130,31 @@ const {
 // };
 
 //----------------- To send forgot Password link  to mail---------------
+
+
+/**
+ * @swagger
+ * /management/api/v1/management/forgot-password:
+ *   post:
+ *     tags:
+ *       - Management
+ *     summary: Request password reset link
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Reset password link sent successfully
+ *       400:
+ *         description: Invalid email or validation error
+ */
+
 const forgotMemberPassword = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -195,6 +238,48 @@ const forgotMemberPassword = async (req, res) => {
 
 //-------------------- To send data to ejs file from token  --------
 
+/**
+ * @swagger
+ * /management/api/v1/management/reset-password:
+ *   get:
+ *     tags:
+ *       - Management
+ *     summary: Display reset password page
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Reset password page rendered
+ *       404:
+ *         description: Invalid token or expired link
+ *   post:
+ *     tags:
+ *       - Management
+ *     summary: Update password with new one
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               c_password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Passwords don't match or validation error
+ */
+
 const resetMemberPassword = async (req, res) => {
   try {
     if (req.query.token == undefined) {
@@ -216,7 +301,37 @@ const resetMemberPassword = async (req, res) => {
 };
 
 //------------- To set the new password in DB -----------
-
+/**
+ * @swagger
+ * /management/api/v1/management/update-password:
+ *   post:
+ *     tags:
+ *       - Management
+ *     summary: Update member's password after reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               user_id:
+ *                 type: string
+ *                 description: ID of the user resetting password
+ *               password:
+ *                 type: string
+ *                 description: New password
+ *               c_password:
+ *                 type: string
+ *                 description: Confirm new password
+ *     responses:
+ *       200:
+ *         description: Password updated successfully, redirects to success page
+ *       400:
+ *         description: Passwords don't match
+ *       404:
+ *         description: User not found or reset token invalid
+ */
 const updateMemberPassword = async (req, res) => {
   try {
     const { user_id, password, c_password } = req.body;
@@ -281,6 +396,43 @@ const generateRefreshToken = async (credDecode) => {
   f;
 };
 
+/**
+ * @swagger
+ * /management/api/v1/management/member-login:
+ *   post:
+ *     tags:
+ *       - Login
+ *     summary: Login for management members
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 accessToken:
+ *                   type: string
+ *                 refreshToken:
+ *                   type: string
+ *       401:
+ *         description: Invalid credentials
+ */
+
+
 const loginMember = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -340,7 +492,21 @@ const loginMember = async (req, res) => {
 };
 
 //--------- To get the user Profile --------------
-
+/**
+ * @swagger
+ * /management/api/v1/management/member-profile:
+ *   get:
+ *     tags:
+ *       - Management
+ *     summary: Get member profile details
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile data retrieved successfully
+ *       401:
+ *         description: Unauthorized access
+ */
 const memberProfile = async (req, res) => {
   try {
     return res.status(200).json({
@@ -358,6 +524,37 @@ const memberProfile = async (req, res) => {
 };
 
 //--------- To update user Profile ---------------
+/**
+ * @swagger
+ * /management/api/v1/management/update-member-profile:
+ *   post:
+ *     tags:
+ *       - Management
+ *     summary: Update member profile
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               mobile:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 description: Base64 encoded image string
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       401:
+ *         description: Unauthorized access
+ *       400:
+ *         description: Invalid input or validation error
+ */
 
 const updateMemberProfile = async (req, res) => {
   try {
@@ -423,6 +620,21 @@ const updateMemberProfile = async (req, res) => {
 };
 
 // ------ To Refresh tokens to the client side -------
+/**
+ * @swagger
+ * /management/api/v1/management/refresh-token:
+ *   get:
+ *     tags:
+ *       - Management
+ *     summary: Refresh access token
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: New tokens generated successfully
+ *       401:
+ *         description: Invalid or expired token
+ */
 
 const refreshToken = async (req, res) => {
   try {
@@ -447,7 +659,23 @@ const refreshToken = async (req, res) => {
 };
 
 // ------------ To Logout the User --------------
-
+/**
+ * @swagger
+ * /management/api/v1/management/logout-member:
+ *   get:
+ *     tags:
+ *       - Management
+ *     summary: Logout member
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *       401:
+ *         description: Unauthorized access
+ *       400:
+ *         description: Error during logout
+ */
 const logoutUser = async (req, res) => {
   try {
     const token =

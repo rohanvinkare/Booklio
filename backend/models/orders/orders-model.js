@@ -19,6 +19,10 @@ const orderSchema = new mongoose.Schema({
     required: true,
     ref: "Book",
   },
+  quantity: {
+    type: Number,
+    required: true,
+  },
 
   userId: {
     type: String,
@@ -57,7 +61,7 @@ const orderSchema = new mongoose.Schema({
   // Order status (e.g., pending, shipped, delivered, canceled)
   status: {
     type: String,
-    enum: ["pending", "shipped", "delivered", "canceled","completed"],
+    enum: ["pending", "shipped", "delivered", "canceled", "completed"],
     default: "pending",
   },
   // Timestamp for when the order was created

@@ -15,7 +15,76 @@ const {
   deleteCloudSingle,
 } = require("../../helpers/delete-file-helper");
 
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Seller
+ *     description: Operations related to Seller
+ */
+
+
 //--------- for seller registration
+/**
+ * @swagger
+ * /seller/api/v1/register:
+ *   post:
+ *     summary: Register a new seller with an image upload
+ *     tags: [Seller]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               mobile:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               storeName:
+ *                 type: string
+ *               storeDescription:
+ *                 type: string
+ *               upiId:
+ *                 type: string
+ *               gstNumber:
+ *                 type: string
+ *               socialMediaLinks:
+ *                 type: object
+ *                 properties:
+ *                   facebook:
+ *                     type: string
+ *                   instagram:
+ *                     type: string
+ *                   linkedin:
+ *                     type: string
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *                   zipCode:
+ *                     type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Successfully registered seller
+ *       400:
+ *         description: Validation error or email already exists
+ */
 const sellerRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -126,7 +195,64 @@ const sellerRegister = async (req, res) => {
   }
 };
 
-//--------- without image 
+//--------- without image
+/**
+ * @swagger
+ * /seller/api/v4/register:
+ *   post:
+ *     summary: use This Register a new seller without an image upload
+ *     tags: [Seller]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               mobile:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               storeName:
+ *                 type: string
+ *               storeDescription:
+ *                 type: string
+ *               upiId:
+ *                 type: string
+ *               gstNumber:
+ *                 type: string
+ *               socialMediaLinks:
+ *                 type: object
+ *                 properties:
+ *                   facebook:
+ *                     type: string
+ *                   instagram:
+ *                     type: string
+ *                   linkedin:
+ *                     type: string
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   country:
+ *                     type: string
+ *                   zipCode:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Successfully registered seller
+ *       400:
+ *         description: Validation error or email already exists
+ */
 const sellerRegisterV4 = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -139,7 +265,6 @@ const sellerRegisterV4 = async (req, res) => {
         error: valErrors.array(),
       });
     }
-
 
     const {
       name,
@@ -232,7 +357,6 @@ const sellerRegisterV4 = async (req, res) => {
       sellerData: sellerData,
     });
   } catch (error) {
-
     return res.status(400).json({
       success: false,
       msg: error.message || "An error occurred",
@@ -240,9 +364,7 @@ const sellerRegisterV4 = async (req, res) => {
   }
 };
 
-
 //--------- Mail Verification while registering seller-----------
-
 const mailVerification = async (req, res) => {
   try {
     //----- Id is there or not in parameters
@@ -284,6 +406,56 @@ const mailVerification = async (req, res) => {
 };
 
 // ---verifying the mail after the registration if he missed at the time of registration -------
+/**
+ * @swagger
+ * /seller/api/v1/mail-verification:
+ *   post:
+ *     summary: Send email verification link.
+ *     description: Sends an email verification link to the seller's registered email.
+ *     tags:
+ *       - Seller
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "seller@example.com"
+ *     responses:
+ *       200:
+ *         description: Verification link sent successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 msg:
+ *                   type: string
+ *                   example: "Verification link sent to your email seller@example.com"
+ *                 sellerData:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                       example: "60d21b4667d0d8992e610c85"
+ *                     email:
+ *                       type: string
+ *                       example: "seller@example.com"
+ *                     is_verified:
+ *                       type: integer
+ *                       example: 0
+ *       400:
+ *         description: Email does not exist or is already verified.
+ *       500:
+ *         description: Internal server error.
+ */
 
 const sendMailVerification = async (req, res) => {
   try {
@@ -359,6 +531,33 @@ const sendMailVerification = async (req, res) => {
 };
 
 //------ To send forgot Password link  to mail---------
+/**
+ * @swagger
+ * /seller/api/v1/forgot-password:
+ *   post:
+ *     summary: Send a password reset link to the seller's email.
+ *     description: Generates a reset token and emails the seller a link to reset their password.
+ *     tags:
+ *       - Seller 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: seller@example.com
+ *     responses:
+ *       201:
+ *         description: Reset password link sent successfully.
+ *       400:
+ *         description: Validation error or email does not exist.
+ *       500:
+ *         description: Internal server error.
+ */
 const forgotPassword = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -439,7 +638,6 @@ const forgotPassword = async (req, res) => {
 };
 
 //------- To send data to ejs file from token --------
-
 const resetPassword = async (req, res) => {
   try {
     if (req.query.token == undefined) {
@@ -461,7 +659,6 @@ const resetPassword = async (req, res) => {
 };
 
 //------- To set the new password in DB --------
-
 const updatePassword = async (req, res) => {
   try {
     const { user_id, password, c_password } = req.body;
@@ -525,6 +722,39 @@ const generateRefreshToken = async (credDecode) => {
   return token;
 };
 
+/**
+ * @swagger
+ * /seller/api/v1/login:
+ *   post:
+ *     summary: Login a seller.
+ *     description: Authenticates a seller using email and password, returning an access token.
+ *     tags:
+ *       - Login 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: seller@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "SecurePassword123"
+ *     responses:
+ *       200:
+ *         description: Seller logged in successfully.
+ *       401:
+ *         description: Invalid credentials or email not verified.
+ *       400:
+ *         description: Validation error.
+ *       500:
+ *         description: Internal server error.
+ */
 const loginSeller = async (req, res) => {
   try {
     const valErrors = validationResult(req);
@@ -584,13 +814,26 @@ const loginSeller = async (req, res) => {
 };
 
 //--------- To get the user Profile --------------
+/**
+ * @swagger
+ * /seller/api/v1/seller/profile:
+ *   get:
+ *     summary: Get seller profile.
+ *     description: Retrieves the logged-in seller's profile details.
+ *     tags:
+ *       - Seller 
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Seller profile retrieved successfully.
+ *       401:
+ *         description: Unauthorized access.
+ *       500:
+ *         description: Internal server error.
+ */
 const sellerProfile = async (req, res) => {
   try {
-
-
-
-
-    
     return res.status(200).json({
       success: true,
       msg: "Seller Profile Data",
@@ -606,7 +849,88 @@ const sellerProfile = async (req, res) => {
 };
 
 //--------- To update user Profile ---------------
-
+/**
+ * @swagger
+ * /seller/api/v1/update-profile:
+ *   put:
+ *     summary: Update seller profile.
+ *     description: Updates the seller's profile details such as name, contact, store details, and social media links.
+ *     tags:
+ *       - Seller
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "John Doe"
+ *               mobile:
+ *                 type: string
+ *                 example: "9876543210"
+ *               storeName:
+ *                 type: string
+ *                 example: "John's Bookstore"
+ *               storeDescription:
+ *                 type: string
+ *                 example: "A premium bookstore for all genres."
+ *               image:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://example.com/profile.jpg"
+ *               upiId:
+ *                 type: string
+ *                 example: "john@upi"
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   street:
+ *                     type: string
+ *                     example: "123 Main St"
+ *                   city:
+ *                     type: string
+ *                     example: "New York"
+ *                   state:
+ *                     type: string
+ *                     example: "NY"
+ *                   country:
+ *                     type: string
+ *                     example: "USA"
+ *                   zipCode:
+ *                     type: string
+ *                     example: "10001"
+ *               gstNumber:
+ *                 type: string
+ *                 example: "22AAAAA0000A1Z5"
+ *               socialMediaLinks:
+ *                 type: object
+ *                 properties:
+ *                   facebook:
+ *                     type: string
+ *                     format: uri
+ *                     example: "https://facebook.com/johndoe"
+ *                   instagram:
+ *                     type: string
+ *                     format: uri
+ *                     example: "https://instagram.com/johndoe"
+ *                   linkedin:
+ *                     type: string
+ *                     format: uri
+ *                     example: "https://linkedin.com/in/johndoe"
+ *     responses:
+ *       200:
+ *         description: Seller profile updated successfully.
+ *       400:
+ *         description: Validation error.
+ *       401:
+ *         description: Unauthorized access.
+ *       500:
+ *         description: Internal server error.
+ */
 const updateSellerProfile = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -699,7 +1023,43 @@ const updateSellerProfile = async (req, res) => {
 };
 
 // ------ To Refresh tokens to the client side -------
-
+/**
+ * @swagger
+ * /seller/api/v1/refresh-token:
+ *   post:
+ *     summary: Refresh seller's access token.
+ *     description: Generates a new access token and refresh token for an authenticated seller.
+ *     tags:
+ *       - Seller
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 msg:
+ *                   type: string
+ *                   example: "Token Refreshed!"
+ *                 accessToken:
+ *                   type: string
+ *                   example: "newAccessToken123"
+ *                 refreshToken:
+ *                   type: string
+ *                   example: "newRefreshToken456"
+ *       400:
+ *         description: Error occurred while refreshing token.
+ *       401:
+ *         description: Unauthorized access.
+ *       500:
+ *         description: Internal server error.
+ */
 const refreshToken = async (req, res) => {
   try {
     //------------------Working but need to fix latter here seller
@@ -724,7 +1084,48 @@ const refreshToken = async (req, res) => {
 };
 
 // ------------ To Logout the User --------------
-
+/**
+ * @swagger
+ * /seller/api/v1/logout:
+ *   post:
+ *     summary: Logout a seller.
+ *     description: Logs out the seller by blacklisting the token and clearing site data.
+ *     tags:
+ *       - Seller 
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token to be blacklisted.
+ *                 example: "Bearer oldAccessToken123"
+ *     responses:
+ *       200:
+ *         description: Successfully logged out.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 msg:
+ *                   type: string
+ *                   example: "You're logged out!"
+ *       400:
+ *         description: Error occurred while logging out.
+ *       401:
+ *         description: Unauthorized access.
+ *       500:
+ *         description: Internal server error.
+ */
 const logoutSeller = async (req, res) => {
   try {
     const token =
@@ -768,5 +1169,5 @@ module.exports = {
   updateSellerProfile,
   refreshToken,
   logoutSeller,
-  sellerRegisterV4
+  sellerRegisterV4,
 };

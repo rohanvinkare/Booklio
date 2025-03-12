@@ -6,6 +6,14 @@ const Blacklist = require("../../../models/blacklist-model");
 const Book = require("../../../models/books/books-model");
 const MemberPasswordReset = require("../../../models/management/password-reset-management-model");
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Admin
+ *     description: Operations available to administrators for managing users, sellers, and members
+ */
+
+
 //-------------- External Libraries
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -24,6 +32,43 @@ const { stringify } = require("querystring");
  * For creating the new member role in Management and sending the mail with Account credentials
  */
 //----------------- for user registration
+
+/**
+ * @swagger
+ * /admin/api/v1/management/member-register:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Register a new management member
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               mobile:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Member registered successfully
+ *       400:
+ *         description: Invalid input
+ */
+
 const memberRegister = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -120,6 +165,39 @@ const memberRegister = async (req, res) => {
 };
 
 //-------------  Register Without the image 
+
+
+/**
+ * @swagger
+ * /admin/api/v4/management/member-register:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: use this Register a new member without image
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               mobile:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Member registered successfully
+ */
+
 
 const memberRegisterV4 = async (req, res) => {
   try {
@@ -224,6 +302,32 @@ const memberRegisterV4 = async (req, res) => {
  * For updating the member role with email and sending the mail of updation details
  */
 //---------------- For Updating the member Role
+
+/**
+ * @swagger
+ * /admin/api/v1/update-member-role:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Update member role
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Role updated successfully
+ */
+
 const updateMemberRole = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -311,6 +415,30 @@ const updateMemberRole = async (req, res) => {
  * For deleting the Management member with memberId and sending the mail of Account Deletion
  */
 //---------------- For deleting the user
+/**
+ * @swagger
+ * /admin/api/v1/delete-member:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Delete a member
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               memberId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Member deleted successfully
+ */
+
+
 const deleteMember = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -383,6 +511,26 @@ const deleteMember = async (req, res) => {
  * if memberId  in query Params present then will return the member specific data
  */
 // Controller function to fetch member data
+
+/**
+ * @swagger
+ * /admin/api/v1/get-member-data/{memberId}:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get member data
+ *     parameters:
+ *       - in: path
+ *         name: memberId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Member ID (optional)
+ *     responses:
+ *       200:
+ *         description: Member data retrieved successfully
+ */
+
 const getMemberData = async (req, res) => {
   try {
     // Validate the request (using express-validator)
@@ -442,6 +590,28 @@ const getMemberData = async (req, res) => {
  * For deleting the user with userId and sending the mail of User Account Deletion
  */
 //---------------- For deleting the user
+/**
+ * @swagger
+ * /admin/api/v1/delete-user:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Delete a user
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ */
 const deleteUser = async (req, res) => {
   try {
     // Validating the req with express validator
@@ -511,6 +681,24 @@ const deleteUser = async (req, res) => {
  * if userId  in query Params present then will return the user specific data
  */
 // Controller function to fetch member data
+/**
+ * @swagger
+ * /admin/api/v1/get-user-data/{userId}:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get user data
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: User ID (optional)
+ *     responses:
+ *       200:
+ *         description: User data retrieved successfully
+ */
 const getUserData = async (req, res) => {
   try {
     // Validate the request (using express-validator)
@@ -637,6 +825,29 @@ const getUserData = async (req, res) => {
 //   }
 // };
 
+/**
+ * @swagger
+ * /admin/api/v1/delete-seller:
+ *   post:
+ *     tags:
+ *       - Admin
+ *     summary: Delete a seller
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               sellerId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Seller deleted successfully
+ */
+
 const deleteSeller = async (req, res) => {
   try {
 
@@ -732,6 +943,26 @@ const deleteSeller = async (req, res) => {
  */
 
 // Controller function to fetch member data
+
+/**
+ * @swagger
+ * /admin/api/v1/get-seller-data/{sellerId}:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get seller data
+ *     parameters:
+ *       - in: path
+ *         name: sellerId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Seller ID (optional)
+ *     responses:
+ *       200:
+ *         description: Seller data retrieved successfully
+ */
+
 const getSellerData = async (req, res) => {
   try {
     // Validate the request (using express-validator)
@@ -791,6 +1022,17 @@ const getSellerData = async (req, res) => {
  * Batch call for all data of the folks
  */
 // Controller function to fetch all data
+/**
+ * @swagger
+ * /admin/api/v1/get-batch-data:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get all users, sellers and members data
+ *     responses:
+ *       200:
+ *         description: All data retrieved successfully
+ */
 const getAllData = async (req, res) => {
   try {
     // Fetch data from all models in parallel using Promise.all
@@ -816,7 +1058,30 @@ const getAllData = async (req, res) => {
  * Batch call for all data of the folks
  */
 // Controller function to fetch all data
-
+/**
+ * @swagger
+ * /admin/api/v1/paycut:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Get paycut statistics
+ *     responses:
+ *       200:
+ *         description: Paycut data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 totalPendingPayCut:
+ *                   type: number
+ *                 totalCanceledPayCut:
+ *                   type: number
+ *                 totalCompletedPayCut:
+ *                   type: number
+ */
 const paycutFunc = async (req, res) => {
   try {
     // Perform aggregation to get pay cuts with lookup and totals
