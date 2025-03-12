@@ -209,10 +209,97 @@ const addBookGoogleAPI = async (req, res) => {
  *       
  */
 
+// const removeSellerFromBook = async (req, res) => {
+//   try {
+
+
+//     // Validate the request
+//     const valErrors = validationResult(req);
+//     if (!valErrors.isEmpty()) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Errors",
+//         error: valErrors.array(),
+//       });
+//     }
+
+//     const sellerId = req.cred.credDecode.sellerId;
+//     const { isbn } = req.body;
+//     console.log(isbn);
+
+
+//     // Find the book by ISBN
+//     const bookExists = await Book.findOne({ isbn: isbn });
+//     if (!bookExists) {
+//       return res.status(404).json({
+//         success: false,
+//         msg: `Book with ISBN ${isbn} not found.`,
+//       });
+//     }
+
+
+
+//     // Check if the seller exists in the spCluster
+//     const sellerIndex = bookExists.spCluster.findIndex(
+//       (coast) => coast.sellerId === sellerId
+//     );
+
+//     if (sellerIndex === -1) {
+//       return res.status(404).json({
+//         success: false,
+//         msg: `Seller ID ${sellerId} is not associated with this book.`,
+//       });
+//     }
+
+
+
+//     // Remove the seller from spCluster array
+//     bookExists.spCluster.splice(sellerIndex, 1);
+
+
+//     // Check if the spCluster array is empty after removal
+//     if (bookExists.spCluster.length === 0) {
+//       // No sellers left, delete the book
+//       await Book.deleteOne({ isbn: isbn });
+
+
+//       // Deleting all cache for consistency
+//       delCache("all_genre_books");
+//       delCache(sellerId);
+
+//       return res.status(200).json({
+//         success: true,
+//         msg: `Book with ISBN ${isbn} deleted because no sellers are left.`,
+//       });
+//     } else {
+//       // Sellers remain, update the book without the removed seller
+//       const updatedBook = await bookExists.save();
+
+
+
+//       // Deleting all cache for consistency
+//       delCache("all_genre_books");
+//       delCache(sellerId);
+
+//       return res.status(200).json({
+//         success: true,
+//         msg: `Seller ID ${sellerId} removed from the book with ISBN ${isbn}.`,
+//         bookData: updatedBook,
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: false,
+//       msg: error.message || "An error occurred while removing the seller.",
+//     });
+//   }
+// };
+
+//--------------------------  Stock Book -----------------------
+
 const removeSellerFromBook = async (req, res) => {
   try {
-
-
     // Validate the request
     const valErrors = validationResult(req);
     if (!valErrors.isEmpty()) {
@@ -225,8 +312,20 @@ const removeSellerFromBook = async (req, res) => {
 
     const sellerId = req.cred.credDecode.sellerId;
     const { isbn } = req.body;
-    console.log(isbn);
 
+    // Check if there are any active orders associated with this book and seller
+    const existingOrders = await Order.findOne({
+      isbn: isbn,
+      sellerId: sellerId,
+      status: { $nin: ["canceled"] }, // Ignore canceled and completed orders
+    });
+
+    if (existingOrders) {
+      return res.status(400).json({
+        success: false,
+        msg: `Cannot remove seller. There are active orders associated with this book (ISBN: ${isbn}).`,
+      });
+    }
 
     // Find the book by ISBN
     const bookExists = await Book.findOne({ isbn: isbn });
@@ -236,8 +335,6 @@ const removeSellerFromBook = async (req, res) => {
         msg: `Book with ISBN ${isbn} not found.`,
       });
     }
-
-
 
     // Check if the seller exists in the spCluster
     const sellerIndex = bookExists.spCluster.findIndex(
@@ -251,17 +348,13 @@ const removeSellerFromBook = async (req, res) => {
       });
     }
 
-
-
     // Remove the seller from spCluster array
     bookExists.spCluster.splice(sellerIndex, 1);
-
 
     // Check if the spCluster array is empty after removal
     if (bookExists.spCluster.length === 0) {
       // No sellers left, delete the book
       await Book.deleteOne({ isbn: isbn });
-
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
@@ -274,8 +367,6 @@ const removeSellerFromBook = async (req, res) => {
     } else {
       // Sellers remain, update the book without the removed seller
       const updatedBook = await bookExists.save();
-
-
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
@@ -296,7 +387,6 @@ const removeSellerFromBook = async (req, res) => {
   }
 };
 
-//--------------------------  Stock Book -----------------------
 
 /**
  * For all Book that seller have in stock
