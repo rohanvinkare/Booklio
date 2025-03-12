@@ -614,11 +614,21 @@ const booksBySeller = async (req, res) => {
       });
     }
 
-    // Return the seller info and the list of books they are selling
+    // Modify spCluster to include only the matching seller's price & stock
+    const filteredBooks = books.map((book) => {
+      return {
+        ...book._doc, // Spread original document
+        spCluster: book.spCluster
+          .filter((sp) => sp.sellerId === sellerId) // Keep only the matched seller
+          .map(({ price, stock }) => ({ price, stock })), // Send only price & stock
+      };
+    });
+
+    // Return the seller info and the filtered list of books
     return res.status(200).json({
       success: true,
       msg: `Seller information and books for sellerId ${sellerId}`,
-      books,
+      books: filteredBooks,
       sellerInfo: seller,
     });
   } catch (error) {
@@ -631,6 +641,8 @@ const booksBySeller = async (req, res) => {
     });
   }
 };
+
+
 
 /**
  * Book info And all the seller selling it
