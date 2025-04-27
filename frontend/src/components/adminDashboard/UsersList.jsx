@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { usersData } from "@/store/adminSlice/usersData";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
@@ -89,7 +88,7 @@ const UsersList = () => {
   const confirmDelete = (userId) => {
     toast(
       (t) => (
-        <div className="flex flex-col p-4  rounded-lg shadow-lg border border-red-300">
+        <div className="flex flex-col rounded-lg">
           <span className="text-gray-800 font-semibold text-lg mb-3">
             Are you sure you want to delete this user?
           </span>

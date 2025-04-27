@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PropTypes from "prop-types";
 import { useLocation } from "react-router-dom";
+import { FaArrowCircleRight, FaShoppingBasket } from "react-icons/fa";
 
 // Utility function to generate a random color
 const getRandomColor = () => {
@@ -20,6 +21,7 @@ const Navbar = ({ userData }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
     window.location.href = "/";
   };
 
@@ -31,67 +33,50 @@ const Navbar = ({ userData }) => {
   }, [userData]);
 
   return (
-    <nav className="bg-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_1px_0_rgba(0,0,0,0.08)]">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <a href="/shop" className="text-4xl font-unbounded font-bold text-gray-900">
-          Booklio
-        </a>
-        <ul className="flex space-x-8">
-          <li>
-            <a
-              href="/user/"
-              className={`${
-                isActive("/user/")
-                  ? " p-2 px-4 bg-blue-700 text-white rounded-xl"
-                  : " p-2 px-4 bg-blue-700 text-white rounded-xl"
-              } transition-all duration-300 ease-in-out`}
-            >
-              Dashboard
+    <nav className="bg-backgroundContrast text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_1px_0_rgba(0,0,0,0.08)]">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-4 gap-4 sm:gap-0">
+          {/* Logo */}
+          <div className="flex items-center">
+            <a href="/shop" className="text-2xl sm:text-3xl md:text-4xl font-unbounded font-bold text-white">
+              Booklio
             </a>
-          </li>
-          <li>
-            <a
-              href="/user/orders"
-              className={`${
-                isActive("/user/orders")
-                  ? " p-2 px-4 bg-blue-700 text-white rounded-xl"
-                  : " p-2 px-4 bg-blue-700 text-white rounded-xl"
-              } transition-all duration-300 ease-in-out`}
-            >
-              My Orders
-            </a>
-          </li>
-        </ul>
-        <div className="relative">
-          <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center space-x-4 focus:outline-none"
-          >
-            <Avatar className="w-12 h-12 border-2 border-gray-300">
-              <AvatarImage src={userData.avatarUrl} alt={userData.name} />
-              <AvatarFallback
-                className="text-3xl font-bold"
-                style={{ backgroundColor: randomColor, color: "white" }}
-              >
-                {userData.name?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <span className="font-medium text-gray-900">{userData.name}</span>
-          </button>
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-300">
-              <div className="px-4 py-3 border-b border-gray-200">
-                <p className="font-semibold text-gray-900">{userData.name}</p>
-                <p className="text-sm text-gray-600">{userData.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
-              >
-                Logout
-              </button>
-            </div>
-          )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4">
+            <ul className="flex flex-wrap justify-center gap-2 sm:gap-4">
+              <li>
+                <a
+                  href="/user"
+                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${
+                    location.pathname === "/user" ? "hidden" : ""
+                  } ${isActive("/user") ? "bg-blue-600" : "bg-blue-600"}`}
+                >
+                  My Account
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/shop/listing"
+                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${
+                    isActive("/shop/listing") ? "bg-blue-700" : "bg-blue-600"
+                  } text-white`}
+                >
+                  Shop
+                  <FaArrowCircleRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                </a>
+              </li>
+              <li>
+                <a
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer bg-red-600 hover:bg-red-700 transition-colors"
+                >
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { managementsData } from "@/store/adminSlice/managementData";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"; // ShadCN card components
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";

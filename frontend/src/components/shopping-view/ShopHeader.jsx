@@ -25,20 +25,20 @@ function ShoppingHeader() {
   };
 
   return (
-    <>
-      <header className="sticky top-0 z-40 w-full text-white border-b bg-background">
-        <div className="flex h-20 items-center justify-between px-20 md:px-40">
+    <header className="fixed top-0 z-40 w-full text-white border-b bg-backgroundContrast">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Logo */}
           <Link to="/shop" className="flex items-center gap-2">
-            <Library className="h-6 w-6" />
-            <span className="font-extrabold text-4xl font-unbounded">BOOKLIO</span>
+            <Library className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="font-bold text-2xl sm:text-3xl md:text-4xl font-unbounded">BOOKLIO</span>
           </Link>
 
           {/* Authentication Actions */}
-          <div className="flex justify-around gap-2 items-center">
+          <div className="flex items-center gap-2 sm:gap-4">
             <div>
               <a
-                className="text-xs px-4 py-2 rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
+                className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer bg-blue-600 hover:bg-blue-700 transition-colors"
                 onClick={() => navigate("/user")}
               >
                 My Account
@@ -47,14 +47,14 @@ function ShoppingHeader() {
             <div>
               {isLoggedIn ? (
                 <a
-                  className="text-xs px-4 py-2 rounded cursor-pointer bg-red-600 hover:bg-red-700"
+                  className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer bg-red-600 hover:bg-red-700 transition-colors"
                   onClick={handleLogout}
                 >
                   Logout
                 </a>
               ) : (
                 <a
-                  className="text-xs px-4 py-2 rounded cursor-pointer bg-blue-600 hover:bg-blue-700"
+                  className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer bg-blue-600 hover:bg-blue-700 transition-colors"
                   onClick={() => navigate("/auth/login")}
                 >
                   Login Now
@@ -63,8 +63,8 @@ function ShoppingHeader() {
             </div>
           </div>
         </div>
-      </header >
-    </>
+      </div>
+    </header>
   );
 }
 

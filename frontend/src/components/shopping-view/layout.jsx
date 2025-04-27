@@ -4,7 +4,7 @@ import { Footer } from "@/components/landingPage/Footer";
 
 function ShoppingLayout() {
   return (
-    <div className="flex flex-col bg-white overflow-hidden">
+    <div className="flex flex-col bg-backgroundContrast text-white overflow-hidden">
       {/* common header */}
       <ShoppingHeader />
       <main className="flex flex-col w-full">

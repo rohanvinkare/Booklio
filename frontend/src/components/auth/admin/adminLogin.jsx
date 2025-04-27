@@ -96,57 +96,62 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="w-full max-w-md space-y-6 bg-white p-8 shadow-md rounded-lg">
-      <Card>
-        <CardHeader>
-          <h2 className="text-2xl font-semibold text-center text-gray-800">Login as Admin</h2>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <Label htmlFor="email" className="text-gray-600">
-                Email
-              </Label>
-              <Input
-                type="email"
-                id="email"
-                {...register("email", { required: "Email is required" })}
-                placeholder="Enter your email"
-                className="mt-2 text-white"
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
-              )}
-            </div>
+    <div className="w-full flex flex-col justify-center items-center max-w-md space-y-6">
+      <a href="/">
+        <p className="text-[4rem] text-blue-500 font-bold font-unbounded">Booklio</p>
+      </a>
+      <div className="bg-white w-[100%] shadow-md rounded-lg">
+        <Card>
+          <CardHeader>
+            <h2 className="text-2xl font-semibold text-center text-gray-800">Login as Admin</h2>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <div>
+                <Label htmlFor="email" className="text-gray-600">
+                  Email
+                </Label>
+                <Input
+                  type="email"
+                  id="email"
+                  {...register("email", { required: "Email is required" })}
+                  placeholder="Enter your email"
+                  className="mt-2 text-white"
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                )}
+              </div>
 
-            <div>
-              <Label htmlFor="password" className="text-gray-600">
-                Password
-              </Label>
-              <Input
-                type="password"
-                id="password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters long",
-                  },
-                })}
-                placeholder="Enter your password"
-                className="mt-2 text-white"
-              />
-              {errors.password && (
-                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
-              )}
-            </div>
+              <div>
+                <Label htmlFor="password" className="text-gray-600">
+                  Password
+                </Label>
+                <Input
+                  type="password"
+                  id="password"
+                  {...register("password", {
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters long",
+                    },
+                  })}
+                  placeholder="Enter your password"
+                  className="mt-2 text-white"
+                />
+                {errors.password && (
+                  <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                )}
+              </div>
 
-            <Button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 mt-4">
-              Login
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              <Button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 mt-4">
+                Login
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

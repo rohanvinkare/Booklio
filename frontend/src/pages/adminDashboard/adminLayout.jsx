@@ -1,14 +1,15 @@
 import Sidebar from "@/components/adminDashboard/Sidebar";
 import { Outlet } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { IoMdArrowDropdown } from "react-icons/io"; // Import an icon for the dropdown indicator
-import { FaSignOutAlt } from "react-icons/fa";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { FaSignOutAlt, FaUserCircle, FaRegEnvelope, FaUserShield } from "react-icons/fa";
 
 const AdminLayout = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Track dropdown state
-  const dropdownButtonRef = useRef(null); // Ref for the profile button
-  const dropdownMenuRef = useRef(null); // Ref for the dropdown menu
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen); // Toggle dropdown visibility
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownButtonRef = useRef(null);
+  const dropdownMenuRef = useRef(null);
+  
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   // Close dropdown if clicked outside
   useEffect(() => {
@@ -23,10 +24,7 @@ const AdminLayout = () => {
       }
     };
 
-    // Add event listener
     document.addEventListener("click", handleClickOutside);
-
-    // Clean up event listener on unmount
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
@@ -34,7 +32,7 @@ const AdminLayout = () => {
 
   // Handle logout
   const handleLogout = async () => {
-    const accessToken = localStorage.getItem("accessToken"); // Get access token from localStorage
+    const accessToken = localStorage.getItem("accessToken");
 
     if (accessToken) {
       try {
@@ -62,55 +60,85 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
       <div className="flex-grow flex flex-col">
         {/* Header */}
-        <header className="bg-white shadow-md px-10 py-4 flex justify-between items-center">
-          <h1 className="text-4xl font-grotesque font-semibold">Booklio</h1>
+        <header className="bg-white shadow-sm px-8 py-4 flex justify-between items-center border-b border-gray-200">
+          <div className="flex items-center space-x-2">
+            <h1 className="text-3xl font-unbounded font-bold text-indigo-600">Booklio</h1>
+            <span className="text-xs font-medium bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md">Admin</span>
+          </div>
+          
           <div className="flex items-center space-x-4 relative">
-            {/* Profile Button */}
+            {/* Notifications icon could go here */}
+            
+            {/* Profile Button with better styling */}
             <button
-              ref={dropdownButtonRef} // Attach the ref to the button
-              className="w-10 h-10 rounded-full bg-gray-800 text-white hover:bg-gray-700 flex items-center justify-center"
+              ref={dropdownButtonRef}
+              className="flex items-center space-x-2 px-3 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
               onClick={toggleDropdown}
             >
-              R
-              <IoMdArrowDropdown />
+              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-medium">
+                R
+              </div>
+              <span className="text-sm font-medium text-gray-700 hidden md:inline">Rohan</span>
+              <IoMdArrowDropdown className={`text-gray-500 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isDropdownOpen && (
               <div
-                ref={dropdownMenuRef} // Attach the ref to the dropdown menu
-                className="absolute right-0 -mt-2 w-80 bg-blue-50 shadow-lg rounded-lg border border-gray-200 z-10"
+                ref={dropdownMenuRef}
+                className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-100 z-10"
                 style={{
-                  top: dropdownButtonRef.current?.getBoundingClientRect().bottom + window.scrollY,
+                  top: "100%",
                 }}
               >
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg">Admin Account</h3>
-                  <p className="text-sm text-gray-600"><span className="font-semibold">Name:</span> Rohan Vinkare</p>
-                  <p className="text-sm text-gray-600"><span className="font-semibold">Email:</span> rohanvinkare2022@gmail.com</p>
-                  <p className="text-sm text-gray-600"><span className="font-semibold">Role:</span> Admin</p>
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-medium">
+                      R
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Rohan Vinkare</h3>
+                      <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">Admin</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2 mt-3">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <FaUserCircle className="mr-2 text-gray-500" />
+                      <span>Rohan Vinkare</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <FaRegEnvelope className="mr-2 text-gray-500" />
+                      <span>rohanvinkare2022@gmail.com</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <FaUserShield className="mr-2 text-gray-500" />
+                      <span>Administrator</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="border-t hover:bg-red-600 border-gray-700">
-                  <a
-                    onClick={handleLogout} // Call handleLogout on button click
-                    className="flex justify-center cursor-pointer items-center p-2 text-sm font-medium rounded-xl hover:text-white transition"
+                
+                <div className="p-1">
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center p-3 text-sm text-left rounded-md transition-colors hover:bg-red-50 text-gray-700 hover:text-red-700"
                   >
-                    <FaSignOutAlt className="text-lg" />
-                    <span className="ml-3">Logout</span>
-                  </a>
+                    <FaSignOutAlt className="mr-3 text-gray-500" />
+                    <span>Sign Out</span>
+                  </button>
                 </div>
               </div>
             )}
           </div>
         </header>
 
-        <main className="flex-grow p-6 bg-gray-100 overflow-y-auto">
+        <main className="flex-grow p-8 bg-gray-50 overflow-y-auto">
           <Outlet />
         </main>
       </div>

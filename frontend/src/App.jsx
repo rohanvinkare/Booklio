@@ -36,8 +36,9 @@ import Landing from "./pages/landingPage/Landing";
 import PlaceOrder from "./components/shopping-view/PlaceOrder";
 import UserLayout from "./pages/userDashboard/UserLayout";
 import UserHome from "./components/userDashboard/UserHome";
-import UserOrders from "./components/userDashboard/userOrders";
 import AdminSales from "./components/adminDashboard/AdminSales";
+import { Team } from "./pages/Team";
+import { About } from "./pages/About";
 
 function App() {
 
@@ -47,6 +48,8 @@ function App() {
         {/* Base */}
         <Route path='/' element={<Format />} >
           <Route index element={<Landing />} />
+          <Route path="team" element={<Team />} />
+          <Route path="about" element={<About />} />
         </Route>
 
         {/* Auth */}
@@ -119,7 +122,7 @@ function App() {
         >
           <Route path="" element={<SellerHome />} />
           <Route path="books" element={<SellerBooksList />} />
-          <Route path="addbook" element={<AddBook />} />
+          <Route path="add-book" element={<AddBook />} />
           <Route path="Orders" element={<SellerOrders />} />
           <Route path="Account" element={<SellerAccount />} />
         </Route>
@@ -135,7 +138,6 @@ function App() {
           }
         >
           <Route path="" element={<UserHome />} />
-          <Route path="orders" element={<UserOrders />} />
         </Route>
 
         {/* Unauth & Notfound */}

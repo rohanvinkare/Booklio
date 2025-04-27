@@ -3,8 +3,10 @@ import Card from '@/components/landingPage/Card';
 import { animate, motion, useMotionValue, useMotionValueEvent, useScroll } from 'framer-motion';  // Import useScroll
 import { useEffect, useState } from 'react';
 import ZoomOutCarousel from './ZoomOutCarousel';
+import { useLocation } from "react-router-dom";
 
 export default function VideoCarousel() {
+    const location = useLocation();
 
     // Infinite Carousel
     const images = [
@@ -65,11 +67,18 @@ export default function VideoCarousel() {
 
     return (
         <>
-            <motion.div animate={carouselVariant} className="bg-background">
-                {/* zoom out carousel */}
-                <ZoomOutCarousel />
+            <motion.div animate={carouselVariant} className="bg-backgroundContrast text-black">
 
-                <div className='relative overflow-hidden h-[300px] w-full bg-background'>
+                {
+                    location.pathname == "/shop" && 
+                    <h2 className="text-4xl font-bold text-center mb-10 text-blue-400">Best Sellers</h2>
+                }
+
+                {
+                    location.pathname !== "/shop" && <ZoomOutCarousel />
+                }
+
+                <div className='relative overflow-hidden h-[300px] w-full bg-backgroundContrast'>
                     <motion.div
                         className="absolute left-0 top-0 flex gap-4"
                         ref={ref}

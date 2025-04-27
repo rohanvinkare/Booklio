@@ -2,7 +2,6 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 export const Faqs = () => {
-
     const faqs = [
         {
             question: "How can I purchase books on Booklio?",
@@ -25,32 +24,51 @@ export const Faqs = () => {
     };
 
     return (
-        <div className="flex justify-center items-center">
-            <section
-                id="faq"
-                className="flex-col w-[80vw] justify-center items-center px-60 pt-20 h-[50vh] mt-10 text-3xl text-white bg-background">
-                <p className="text-4xl font-helvetica">FAQ's</p>
+        <div className="min-h-[1/2] bg-backgroundContrast py-10">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h2 className="text-4xl font-bold text-blue-400 mb-4">Frequently Asked Questions</h2>
+                    <p className="text-gray-400">Everything you need to know about Booklio</p>
+                </div>
 
-                {faqs.map((faq, index) => (
-                    <div
-                        key={index}
-                        onClick={() => handleClick(index)}
-                        className={`faq mt-2 pb-2 border-b-2 border-white cursor-pointer transition-all duration-500 ${clickedIndex === index ? "max-h-[300px]" : "max-h-16"}`}
-                    >
-                        <div className="question flex justify-between items-center">
-                            <p className="text-xl font-helvetica">{faq.question}</p>
-                            {clickedIndex === index ? <ChevronUp /> : <ChevronDown />}
-                        </div>
+                <div className="space-y-4">
+                    {faqs.map((faq, index) => (
                         <div
-                            className={`answer overflow-hidden transition-max-height duration-500 ${clickedIndex === index ? "max-h-[200px]" : "max-h-0"}`}
+                            key={index}
+                            onClick={() => handleClick(index)}
+                            className="bg-gray-600/50 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-gray-700/70 transition-all duration-300"
                         >
-                            <p className="pt-2 text-sm font-helvetica leading-6">
-                                {faq.answer}
-                            </p>
+                            <button
+                                className="w-full px-6 py-4 text-left flex items-center justify-between"
+                                aria-expanded={clickedIndex === index}
+                            >
+                                <span className="text-lg font-medium text-white">{faq.question}</span>
+                                <span className="ml-6 flex-shrink-0 text-white">
+                                    {clickedIndex === index ? (
+                                        <ChevronUp className="h-6 w-6" />
+                                    ) : (
+                                        <ChevronDown className="h-6 w-6" />
+                                    )}
+                                </span>
+                            </button>
+
+                            <div
+                                className={`transition-all duration-300 ease-in-out ${
+                                    clickedIndex === index 
+                                        ? 'max-h-48 opacity-100' 
+                                        : 'max-h-0 opacity-0'
+                                }`}
+                            >
+                                <div className="px-6 pb-4">
+                                    <p className="text-blue-300 text-base leading-relaxed">
+                                        {faq.answer}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </section>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

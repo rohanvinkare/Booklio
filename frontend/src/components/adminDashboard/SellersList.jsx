@@ -12,7 +12,6 @@ import { MdModeEditOutline } from "react-icons/md";
 import { IoCloseCircle } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
 import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
-import { sellersData } from "@/store/adminSlice/sellerData";
 import {
   Dialog,
   DialogTrigger,
@@ -116,7 +115,7 @@ const SellersList = () => {
   const confirmDelete = (sellerId) => {
     toast(
       (t) => (
-        <div className="flex flex-col p-4 text-black rounded-lg shadow-lg border border-red-300">
+        <div className="flex flex-col text-black rounded-lg">
           <span className="text-gray-800 font-semibold text-lg mb-3">
             Are you sure you want to delete this seller?
           </span>

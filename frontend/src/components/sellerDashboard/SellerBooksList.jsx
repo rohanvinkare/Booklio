@@ -5,7 +5,7 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { FaBook } from "react-icons/fa";
+import { FaBook, FaBookOpen, FaStoreAlt, FaStoreAltSlash, FaUpload } from "react-icons/fa";
 import { IoCloseCircle } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,7 @@ const SellerBooksList = () => {
         }/book/api/v1/books-by-seller/${sellerId}`
       );
       const data = await response.json();
-
+      
       if (data.success && Array.isArray(data.books)) {
         setBooks(data.books);
       } else {
@@ -48,19 +48,16 @@ const SellerBooksList = () => {
   };
 
 
-
   useEffect(() => {
     if (!sellerId) return;
     fetchBooks();
   }, [sellerId, fetchBooks]);
 
 
-
-
   // Function to confirm and remove a book
   const confirmRemoveBook = async (isbn) => {
     toast((t) => (
-      <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-md">
+      <div className="flex flex-col items-center bg-white rounded-lg">
         <span className="text-gray-800 font-semibold text-lg mb-4">
           Are you sure you want to delete this book?
         </span>
@@ -85,7 +82,6 @@ const SellerBooksList = () => {
     ));
   };
 
-  //==============================  To remove the Book 
   const removeBook = async (isbn) => {
     const token = localStorage.getItem("accessToken");
     try {
@@ -131,20 +127,22 @@ const SellerBooksList = () => {
 
   const truncatedDescription = (description) => {
     const words = description.split(" ");
-    return words.length > 120
+    return words.length > 60
       ? words.slice(0, 120).join(" ") + "..."
       : description;
   };
 
 
   return (
-    <div className=" grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
       {books.length > 0 ? (
         books.map((book, index) => {
           const {
             data: { volumeInfo },
             spCluster,
           } = book;
+
+          console.log(books, "books")
 
           // Extract relevant data
           const title = volumeInfo?.title || "Untitled";
@@ -157,11 +155,13 @@ const SellerBooksList = () => {
             volumeInfo?.industryIdentifiers?.[0]?.identifier || "N/A";
           const publishedDate = volumeInfo?.publishedDate || "N/A";
           const publisher = volumeInfo?.publisher || "N/A";
+          const stock = spCluster[0]?.stock || "N/A";
+          const sellerPrice = spCluster[0]?.price || "N/A";
 
           // Find price for the current seller
-          const sellerPrice =
-            spCluster.find((cluster) => cluster.sellerId === sellerId)?.price ||
-            "N/A";
+          // const sellerPrice =
+          //   spCluster.find((cluster) => cluster.sellerId === sellerId)?.price ||
+          //   "N/A";
 
           return (
             <Dialog
@@ -178,19 +178,23 @@ const SellerBooksList = () => {
                     ₹{sellerPrice}
                   </div>
                 </div>
-                <CardHeader>
+                <CardHeader className="px-4 py-2 flex justify-center items-center">
                   <img
                     src={imageUrl}
                     alt={title}
                     className="w-full h-64 object-contain"
                   />
+                  <div className="flex justify-center items-center gap-2">
+                    <FaStoreAlt /> 
+                    <span className="rounded-xl text-blue-300">Stock: {stock} books available</span>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-4">
-                  <h2 className="text-xl font-semibold text-gray-800">
+                <CardContent className="px-4 pb-2">
+                  <h2 className="text-xl font-semibold text-white">
                     {title}
                   </h2>
-                  <p className="text-sm text-gray-600">{authors}</p>
-                  <p className="mt-2 text-sm text-gray-500 line-clamp-3">
+                  <p className="text-sm text-white">{authors}</p>
+                  <p className="mt-2 text-sm text-white line-clamp-3">
                     {description}
                   </p>
                 </CardContent>
@@ -203,7 +207,7 @@ const SellerBooksList = () => {
                   </CardFooter>
                 </DialogTrigger>
               </Card>
-              <DialogContent className="max-w-3xl p-6 bg-white rounded-lg shadow-lg">
+              <DialogContent className="max-w-3xl p-6 bg-[#232323] text-white rounded-lg shadow-lg">
                 <DialogHeader>
                   <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
@@ -220,12 +224,14 @@ const SellerBooksList = () => {
                     <p>
                       <strong>Description:</strong> {truncatedDescription(description)}
                     </p>
-
                     <p>
-                      <strong>Price:</strong> ₹{sellerPrice}
+                      <strong>Price:</strong> <b className="text-green-500"> ₹{sellerPrice}</b>
                     </p>
                     <p>
-                      <strong>ISBN:</strong> {book.isbn}
+                      <strong>Stock:</strong> <b className="text-blue-500">{stock} books available</b>
+                    </p>
+                    <p>
+                      <strong>ISBN:</strong> <b>{isbn} </b>
                     </p>
                     <p>
                       <strong>Published Date:</strong> {publishedDate}
@@ -237,8 +243,7 @@ const SellerBooksList = () => {
                 </DialogDescription>
                 <DialogFooter className="flex justify-end">
                   <Button
-                    variant="outline"
-                    className="bg-red-500 text-white"
+                    className="bg-red-500 text-black"
                     onClick={() => confirmRemoveBook(book.isbn)} // Confirmation before delete
                   >
                     Remove <IoCloseCircle className="ml-2" />

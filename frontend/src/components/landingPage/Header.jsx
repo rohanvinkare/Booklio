@@ -26,23 +26,11 @@ export const Header = () => {
     return (
         <>
             <header id="header" className="bg-backgroundContrast text-white relative z-20">
-                <Container className="flex justify-between items-center min-h-[--header-row-height]">
-                    <div>
-                        <a href="/" className="h-[--header-row-height] text-xl flex items-center -ml-6 px-6">
-                            📚<span className="sr-only">Back to homepage</span>
-                        </a>
-                    </div>
-                    {/* <div className="gap-2">
-                        <a href="/" className="font-helvetica px-2">Home</a>
-                        <a href="#services" className="font-helvetica px-2">Services</a>
-                        <a href="#team" className="font-helvetica px-2">Team</a>
-                        <a href="#faq" className="font-helvetica px-2">FAQ's</a>
-                    </div> */}
-                </Container>
-            </header>
             <div className="sticky top-0 z-20 bg-backgroundContrast text-white">
                 <Container className="flex justify-between items-center min-h-[--header-row-height]">
-                    <p className="font-unbounded text-xl font-semibold">Booklio</p>
+                    <a href="/">
+                        <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p>
+                    </a>
                     {isLoggedIn ? (
                         <a className="text-xs px-2 py-1 rounded cursor-pointer bg-red-600" onClick={handleLogout}>Logout</a>
                     ) : (
@@ -50,6 +38,7 @@ export const Header = () => {
                     )}
                 </Container>
             </div>
+            </header>
         </>
     );
 };

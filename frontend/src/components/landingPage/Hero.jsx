@@ -15,7 +15,7 @@ export const Hero = () => {
     const opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0])
 
     return (
-        <div className="relative bg-background text-white">
+        <div className="relative bg-backgroundContrast text-white">
             <motion.div
                 style={{ opacity }}
                 className="absolute -top-[var(--header-height)] left-0 w-full h-[200vh]"

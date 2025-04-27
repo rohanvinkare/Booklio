@@ -8,7 +8,7 @@ const Card = ({ image }) => {
 
   return (
     <motion.div
-      className="relative h-[300px] min-w-[200px] bg-slate-400 flex justify-center items-center"
+      className="relative h-[300px] min-w-[200px] bg-backgroundContrast flex justify-center items-center"
       onHoverStart={() => setShowOverlay(true)}
       onHoverEnd={() => setShowOverlay(false)}
     >
@@ -21,7 +21,7 @@ const Card = ({ image }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <div className="absolute bg-black pointer-events-none opacity-50 h-full w-full" />
+              <div className="absolute bg-backgroundContrast pointer-events-none opacity-50 h-full w-full" />
               <motion.h1
                 className="bg-white font-semibold text-sm z-10 px-2 py-2 rounded-full flex items-center gap-[0.5ch] hover:opacity-75 pointer-events-none"
                 initial={{ y: 10 }}

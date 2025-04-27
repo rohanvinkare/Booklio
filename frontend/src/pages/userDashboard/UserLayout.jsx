@@ -51,14 +51,14 @@ const UserLayout = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-gray-500">
+      <div className="flex justify-center items-center h-screen text-white">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-900">
+    <div className="flex flex-col min-h-screen bg-backgroundContrast text-white">
       <Navbar userData={userData} />
       <div className="flex-1 p-6">
         <Outlet context={userData} />

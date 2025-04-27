@@ -29,6 +29,7 @@ const AddBook = () => {
       token: `Bearer ${token}`,
       isbn: data.isbn,
       price: data.price,
+      stock: data.stock
     };
 
     try {
@@ -60,11 +61,11 @@ const AddBook = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-md rounded-lg p-6 mt-8">
+    <div className="max-w-md mx-auto bg-[#232323] shadow-md rounded-lg p-6 mt-8">
       <h2 className="text-2xl font-semibold text-center mb-4">Add a New Book</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="isbn">
+          <label className="block text-white mb-2" htmlFor="isbn">
             ISBN:
           </label>
           <input
@@ -77,14 +78,14 @@ const AddBook = () => {
                 message: "ISBN must be exactly 10 digits",
               },
             })}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter ISBN"
           />
           {errors.isbn && <p className="text-sm text-red-500">{errors.isbn.message}</p>}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2" htmlFor="price">
+          <label className="block text-white mb-2" htmlFor="price">
             Price (₹):
           </label>
           <input
@@ -94,10 +95,27 @@ const AddBook = () => {
               required: "Price is required",
               valueAsNumber: true,
             })}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter Price"
           />
           {errors.price && <p className="text-sm text-red-500">{errors.price.message}</p>}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-white mb-2" htmlFor="stock">
+            Stock :
+          </label>
+          <input
+            type="number"
+            id="stock"
+            {...register("stock", {
+              required: "stock is required",
+              valueAsNumber: true,
+            })}
+            className="w-full px-3 py-2 text-black border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Available Stock"
+          />
+          {errors.price && <p className="text-sm text-red-500">{errors.stock.message}</p>}
         </div>
 
         <button

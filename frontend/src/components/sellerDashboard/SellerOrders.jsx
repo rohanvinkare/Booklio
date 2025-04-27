@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSellerOrders } from "../../store/sellerSlice";
 import {
   Table,
   TableHeader,
@@ -18,91 +19,67 @@ import {
 } from "@/components/ui/dialog";
 
 const SellerOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
   const { sellerData } = useOutletContext();
   const sellerId = sellerData?.sellerId;
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/order/seller-order-list/${sellerId}`
-        );
-        if (
-          response.data.success &&
-          Array.isArray(response.data.data[0]?.orders)
-        ) {
-          setOrders(response.data.data[0].orders);
-        } else {
-          setError("No Orders Available");
-        }
-      } catch (err) {
-        setError("Error fetching orders");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const dispatch = useDispatch();
 
-    if (sellerId) fetchOrders();
-  }, [sellerId]);
+  // Get orders from Redux
+  const { sellerOrders, loading, error } = useSelector((state) => state.seller);
+
+  console.log(sellerOrders, "sellerOrders")
+
+  useEffect(() => {
+    if (sellerId) {
+      dispatch(fetchSellerOrders(sellerId));
+    }
+  }, [sellerId, dispatch]);
 
   if (loading)
     return <div className="text-center p-6 text-lg">Loading orders...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
-  if (orders.length === 0)
+  if (!sellerOrders || sellerOrders.length === 0)
     return <div className="text-center">No orders available.</div>;
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-semibold mb-6 text-gray-800">Order List</h2>
+    <div className="p-6 bg-[#232323] rounded-lg shadow-md">
       <Table className="min-w-full border-collapse">
-        <TableHeader className="bg-gray-100">
+        <TableHeader className="bg-gray-700">
           <TableRow>
             <TableHead className="py-4 px-6 text-left">Order ID</TableHead>
             <TableHead className="py-4 px-6 text-left">ISBN</TableHead>
-            <TableHead className="py-4 px-6 text-left">Price (₹)</TableHead>
+            <TableHead className="py-4 px-6 text-left">Total Price</TableHead>
+            <TableHead className="py-4 px-6 text-left">Quantity</TableHead>
             <TableHead className="py-4 px-6 text-left">Status</TableHead>
             <TableHead className="py-4 px-6 text-left">Customer</TableHead>
-            <TableHead className="py-4 px-6 text-left">
-              Shipping Address
-            </TableHead>
+            <TableHead className="py-4 px-6 text-left">Shipping Address</TableHead>
             <TableHead className="py-4 px-6 text-left">Order Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order) => (
+          {sellerOrders.map((order) => (
             <TableRow
               key={order.orderId}
-              className="hover:bg-gray-50 transition-colors cursor-pointer rounded-lg"
+              className="hover:bg-gray-600 transition-colors cursor-pointer rounded-lg"
               onClick={() => setSelectedOrder(order)}
             >
               <TableCell className="py-3 px-6">{order.orderId}</TableCell>
               <TableCell className="py-3 px-6">{order.isbn}</TableCell>
               <TableCell className="py-3 px-6 font-semibold">
-                {order.price}
+                ₹ {order.price}
               </TableCell>
-              <TableCell
-              className="py-3 px-6 text-green-500 font-semibold"
-                // className={`py-3 px-6 capitalize ${
-                //   order.status === "completed"
-                //     ? "text-green-600"
-                //     : "text-yellow-600"
-                // }`}
-              >
-                {/* {order.status} */}
-                Placed
+              <TableCell className="py-3 px-6 font-semibold">
+                {order.quantity}
+              </TableCell>
+              <TableCell className={`py-3 px-6 text-${order.status == "pending" ? "orange" : order.status == "shipped" ? "purple" : order.status == "delivered" ? "blue" : order.status == "cancelled" ? "red" : order.status == "completed" ? "green" : ""}-500 font-semibold`}>
+                {order.status}
               </TableCell>
               <TableCell className="py-3 px-6">
                 <div className="font-medium">{order.user.name}</div>
-                <div className="text-sm text-gray-500">{order.user.mobile}</div>
+                <div className="text-sm text-white">{order.user.mobile}</div>
               </TableCell>
-              <TableCell className="py-3 px-6 text-gray-700">
+              <TableCell className="py-3 px-6 text-white">
                 {order.shippingAddress.street}, {order.shippingAddress.city},{" "}
                 {order.shippingAddress.state}, {order.shippingAddress.zipCode}
               </TableCell>
@@ -114,58 +91,61 @@ const SellerOrders = () => {
         </TableBody>
       </Table>
 
-      {/* Enhanced Popup Dialog */}
       {selectedOrder && (
         <Dialog
           open={!!selectedOrder}
           onOpenChange={() => setSelectedOrder(null)}
         >
-          <DialogContent className="max-w-lg p-8 rounded-lg shadow-xl bg-white">
+          <DialogContent className="max-w-lg p-8 rounded-lg shadow-xl bg-[#232323] text-white">
             <DialogHeader>
-              <DialogTitle className="text-3xl font-bold mb-4 text-gray-900">
+              <div className="absolute z-10 -top-1 -left-2 bg-blue-500 text-white text-sm font-bold py-1 px-4 shadow-md before:z-5 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:border-l-8 before:border-l-transparent before:border-t-8 before:border-t-blue-700">
+                {selectedOrder.status}
+              </div>
+              <DialogTitle className="text-3xl font-bold mb-4">
                 Order Details
               </DialogTitle>
-              <DialogDescription className="text-gray-600 mb-6">
-                Details for Order ID: <strong>{selectedOrder.orderId}</strong>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 text-gray-800">
               <p>
-                <strong className="text-gray-600">ISBN:</strong>{" "}
+                <strong className="text-gray-100 text-sm">Details for Order ID:</strong>{" "}
+                {selectedOrder.orderId}
+              </p>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p>
+                <strong className="text-gray-100">ISBN:</strong>{" "}
                 {selectedOrder.isbn}
               </p>
               <p>
-                <strong className="text-gray-600">Price:</strong>{" "}
-                <span className="text-lg font-semibold">
-                  ₹{selectedOrder.price}
-                </span>
+                <strong className="text-gray-100">Book:</strong>{" "}
+                {selectedOrder.bookInfo.data.volumeInfo.title || "N/A"}
               </p>
               <p>
-                <strong className="text-gray-600">Status:</strong>{" "}
-                <span
-                  className="text-green-500 font-semibold"
-                >Placed
-                </span>
-                {/* <span
-                  className={`capitalize ${
-                    selectedOrder.status === "completed"
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                  }`}
-                >
-                  {selectedOrder.status}
-                </span> */}
-              </p>
-              <p>
-                <strong className="text-gray-600">Customer:</strong>{" "}
+                <strong className="text-gray-100">Customer:</strong>{" "}
                 {selectedOrder.user.name}
               </p>
               <p>
-                <strong className="text-gray-600">Mobile:</strong>{" "}
+                <strong className="text-gray-100">Mobile:</strong>{" "}
                 {selectedOrder.user.mobile}
               </p>
               <p>
-                <strong className="text-gray-600">Shipping Address:</strong>
+                <strong className="text-orange-500">Price of one book:</strong>{" "}
+                <span className="text-orange-500 font-semibold">
+                  ₹ {(selectedOrder.price) / selectedOrder.quantity}
+                </span>
+              </p>
+              <p>
+                <strong className="text-purple-400">Quantity:</strong>{" "}
+                <span className="text-purple-400 font-semibold">
+                  x{selectedOrder.quantity}
+                </span>
+              </p>
+              <p>
+                <strong className="text-green-500">Payable Amount:</strong>{" "}
+                <span className="text-green-500 font-semibold">
+                  ₹ {selectedOrder.price}
+                </span>
+              </p>
+              <p>
+                <strong className="text-gray-100">Shipping Address:</strong>
                 <br />
                 {selectedOrder.shippingAddress.street},{" "}
                 {selectedOrder.shippingAddress.city},{" "}
@@ -173,7 +153,7 @@ const SellerOrders = () => {
                 {selectedOrder.shippingAddress.zipCode}
               </p>
               <p>
-                <strong className="text-gray-600">Order Date:</strong>{" "}
+                <strong className="text-gray-100">Order Date:</strong>{" "}
                 {new Date(selectedOrder.createdAt).toLocaleDateString()}
               </p>
             </div>

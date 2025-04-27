@@ -25,12 +25,12 @@ export default function ZoomOutCarousel() {
     const scale = useTransform(scrollYProgress, [0.3, 0.5, 0.66], [maximumScale * 1.1, maximumScale, 1]);
 
     const postersOpacity = useTransform(scrollYProgress, [0.64, 0.66], [0, 1]);
-    const posterTranslateXLeft = useTransform(scrollYProgress, [0.64, 0.66], [-20, 0]);
-    const posterTranslateXRight = useTransform(scrollYProgress, [0.64, 0.66], [20, 0]);
+    const posterTranslateXLeft = useTransform(scrollYProgress, [0.64, 0.66], [-240, 0]);
+    const posterTranslateXRight = useTransform(scrollYProgress, [0.64, 0.66], [240, 0]);
 
     return (
-        <div ref={carouselWrapperRef} className="mt-[-100vh] overflow-clip h-[300vh]">
-            <div className="h-screen sticky top-0 flex items-center">
+        <div ref={carouselWrapperRef} className="mt-[-180vh] overflow-clip h-[300vh]">
+            <div className="h-screen sticky top-[320vh] flex items-center">
                 <div className="flex relative gap-5 left-1/2 -translate-x-1/2">
                     <motion.div
                         style={{ opacity: postersOpacity, x: posterTranslateXLeft }}

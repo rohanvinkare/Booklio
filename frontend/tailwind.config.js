@@ -3,9 +3,55 @@ export const content = ["./src/**/*.{html,js,jsx}"];
 export const theme = {
   extend: {
     colors: {
-      background: "#000000",
-      backgroundContrast: "#111111",
-      textBlack: "#1d1d1f",
+      // Base background colors
+      background: "#121212", // Main background - deep dark gray
+      backgroundContrast: "#1E1E1E", // Slightly lighter background for cards/sections
+      backgroundHover: "#2A2A2A", // Hover state background
+      
+      // Primary colors
+      primary: {
+        DEFAULT: "#7C4DFF", // Main primary color - royal purple
+        light: "#9E7BFF", // Lighter shade for hover states
+        dark: "#5C35CC", // Darker shade for active states
+      },
+      
+      // Accent colors
+      accent: {
+        gold: "#FFD700", // Gold for premium features/highlights
+        copper: "#B87333", // Copper for vintage/classic book themes
+      },
+      
+      // Text colors
+      text: {
+        primary: "#FFFFFF", // Primary text
+        secondary: "#B3B3B3", // Secondary text
+        tertiary: "#808080", // Tertiary text for less emphasis
+        disabled: "#4D4D4D", // Disabled text
+      },
+      
+      // Surface colors (for cards, modals, etc.)
+      surface: {
+        DEFAULT: "#262626", // Default surface color
+        light: "#2E2E2E", // Lighter surface
+        dark: "#1A1A1A", // Darker surface
+      },
+      
+      // Border colors
+      border: {
+        DEFAULT: "#333333", // Default border color
+        light: "#404040", // Lighter border
+        focus: "#7C4DFF", // Border color for focus states
+      },
+      
+      // Status colors
+      status: {
+        success: "#4CAF50", // Success state
+        error: "#FF5252", // Error state
+        warning: "#FFC107", // Warning state
+        info: "#2196F3", // Info state
+      },
+      
+      // Keep the white color for specific cases
       white: "#ffffff",
     },
     keyframes: {
