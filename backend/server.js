@@ -1,9 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db-config.js");
+const { connectRedis } = require('./cache/redis_config.js');
 
 const app = express();
 connectDB();
+
+// Connecting to Redis
+connectRedis();
+
 
 app.set("view engine", "ejs");
 app.set("views", "./views");

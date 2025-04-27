@@ -3,7 +3,9 @@ const Book = require("../../models/books/books-model");
 const { validationResult } = require("express-validator");
 const Seller = require("../../models/seller/seller-model");
 const Order = require("../../models/orders/orders-model");
-const { getCache, setCache, delCache } = require("../../cache/node-cache");
+const { getCache, setCache, delCache } = require("../../cache/redis_config");
+
+
 
 /**
  * @swagger
@@ -112,7 +114,7 @@ const addBookGoogleAPI = async (req, res) => {
 
         // Deleting all cache for consistency
         delCache("all_genre_books");
-        delCache(sellerId);
+        delCache(`${sellerId}:sellerStockBook:books`);   
 
         return res.status(200).json({
           success: true,
@@ -151,7 +153,7 @@ const addBookGoogleAPI = async (req, res) => {
 
     // Deleting all cache for consistency
     delCache("all_genre_books");
-    delCache(sellerId);
+    delCache(`${sellerId}:sellerStockBook:books`); 
 
     // Respond with success message
     return res.status(200).json({
@@ -358,7 +360,7 @@ const removeSellerFromBook = async (req, res) => {
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
-      delCache(sellerId);
+      delCache(`${sellerId}:sellerStockBook:books`); 
 
       return res.status(200).json({
         success: true,
@@ -370,7 +372,7 @@ const removeSellerFromBook = async (req, res) => {
 
       // Deleting all cache for consistency
       delCache("all_genre_books");
-      delCache(sellerId);
+      delCache(`${sellerId}:sellerStockBook:books`); 
 
       return res.status(200).json({
         success: true,
@@ -411,18 +413,72 @@ const removeSellerFromBook = async (req, res) => {
  *         description: Server error.
  */
 
+// const sellerStockBook = async (req, res) => {
+//   try {
+//     const sellerId = req.cred.credDecode.sellerId;
+
+//     const cacheKey = sellerId;
+//     // Check if the data is already cached
+//     const cachedData = getCache(cacheKey);
+//     if (cachedData) {
+//       return res.status(200).json({
+//         success: true,
+//         msg: `All Books from Seller ${sellerId}'s Stock.from cache`,
+//         booksData: cachedData,
+//       });
+//     }
+
+//     // Check if the seller exists
+//     const sellerExists = await Seller.findOne({ sellerId: sellerId });
+//     if (!sellerExists) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: `Seller with ID: ${sellerId} does not exist!`,
+//       });
+//     }
+
+//     // Find books that have the seller in the spCluster array
+//     const booksData = await Book.find({ "spCluster.sellerId": sellerId });
+
+//     // Check if any books were found for the seller
+//     if (booksData.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         msg: `No books found for Seller: ${sellerId}.`,
+//       });
+//     }
+
+//     // Store the processed data in cache
+//     setCache(cacheKey, booksData);
+
+//     // Respond with success and the list of books in stock for the seller
+//     return res.status(200).json({
+//       success: true,
+//       msg: `All Books from Seller ${sellerId}'s Stock.`,
+//       booksData: booksData,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({
+//       success: false,
+//       msg: error.message || "An error occurred while fetching the stock.",
+//     });
+//   }
+// };
+
 const sellerStockBook = async (req, res) => {
   try {
     const sellerId = req.cred.credDecode.sellerId;
 
-    const cacheKey = sellerId;
+    const cacheKey = `${sellerId}:sellerStockBook:books`;;
+
     // Check if the data is already cached
-    const cachedData = getCache(cacheKey);
+    const cachedData = await getCache(cacheKey); // Ensure this is awaited
     if (cachedData) {
       return res.status(200).json({
         success: true,
-        msg: `All Books from Seller ${sellerId}'s Stock.from cache`,
-        booksData: cachedData,
+        msg: `All Books from Seller ${sellerId}'s Stock from cache`,
+        booksData: JSON.parse(cachedData), // Parse the cached JSON data
       });
     }
 
@@ -447,7 +503,7 @@ const sellerStockBook = async (req, res) => {
     }
 
     // Store the processed data in cache
-    setCache(cacheKey, booksData);
+    await setCache(cacheKey, booksData);  // Ensure this is awaited
 
     // Respond with success and the list of books in stock for the seller
     return res.status(200).json({
@@ -463,6 +519,7 @@ const sellerStockBook = async (req, res) => {
     });
   }
 };
+
 
 /**
  * Get all book Data from the Db  w.r.t there Genre APi
@@ -485,17 +542,66 @@ const sellerStockBook = async (req, res) => {
  *         description: Server error.
  */
 
+// const bookAllGenreGoogleAPI = async (req, res) => {
+//   try {
+//     const cacheKey = "all_genre_books";
+//     // Check if the data is already cached
+//     const cachedData = getCache(cacheKey);
+//     if (cachedData) {
+//       return res.status(200).json({
+//         success: true,
+//         msg: "Books grouped by genre fetched from cache",
+//         bookData: cachedData,
+//       });
+//     }
+
+//     const genres = {};
+
+//     const books = await Book.find({}, { _id: 0 });
+
+//     // Iterate through each book and categorize them based on genres
+//     books.forEach((book) => {
+//       const { genre } = book;
+
+//       // Iterate through each genre in the genre array
+//       genre.forEach((g) => {
+//         const lowerGenre = g.toLowerCase();
+
+//         if (!genres[lowerGenre]) {
+//           genres[lowerGenre] = [];
+//         }
+//         genres[lowerGenre].push(book);
+//       });
+//     });
+
+//     // Store the processed data in cache
+//     setCache(cacheKey, genres);
+
+//     // Return success response with organized genre data
+//     return res.status(200).json({
+//       success: true,
+//       msg: "Books grouped by genre successfully",
+//       bookData: genres,
+//     });
+//   } catch (error) {
+//     return res.status(400).json({
+//       success: false,
+//       msg: error.message || "An error occurred",
+//     });
+//   }
+// };
 
 const bookAllGenreGoogleAPI = async (req, res) => {
   try {
     const cacheKey = "all_genre_books";
+
     // Check if the data is already cached
-    const cachedData = getCache(cacheKey);
+    const cachedData = await getCache(cacheKey); // Await Redis cache get
     if (cachedData) {
       return res.status(200).json({
         success: true,
         msg: "Books grouped by genre fetched from cache",
-        bookData: cachedData,
+        bookData: JSON.parse(cachedData), // Parse cached data
       });
     }
 
@@ -519,7 +625,7 @@ const bookAllGenreGoogleAPI = async (req, res) => {
     });
 
     // Store the processed data in cache
-    setCache(cacheKey, genres);
+    await setCache(cacheKey, genres);  // Await Redis cache set
 
     // Return success response with organized genre data
     return res.status(200).json({
@@ -534,6 +640,7 @@ const bookAllGenreGoogleAPI = async (req, res) => {
     });
   }
 };
+
 
 /**
  * Get all book Data from the Db Sorted by the specific  genre
