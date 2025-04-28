@@ -14,7 +14,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-60 bg-gray-800 text-white h-screen shadow-lg">
+    <aside className="hidden md:flex flex-col w-64 bg-gray-800 text-white h-screen shadow-lg fixed left-0 top-0">
       <div className="p-6 text-xl font-bold">Admin Dashboard</div>
       <nav className="flex-1 mt-4">
         <ul className="space-y-2">

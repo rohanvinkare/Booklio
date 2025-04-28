@@ -65,15 +65,11 @@ const SellerHome = () => {
     return acc;
   }, {});
 
-  console.log("Redux Store - Books:", books);
-
   // Get total books for percentage calculation
   const totalBooks = books.length || 1;
 
   // Get orders from Redux
   const { sellerOrders, loading, error, mostOrderedBook } = useSelector((state) => state.seller);
-
-  console.log("Most Ordered Book:", mostOrderedBook);
 
   useEffect(() => {
     if (sellerId) {
@@ -81,49 +77,51 @@ const SellerHome = () => {
     }
   }, [sellerId, dispatch]);
 
-  // Find the book that is ordered maximum times based on ISBN
-  const findBestSellerBook = () => {
-    if (!sellerOrders || sellerOrders.length === 0) {
-      return { title: "N/A", isbn: null };
+  useEffect(() => {
+    if (sellerId) {
+      dispatch(fetchSellerBooks(sellerId));
     }
-
-    // Count occurrences of each ISBN
-    const isbnCount = {};
-    sellerOrders.forEach(order => {
-      const isbn = order.isbn;
-      isbnCount[isbn] = (isbnCount[isbn] || 0) + 1;
-    });
-
-    // Find ISBN with highest count
-    let maxCount = 0;
-    let bestSellerISBN = null;
-
-    for (const isbn in isbnCount) {
-      if (isbnCount[isbn] > maxCount) {
-        maxCount = isbnCount[isbn];
-        bestSellerISBN = isbn;
-      }
-    }
-
-    // Find the corresponding book title
-    if (bestSellerISBN) {
-      const bestSellerOrder = sellerOrders.find(order => order.isbn === bestSellerISBN);
-      if (bestSellerOrder?.bookInfo?.data?.volumeInfo?.title) {
-        return { 
-          title: bestSellerOrder.bookInfo.data.volumeInfo.title,
-          isbn: bestSellerISBN
-        };
-      }
-    }
-
-    return { title: "N/A", isbn: null };
-  };
-
-  const bestSeller = findBestSellerBook();
+  }, [sellerId, dispatch]);
 
   const totalRevenue = sellerOrders?.reduce((sum, order) => sum + Number(order.price), 0) || 0;
   const monthlyRevenue = sellerOrders?.reduce((sum, order) => sum + Number(order.price) / 12, 0) || 0;
   const totalProfit = sellerOrders?.reduce((sum, order) => sum + Number(order.price) * 0.04, 0) || 0;
+
+  // Calculate book-wise revenue and sales
+  const bookStats = sellerOrders?.reduce((acc, order) => {
+    const isbn = order.isbn;
+    const bookTitle = order.bookInfo?.data?.volumeInfo?.title || "Unknown Book";
+    const price = Number(order.price) || 0;
+
+    if (!acc[isbn]) {
+      acc[isbn] = {
+        title: bookTitle,
+        totalRevenue: 0,
+        copiesSold: 0,
+        averagePrice: 0
+      };
+    }
+
+    acc[isbn].totalRevenue += price;
+    acc[isbn].copiesSold += 1;
+    acc[isbn].averagePrice = acc[isbn].totalRevenue / acc[isbn].copiesSold;
+
+    return acc;
+  }, {});
+
+  // Convert to array and sort by revenue
+  const sortedBookStats = Object.entries(bookStats || {})
+    .map(([isbn, stats]) => ({
+      isbn,
+      ...stats
+    }))
+    .sort((a, b) => b.totalRevenue - a.totalRevenue);
+
+  const findBestSellerBook = () => {
+    return sortedBookStats.length > 0 ? sortedBookStats[0] : { title: "N/A", isbn: null };
+  };
+
+  const bestSeller = findBestSellerBook();
 
   const stats = [
     {
@@ -158,7 +156,7 @@ const SellerHome = () => {
     },
     {
       title: "Best Seller",
-      value: bestSeller.title, // Use the calculated best seller title
+      value: bestSeller.title,
       icon: <FaShoppingCart />,
       iconBg: "from-indigo-400 to-indigo-600",
     },
@@ -217,30 +215,26 @@ const SellerHome = () => {
     },
   };
 
-
-  useEffect(() => {
-    if (sellerId) {
-      dispatch(fetchSellerBooks(sellerId));
-    }
-  }, [sellerId, dispatch]);
-
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <Card
             key={index}
-            className="bg-[#232323] border-none shadow-md hover:shadow-lg transition"
+            className="bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a] border-none shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
           >
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-400">{stat.title}</p>
-                <p className="text-2xl font-semibold">{stat.value}</p>
-              </div>
-              <div className={`flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${stat.iconBg}`}>
-                {stat.icon}
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-400 font-medium">{stat.title}</p>
+                  <p className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    {stat.value}
+                  </p>
+                </div>
+                <div className={`flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${stat.iconBg} shadow-lg`}>
+                  <span className="text-xl text-white">{stat.icon}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -249,65 +243,253 @@ const SellerHome = () => {
 
       {/* Main Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* book genres chart */}
-        <Card className="bg-[#232323] border-none shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between px-6">
-            <div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-400">Revenue Charts</span>
-              </div>
-              <CardTitle className="text-2xl mt-1">₹{totalRevenue}</CardTitle>
-              <div className="flex items-center mt-1 text-xs">
-                <span className="text-green-400">{((totalProfit/totalRevenue)*100).toFixed(2)}%</span>
-                <span className="ml-2 text-gray-400">Total Profit</span>
-              </div>
-              <div className="flex items-center mt-2">
-                <div className="w-3 h-3 rounded-full bg-green-400 mr-2"></div>
-                <span className="text-xs text-gray-400">On track</span>
-              </div>
-            </div>
-            <div className="bg-[#FF6B4A] text-white px-2 py-1 rounded-md text-xs font-medium">
-            {((monthlyRevenue/totalRevenue)*100).toFixed(2)}%
-            </div>
+        <Card className="bg-[#232323] border-none shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-white">Revenue Overview</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-52">
-              <Line data={revenueChartData} options={revenueChartOptions} />
-            </div>
+          <CardContent className="h-[400px]">
+            <Line data={revenueChartData} options={revenueChartOptions} />
           </CardContent>
         </Card>
 
-        {/* Project Completion */}
-        <Card className="bg-[#232323] border-none shadow-md">
+        <Card className="bg-[#232323] border-none shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl">Book Genres</CardTitle>
+            <CardTitle className="text-xl font-semibold text-white">Genre Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {Object.entries(genreCounts).map(([genre, count], index) => (
-              <div key={index} className="space-y-1">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-400">{genre}</span>
-                  <span className="text-gray-400">{count} books</span>
-                </div>
-                <div className="w-full h-2 bg-gray-700 rounded-full">
-                  <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full"
-                    style={{ width: `${(count / totalBooks) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-
-            <div className="pt-4 flex">
-              {Array.from({ length: 11 }).map((_, i) => (
-                <div key={i} className="flex-1 text-center">
-                  <span className="text-xs text-gray-500">{i * 10}%</span>
-                </div>
-              ))}
-            </div>
+          <CardContent className="h-[400px]">
+            <Bar
+              data={{
+                labels: Object.keys(genreCounts),
+                datasets: [
+                  {
+                    label: "Books by Genre",
+                    data: Object.values(genreCounts),
+                    backgroundColor: "rgba(255, 107, 74, 0.6)",
+                    borderColor: "#FF6B4A",
+                    borderWidth: 1,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: "top",
+                    labels: {
+                      color: "#fff",
+                    },
+                  },
+                },
+                scales: {
+                  x: {
+                    ticks: { color: "#aaa" },
+                    grid: { color: "rgba(255, 255, 255, 0.1)" },
+                  },
+                  y: {
+                    ticks: { color: "#aaa" },
+                    grid: { color: "rgba(255, 255, 255, 0.1)" },
+                  },
+                },
+              }}
+            />
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Orders Section */}
+      <Card className="bg-[#232323] border-none shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-white">Recent Orders</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <th className="text-left py-3 px-4 text-gray-400">Book</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Customer</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Price</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Quantity</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Date</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sellerOrders?.slice(0, 5).map((order, index) => (
+                  <tr key={index} className="border-b border-gray-700 hover:bg-gray-800/50">
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{order.bookInfo?.data?.volumeInfo?.title || "N/A"}</span>
+                        <span className="text-sm text-gray-400">ISBN: {order.isbn}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex flex-col">
+                        <span className="font-medium">{order.user?.name || "N/A"}</span>
+                        <span className="text-sm text-gray-400">{order.user?.mobile || "N/A"}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex flex-col">
+                        <span className="font-medium">₹{order.price}</span>
+                        <span className="text-sm text-gray-400">₹{(order.price / order.quantity).toFixed(2)} each</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <span className="font-medium">{order.quantity}</span>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex flex-col">
+                        <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                        <span className="text-sm text-gray-400">
+                          {new Date(order.createdAt).toLocaleTimeString()}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        order.status === "completed" 
+                          ? "bg-green-500/20 text-green-400"
+                          : order.status === "cancelled"
+                          ? "bg-red-500/20 text-red-400"
+                          : order.status === "shipped"
+                          ? "bg-blue-500/20 text-blue-400"
+                          : "bg-yellow-500/20 text-yellow-400"
+                      }`}>
+                        {order.status === "pending" ? "Placed" : order.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Book Revenue Analysis Section */}
+      <Card className="bg-[#232323] border-none shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-white">Book Revenue Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-700">
+                  <th className="text-left py-3 px-4 text-gray-400">Book Title</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Copies Sold</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Total Revenue</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Average Price</th>
+                  <th className="text-left py-3 px-4 text-gray-400">Performance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedBookStats.map((book, index) => (
+                  <tr key={book.isbn} className="border-b border-gray-700 hover:bg-gray-800/50">
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400">#{index + 1}</span>
+                        <span className="font-medium">{book.title}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-400">{book.copiesSold}</span>
+                        <span className="text-gray-400">copies</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-400">₹{book.totalRevenue.toFixed(2)}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="text-yellow-400">₹{book.averagePrice.toFixed(2)}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        {index === 0 ? (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                            Best Performer
+                          </span>
+                        ) : index === sortedBookStats.length - 1 ? (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">
+                            Lowest Revenue
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
+                            {((book.totalRevenue / sortedBookStats[0].totalRevenue) * 100).toFixed(1)}% of Best
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Book Sales Distribution Chart */}
+      <Card className="bg-[#232323] border-none shadow-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold text-white">Book Sales Distribution</CardTitle>
+        </CardHeader>
+        <CardContent className="h-[400px]">
+          <Bar
+            data={{
+              labels: sortedBookStats.map(book => book.title),
+              datasets: [
+                {
+                  label: "Copies Sold",
+                  data: sortedBookStats.map(book => book.copiesSold),
+                  backgroundColor: "rgba(74, 144, 226, 0.6)",
+                  borderColor: "#4A90E2",
+                  borderWidth: 1,
+                },
+                {
+                  label: "Revenue (₹)",
+                  data: sortedBookStats.map(book => book.totalRevenue),
+                  backgroundColor: "rgba(255, 107, 74, 0.6)",
+                  borderColor: "#FF6B4A",
+                  borderWidth: 1,
+                }
+              ],
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "top",
+                  labels: {
+                    color: "#fff",
+                  },
+                },
+              },
+              scales: {
+                x: {
+                  ticks: { 
+                    color: "#aaa",
+                    maxRotation: 45,
+                    minRotation: 45
+                  },
+                  grid: { color: "rgba(255, 255, 255, 0.1)" },
+                },
+                y: {
+                  ticks: { color: "#aaa" },
+                  grid: { color: "rgba(255, 255, 255, 0.1)" },
+                },
+              },
+            }}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 };

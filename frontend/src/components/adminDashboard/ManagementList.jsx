@@ -47,7 +47,7 @@ const ManagementList = () => {
   }, [dispatch]);
 
   if (!members || members.length === 0) {
-    return <div className="text-center p-8 text-xl">Loading...</div>;
+    return <div className="text-center p-8 text-xl text-gray-300">Loading...</div>;
   }
 
   return (
@@ -66,34 +66,34 @@ const ManagementList = () => {
         return (
           <Card
             key={uniqueKey}
-            className="transition-transform duration-300 transform shadow-slate-500 rounded-xl overflow-hidden w-full md:w-72 bg-white hover:bg-slate-50"
+            className="transition-transform duration-300 transform shadow-lg rounded-xl overflow-hidden w-full md:w-72 bg-gray-800 border-gray-700 hover:bg-gray-700 hover:shadow-gray-700/50 hover:-translate-y-1"
           >
             <CardHeader className="relative flex justify-center items-center p-4">
               <Avatar
                 style={{ backgroundColor: backgroundColor }} // Apply the random background color
                 size="lg"
-                className="h-36 w-36 font-gloock flex items-center justify-center text-white text-6xl font-semibold"
+                className="h-36 w-36 font-gloock flex items-center justify-center text-white text-6xl font-semibold ring-2 ring-gray-700"
               >
                 {firstLetter} {/* Display the first letter of the name */}
               </Avatar>
             </CardHeader>
             <CardContent className="p-4 space-y-2">
-              <h2 className="text-xl font-bold text-slate-800">{name}</h2>
-              <p className="text-sm font-semibold text-slate-600">{capitalize(role)}</p>
-              <p className="text-sm text-slate-600">{email}</p>
-              <span className="text-sm text-slate-600">
-                Mobile: <span className="text-slate-500">{mobile}</span>
+              <h2 className="text-xl font-bold text-gray-100">{name}</h2>
+              <p className="text-sm font-semibold text-gray-300">{capitalize(role)}</p>
+              <p className="text-sm text-gray-400">{email}</p>
+              <span className="text-sm text-gray-400">
+                Mobile: <span className="text-gray-300">{mobile}</span>
               </span>
             </CardContent>
 
             {/* {role === "admin" ? <p> </p>:
-            <CardFooter className="bg-slate-300 p-0 flex justify-around items-center w-full h-12">
+            <CardFooter className="bg-gray-700 p-0 flex justify-around items-center w-full h-12">
               <Button
-                className="hover:bg-blue-600 hover:text-white transition active:bg-blue-500 w-full group-hover:w-1/2 h-full">
+                className="hover:bg-indigo-600 hover:text-white transition active:bg-indigo-500 w-full group-hover:w-1/2 h-full text-gray-300">
                 Edit <MdModeEditOutline />
               </Button>
               <Button
-                className="hover:bg-red-600 hover:text-white transition active:bg-red-500 w-full group-hover:w-1/2 h-full">
+                className="hover:bg-red-600 hover:text-white transition active:bg-red-500 w-full group-hover:w-1/2 h-full text-gray-300">
                 Delete <MdDeleteForever />
               </Button>
             </CardFooter>

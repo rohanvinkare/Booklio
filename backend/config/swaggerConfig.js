@@ -14,6 +14,10 @@ const options = {
                 url: "http://localhost:3000",
                 description: "Base URL of the application",
             },
+            {
+                url: "http://13.203.251.217:3000",
+                description: "Production server (IP address)",
+            },
         ],
         components: {
             securitySchemes: {

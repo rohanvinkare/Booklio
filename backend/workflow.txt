@@ -108,6 +108,9 @@ req.images => has array of images
 
 
 User-password;- Password123!
+
+//=============== Admin
+
 admin-Password:- {
     "email": "rohanvinkare2022@gmail.com",
     "password":"Rohan123#XYZ"
@@ -123,3 +126,17 @@ admin-Password:- {
   "email": "aarav.sharma@example.com",
   "password": "Password123!"
 }
+
+
+
+
+//===============  Seller 
+
+
+{
+  "email": "rrvisualcraft@gmail.com",
+  "password": "Password123!"
+}
+
+
+
