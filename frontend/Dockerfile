@@ -3,6 +3,9 @@ FROM node:20 AS build
 
 WORKDIR /app
 
+# Set the environment variable to increase the memory limit
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 COPY package*.json ./
 
 RUN npm install
