@@ -214,7 +214,7 @@ jobs:
             rm -rf booklio-deploy
 
             # Clone using SSH and GitHub token for authentication
-            git clone https://$GITHUB_TOKEN@github.com/rohanvinkare/Booklio.git booklio-deploy
+            git clone https://$GH_TOKEN@github.com/rohanvinkare/Booklio.git booklio-deploy
             cd booklio-deploy
 
             # Pull the latest Docker images
