@@ -1,76 +1,148 @@
+# name: Build and Deploy Docker Images to EC2
+
+# on:
+#   push:
+#     branches:
+#       - main # Trigger deployment on pushing to the 'main' branch
+
+# jobs:
+#   build_and_push:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # Step 1: Checkout the code
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       # Step 2: Log in to Docker Hub
+#       - name: Log in to Docker Hub
+#         run: |
+#           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+#       # Step 3: Build Docker images for frontend and backend
+#       - name: Build frontend Docker image
+#         run: |
+#           docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
+
+#       - name: Build backend Docker image
+#         run: |
+#           docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
+
+#       # Step 4: Push Docker images to Docker Hub
+#       - name: Push frontend Docker image to Docker Hub
+#         run: |
+#           docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+
+#       - name: Push backend Docker image to Docker Hub
+#         run: |
+#           docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
+
+#   deploy_to_ec2:
+#     runs-on: ubuntu-latest
+#     needs: build_and_push
+
+#     steps:
+#       - name: Set up SSH for EC2 access
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+#           chmod 600 ~/.ssh/id_rsa
+#           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+#       - name: Deploy Docker containers on EC2 using docker-compose from GitHub repo
+#         env:
+#           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#           GITHUB_REPO: your-username/booklio # 🔁 Replace with actual GitHub repo
+#         run: |
+#           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+#             set -e
+
+#             # Clean old project directory if exists
+#             rm -rf booklio-deploy
+
+#             # Clone the latest repo with docker-compose.yml
+#             git clone https://github.com/rohanvinkare/Booklio.git booklio-deploy
+#             cd booklio-deploy
+
+#             # Pull the latest Docker images
+#             docker pull \$DOCKER_USERNAME/booklio-frontend:latest
+#             docker pull \$DOCKER_USERNAME/booklio-backend:latest
+
+#             # Optional: clean unused images/layers to save space
+#             docker system prune -af
+
+#             # Start containers with docker-compose
+#             docker-compose up -d
+#           EOF
+
+
 name: Build and Deploy Docker Images to EC2
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on pushing to the 'main' branch
+      - main
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Log in to Docker Hub
       - name: Log in to Docker Hub
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      # Step 3: Build Docker images for frontend and backend
       - name: Build frontend Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
 
       - name: Build backend Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
 
-      # Step 4: Push Docker images to Docker Hub
-      - name: Push frontend Docker image to Docker Hub
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+      - name: Push frontend Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
 
-      - name: Push backend Docker image to Docker Hub
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
+      - name: Push backend Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
   deploy_to_ec2:
     runs-on: ubuntu-latest
     needs: build_and_push
 
     steps:
-      - name: Set up SSH for EC2 access
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy Docker containers on EC2 using docker-compose from GitHub repo
+      - name: Deploy on EC2 with SSH Git clone
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          GITHUB_REPO: your-username/booklio  # 🔁 Replace with actual GitHub repo
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
 
-            # Clean old project directory if exists
+            # Setup deploy key for GitHub access
+            echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/booklio-deploy-key
+            chmod 600 ~/.ssh/booklio-deploy-key
+
+            # Ensure Git uses the SSH key
+            export GIT_SSH_COMMAND="ssh -i ~/.ssh/booklio-deploy-key -o StrictHostKeyChecking=no"
+
+            # Remove previous repo
             rm -rf booklio-deploy
 
-            # Clone the latest repo with docker-compose.yml
-            git clone https://github.com/rohanvinkare/Booklio.git booklio-deploy
+            # Clone using SSH
+            git clone git@github.com:rohanvinkare/Booklio.git booklio-deploy
             cd booklio-deploy
 
-            # Pull the latest Docker images
-            docker pull \$DOCKER_USERNAME/booklio-frontend:latest
-            docker pull \$DOCKER_USERNAME/booklio-backend:latest
+            # Pull images
+            docker pull $DOCKER_USERNAME/booklio-frontend:latest
+            docker pull $DOCKER_USERNAME/booklio-backend:latest
 
-            # Optional: clean unused images/layers to save space
             docker system prune -af
-
-            # Start containers with docker-compose
             docker-compose up -d
           EOF
