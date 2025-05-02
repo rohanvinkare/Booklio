@@ -146,7 +146,6 @@
 #             docker system prune -af
 #             docker-compose up -d
 #           EOF
-
 name: Build and Deploy Docker Images to EC2
 
 on:
@@ -191,7 +190,7 @@ jobs:
 
       - name: Deploy on EC2 with SSH Git clone
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: rohanv7  # Replace with your Docker username
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
@@ -209,6 +208,9 @@ jobs:
             docker pull $DOCKER_USERNAME/booklio-frontend:latest
             docker pull $DOCKER_USERNAME/booklio-backend:latest
 
+            # Clean up unused Docker resources
             docker system prune -af
+
+            # Start containers using Docker Compose
             docker-compose up -d
           EOF
