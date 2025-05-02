@@ -1,4 +1,4 @@
-name: Build and Deploy Docker Image to EC2
+name: Build and Deploy Docker Images to EC2
 
 on:
   push:
@@ -19,15 +19,26 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      # Step 3: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio:latest .
+      # Step 3: Build Docker images for frontend and backend
 
-      # Step 4: Push Docker image to Docker Hub
-      - name: Push Docker image to Docker Hub
+      # Build frontend Docker image
+      - name: Build frontend Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend  # Adjust path if needed
+
+      # Build backend Docker image
+      - name: Build backend Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend  # Adjust path if needed
+
+      # Step 4: Push Docker images to Docker Hub
+      - name: Push frontend Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+
+      - name: Push backend Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
   deploy_to_ec2:
     runs-on: ubuntu-latest
@@ -42,17 +53,17 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 2: Deploy to EC2
-      - name: Deploy Docker container on EC2
+      # Step 2: Deploy Docker containers on EC2 using docker-compose
+      - name: Deploy Docker containers on EC2 with docker-compose
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Pull the latest Docker image from Docker Hub
-            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio:latest
+            # Pull the latest Docker images from Docker Hub
+            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
-            # Stop and remove any running container
-            docker stop booklio || true
-            docker rm booklio || true
+            # Change directory to where docker-compose.yml is located (in the root directory)
+            cd /path/to/your/project/directory
 
-            # Run the new Docker container
-            docker run -d --name booklio -p 80:80 ${{ secrets.DOCKER_USERNAME }}/booklio:latest
+            # Use docker-compose to bring up the services (frontend and backend)
+            docker-compose up -d
           EOF
