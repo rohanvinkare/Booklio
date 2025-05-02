@@ -1,26 +1,82 @@
+# version: '3'
+# services:
+#   backend:
+#     build:
+#       context: ./backend  # Path to the backend folder with Dockerfile
+#     ports:
+#       - "3000:3000"
+#     env_file:
+#       - ./backend/.env  # Path to the backend .env file
+#     networks:
+#       - booklio_network
+#     depends_on:
+#       - redis  # Ensure backend starts after Redis
+
+#   frontend:
+#     build:
+#       context: ./frontend  # Path to the frontend folder with Dockerfile
+#     ports:
+#       - "4173:80"  # Map Nginx port 80 to host port 80
+#     env_file:
+#       - ./frontend/.env  # Path to the frontend .env file
+#     depends_on:
+#       - backend  # Ensure frontend starts after backend
+#     networks:
+#       - booklio_network
+
+#   redis:
+#     image: redis
+#     container_name: my-redis
+#     command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
+#     ports:
+#       - "6379:6379"
+#     networks:
+#       - booklio_network
+#     mem_limit: 100m  # Set the maximum memory limit for Redis
+
+# networks:
+#   booklio_network:
+#     driver: bridge
+
 version: '3'
 services:
   backend:
     build:
-      context: ./backend  # Path to the backend folder with Dockerfile
+      context: ./backend
     ports:
       - "3000:3000"
-    env_file:
-      - ./backend/.env  # Path to the backend .env file
+    environment:
+      - PORT=3000
+      - MONGODB_URL=mongodb+srv://rohanvinkare2022:TCjyqJjkBWmADA6F@cluster0.4blm2.mongodb.net/Booklio?retryWrites=true&w=majority&appName=Cluster0/Booklio
+      - ACCESS_TOKEN_SECRET=youre_access_token_secreat
+      - SMTP_MAIL=ourblacklife321@gmail.com
+      - SMTP_PASSWORD=wwtqmbjbmiqaqaqw
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - APP_CLOUDINARY_CLOUD_NAME=djwfg6dgl
+      - APP_CLOUDINARY_API_KEY=536291919137663
+      - APP_CLOUDINARY_SECRET_KEY=OoRmYjHhCT0S1wWt2wtzzZN9VAE
+      - MAIL_VERIFICATION=https://booklio.onrender.com
+      - FORGOT_URL=https://booklio.onrender.com
+      - googleapis_key=AIzaSyB_-_Gj3pY-dK3WzkrM7pSzMpQEubCyn8s
+      - PAY_CUT_PERCENTAGE=5
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     networks:
       - booklio_network
     depends_on:
-      - redis  # Ensure backend starts after Redis
+      - redis
 
   frontend:
     build:
-      context: ./frontend  # Path to the frontend folder with Dockerfile
+      context: ./frontend
     ports:
-      - "4173:80"  # Map Nginx port 80 to host port 80
-    env_file:
-      - ./frontend/.env  # Path to the frontend .env file
+      - "4173:80"
+    environment:
+      - VITE_BASE_URL=http://13.203.48.97:300
+      - GEOCODE_API=b6b5a9c356a54d6aaeb80b98fa63aa75
     depends_on:
-      - backend  # Ensure frontend starts after backend
+      - backend
     networks:
       - booklio_network
 
@@ -32,7 +88,7 @@ services:
       - "6379:6379"
     networks:
       - booklio_network
-    mem_limit: 100m  # Set the maximum memory limit for Redis
+    mem_limit: 100m
 
 networks:
   booklio_network:
