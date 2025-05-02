@@ -61,7 +61,7 @@ jobs:
             rm -rf booklio-deploy
 
             # Clone the latest repo with docker-compose.yml
-            git clone https://github.com/\$GITHUB_REPO.git booklio-deploy
+            git clone https://github.com/rohanvinkare/Booklio.git booklio-deploy
             cd booklio-deploy
 
             # Pull the latest Docker images
