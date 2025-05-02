@@ -211,7 +211,11 @@ jobs:
             git clone https://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@github.com/rohanvinkare/Booklio.git booklio-deploy || { echo 'Git clone failed'; exit 1; }
             cd booklio-deploy
 
-            echo "Pulling Docker images..."
+            echo "Verifying Docker image tags before pulling..."
+            echo "Frontend Image: $DOCKER_USERNAME/booklio-frontend:latest"
+            echo "Backend Image: $DOCKER_USERNAME/booklio-backend:latest"
+
+            # Pull Docker images
             docker pull $DOCKER_USERNAME/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
             docker pull $DOCKER_USERNAME/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
 
