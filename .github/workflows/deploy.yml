@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Build and Deploy Docker Image to EC2
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main  # Trigger deployment on pushing to the 'main' branch
 
 jobs:
-  deploy:
+  build_and_push:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,7 +14,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up SSH for EC2 access
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      # Step 3: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio:latest .
+
+      # Step 4: Push Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/booklio:latest
+
+  deploy_to_ec2:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      # Step 1: Set up SSH for EC2 access
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -22,18 +42,17 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 3: Deploy to EC2 (SSH into EC2 instance and run commands)
-      - name: Deploy to EC2
+      # Step 2: Deploy to EC2
+      - name: Deploy Docker container on EC2
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Ensure the Booklio directory exists
-            mkdir -p ~/Booklio
-            cd ~/Booklio || (git clone https://github.com/<your-username>/<your-repo>.git . && cd .)
+            # Pull the latest Docker image from Docker Hub
+            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio:latest
 
-            # Pull the latest changes from the repository
-            git pull origin main
+            # Stop and remove any running container
+            docker stop booklio || true
+            docker rm booklio || true
 
-            # Stop and restart Docker containers
-            docker-compose down
-            docker-compose up --build -d
+            # Run the new Docker container
+            docker run -d --name booklio -p 80:80 ${{ secrets.DOCKER_USERNAME }}/booklio:latest
           EOF
