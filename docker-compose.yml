@@ -38,17 +38,17 @@
 #   booklio_network:
 #     driver: bridge
 
+
 version: '3'
 services:
   backend:
-    build:
-      context: ./backend
+    image: rohanv7/booklio-backend:latest  # Use your Docker Hub username
     ports:
       - "3000:3000"
     environment:
       - PORT=3000
       - MONGODB_URL=mongodb+srv://rohanvinkare2022:TCjyqJjkBWmADA6F@cluster0.4blm2.mongodb.net/Booklio?retryWrites=true&w=majority&appName=Cluster0/Booklio
-      - ACCESS_TOKEN_SECRET=youre_access_token_secreat
+      - ACCESS_TOKEN_SECRET=your_access_token_secret
       - SMTP_MAIL=ourblacklife321@gmail.com
       - SMTP_PASSWORD=wwtqmbjbmiqaqaqw
       - SMTP_HOST=smtp.gmail.com
@@ -68,8 +68,7 @@ services:
       - redis
 
   frontend:
-    build:
-      context: ./frontend
+    image: rohanv7/booklio-frontend:latest  # Use your Docker Hub username
     ports:
       - "4173:80"
     environment:

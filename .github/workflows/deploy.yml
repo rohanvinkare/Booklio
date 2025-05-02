@@ -147,39 +147,34 @@
 #             docker-compose up -d
 #           EOF
 
-
 name: Build and Deploy Docker Images to EC2
 
 on:
   push:
     branches:
-      - main  # Trigger deployment on pushing to the 'main' branch
+      - main
 
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Log in to Docker Hub
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      # Step 3: Build Docker images for frontend and backend
       - name: Build frontend Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
 
       - name: Build backend Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
 
-      # Step 4: Push Docker images to Docker Hub
-      - name: Push frontend Docker image to Docker Hub
+      - name: Push frontend Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
 
-      - name: Push backend Docker image to Docker Hub
+      - name: Push backend Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
   deploy_to_ec2:
@@ -187,7 +182,6 @@ jobs:
     needs: build_and_push
 
     steps:
-      # Step 1: Set up SSH for EC2 access
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -195,35 +189,26 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 2: Deploy on EC2 with SSH Git clone
-      - name: Deploy Docker containers on EC2 using docker-compose from GitHub repo
+      - name: Deploy on EC2 with SSH Git clone
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
 
             # Setup deploy key for GitHub access
-            echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/booklio-deploy-key
+            echo "${{ secrets.GITHUB_TOKEN }}" > ~/.ssh/booklio-deploy-key
             chmod 600 ~/.ssh/booklio-deploy-key
 
-            # Ensure Git uses the SSH key
-            export GIT_SSH_COMMAND="ssh -i ~/.ssh/booklio-deploy-key -o StrictHostKeyChecking=no"
-
-            # Remove previous repo
-            rm -rf booklio-deploy
-
-            # Clone using SSH and GitHub token for authentication
-            git clone https://$GH_TOKEN@github.com/rohanvinkare/Booklio.git booklio-deploy
+            # Ensure Git uses the token for HTTPS cloning
+            git clone https://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@github.com/rohanvinkare/Booklio.git booklio-deploy
             cd booklio-deploy
 
-            # Pull the latest Docker images
+            # Pull images
             docker pull $DOCKER_USERNAME/booklio-frontend:latest
             docker pull $DOCKER_USERNAME/booklio-backend:latest
 
-            # Optional: clean unused images/layers to save space
             docker system prune -af
-
-            # Start containers with docker-compose
             docker-compose up -d
           EOF
