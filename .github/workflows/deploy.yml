@@ -3,35 +3,37 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # Change this to your working branch if necessary
+      - main  # Trigger deployment on pushing to the 'main' branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Set up SSH key
+      # Step 2: Set up SSH for EC2 access
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
+      # Step 3: Deploy to EC2 (SSH into EC2 instance and run commands)
       - name: Deploy to EC2
         run: |
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Update and install dependencies if not present
-            sudo apt update
-            sudo apt install -y git docker-compose
-            
-            # Clone the repo if it doesn't exist or pull the latest code
-            cd ~/Booklio || (git clone https://github.com/${{ github.repository }}.git Booklio && cd Booklio)
+          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # Ensure the Booklio directory exists
+            mkdir -p ~/Booklio
+            cd ~/Booklio || (git clone https://github.com/<your-username>/<your-repo>.git . && cd .)
+
+            # Pull the latest changes from the repository
             git pull origin main
 
-            # Restart Docker containers
+            # Stop and restart Docker containers
             docker-compose down
             docker-compose up --build -d
           EOF
