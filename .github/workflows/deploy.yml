@@ -162,34 +162,19 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Log in to Docker Hub
-        run: |
-          echo "Logging into Docker Hub..."
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-        continue-on-error: true
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Build frontend Docker image
-        run: |
-          echo "Building frontend Docker image..."
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
-        continue-on-error: true
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
 
       - name: Build backend Docker image
-        run: |
-          echo "Building backend Docker image..."
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
-        continue-on-error: true
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
 
       - name: Push frontend Docker image
-        run: |
-          echo "Pushing frontend Docker image..."
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
-        continue-on-error: true
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
 
       - name: Push backend Docker image
-        run: |
-          echo "Pushing backend Docker image..."
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
-        continue-on-error: true
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
   deploy_to_ec2:
     runs-on: ubuntu-latest
@@ -198,16 +183,14 @@ jobs:
     steps:
       - name: Set up SSH
         run: |
-          echo "Setting up SSH..."
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-        continue-on-error: true
 
       - name: Deploy on EC2 with SSH Git clone
         env:
-          DOCKER_USERNAME: rohanv7  # Ensure this matches your Docker username
+          DOCKER_USERNAME: rohanv7  # Replace with your Docker username
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Deploying on EC2..."
@@ -217,6 +200,12 @@ jobs:
             echo "Setting up deploy key for GitHub access..."
             echo "${{ secrets.GITHUB_TOKEN }}" > ~/.ssh/booklio-deploy-key
             chmod 600 ~/.ssh/booklio-deploy-key
+
+            # Check if 'booklio-deploy' directory exists, and remove it if it does
+            if [ -d "booklio-deploy" ]; then
+              echo "'booklio-deploy' directory already exists. Removing it..."
+              rm -rf booklio-deploy
+            fi
 
             echo "Cloning repository from GitHub..."
             git clone https://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@github.com/rohanvinkare/Booklio.git booklio-deploy || { echo 'Git clone failed'; exit 1; }
@@ -234,4 +223,3 @@ jobs:
 
             echo "Deployment completed successfully!"
           EOF
-        continue-on-error: true
