@@ -20,16 +20,13 @@ jobs:
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       # Step 3: Build Docker images for frontend and backend
-
-      # Build frontend Docker image
       - name: Build frontend Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend  # Adjust path if needed
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
 
-      # Build backend Docker image
       - name: Build backend Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend  # Adjust path if needed
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
 
       # Step 4: Push Docker images to Docker Hub
       - name: Push frontend Docker image to Docker Hub
@@ -45,25 +42,35 @@ jobs:
     needs: build_and_push
 
     steps:
-      # Step 1: Set up SSH for EC2 access
-      - name: Set up SSH
+      - name: Set up SSH for EC2 access
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 2: Deploy Docker containers on EC2 using docker-compose
-      - name: Deploy Docker containers on EC2 with docker-compose
+      - name: Deploy Docker containers on EC2 using docker-compose from GitHub repo
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          GITHUB_REPO: your-username/booklio  # 🔁 Replace with actual GitHub repo
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Pull the latest Docker images from Docker Hub
-            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
-            docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
+          ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+            set -e
 
-            # Change directory to where docker-compose.yml is located (in the root directory)
-            cd /path/to/your/project/directory
+            # Clean old project directory if exists
+            rm -rf booklio-deploy
 
-            # Use docker-compose to bring up the services (frontend and backend)
+            # Clone the latest repo with docker-compose.yml
+            git clone https://github.com/\$GITHUB_REPO.git booklio-deploy
+            cd booklio-deploy
+
+            # Pull the latest Docker images
+            docker pull \$DOCKER_USERNAME/booklio-frontend:latest
+            docker pull \$DOCKER_USERNAME/booklio-backend:latest
+
+            # Optional: clean unused images/layers to save space
+            docker system prune -af
+
+            # Start containers with docker-compose
             docker-compose up -d
           EOF
