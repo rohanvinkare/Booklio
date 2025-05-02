@@ -37,12 +37,10 @@
 # networks:
 #   booklio_network:
 #     driver: bridge
-
-
 version: '3'
 services:
   backend:
-    image: rohanv7/booklio-backend:latest  # Use your Docker Hub username
+    image: rohanv7/booklio-backend:latest
     ports:
       - "3000:3000"
     environment:
@@ -68,12 +66,9 @@ services:
       - redis
 
   frontend:
-    image: rohanv7/booklio-frontend:latest  # Use your Docker Hub username
+    image: rohanv7/booklio-frontend:latest
     ports:
       - "4173:80"
-    environment:
-      - VITE_BASE_URL=http://13.203.48.97:3000
-      - GEOCODE_API=b6b5a9c356a54d6aaeb80b98fa63aa75
     depends_on:
       - backend
     networks:

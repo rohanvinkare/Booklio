@@ -246,23 +246,22 @@ jobs:
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Build frontend Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
+      - name: Build frontend Docker image with VITE_BASE_URL
+        run: |
+          docker build \
+            --build-arg VITE_BASE_URL=http://13.203.48.97:3000 \
+            -t ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ./frontend
 
       - name: Build backend Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
-
-      - name: Remove existing frontend image from Docker Hub (if exists)
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest || echo "Frontend image not found on Docker Hub"
-          docker tag ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ./backend
 
-      - name: Remove existing backend image from Docker Hub (if exists)
-        run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest || echo "Backend image not found on Docker Hub"
-          docker tag ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
+      - name: Push frontend image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-frontend:latest
+
+      - name: Push backend image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/booklio-backend:latest
 
   deploy_to_ec2:
     runs-on: ubuntu-latest
@@ -276,42 +275,36 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy on EC2 with SSH Git clone
-        env:
-          DOCKER_USERNAME: rohanv7 # Replace with your Docker username
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: SSH into EC2 and deploy
         run: |
-          echo "Deploying on EC2..."
           ssh -i ~/.ssh/id_rsa ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
 
-            echo "Setting up deploy key for GitHub access..."
-            echo "${{ secrets.GITHUB_TOKEN }}" > ~/.ssh/booklio-deploy-key
-            chmod 600 ~/.ssh/booklio-deploy-key
+            echo "Stopping all containers..."
+            docker container stop $(docker ps -aq) || true
 
-            # Check if 'booklio-deploy' directory exists, and remove it if it does
-            if [ -d "booklio-deploy" ]; then
-              echo "'booklio-deploy' directory already exists. Removing it..."
-              rm -rf booklio-deploy
-            fi
+            echo "Removing all containers..."
+            docker container rm $(docker ps -aq) || true
 
-            echo "Cloning repository from GitHub..."
-            git clone https://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@github.com/rohanvinkare/Booklio.git booklio-deploy || { echo 'Git clone failed'; exit 1; }
+            echo "Removing all images..."
+            docker rmi -f $(docker images -aq) || true
+
+            echo "Pruning volumes..."
+            docker volume prune -f || true
+
+            echo "Removing old repo if exists..."
+            rm -rf booklio-deploy
+
+            echo "Cloning fresh repo..."
+            git clone https://github.com/rohanvinkare/Booklio.git booklio-deploy
             cd booklio-deploy
 
-            echo "Verifying Docker image tags before pulling..."
-            echo "Frontend Image: rohanv7/booklio-frontend:latest"
-            echo "Backend Image: rohanv7/booklio-backend:latest"
+            echo "Pulling latest Docker images..."
+            docker pull rohanv7/booklio-frontend:latest
+            docker pull rohanv7/booklio-backend:latest
 
-            # Pull Docker images
-            docker pull rohanv7/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
-            docker pull rohanv7/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
+            echo "Starting Docker Compose..."
+            docker-compose up -d
 
-            echo "Cleaning up unused Docker resources..."
-            docker system prune -af || { echo 'Failed to prune Docker system'; exit 1; }
-
-            echo "Starting Docker containers with Docker Compose..."
-            docker-compose up -d || { echo 'Failed to start Docker containers'; exit 1; }
-
-            echo "Deployment completed successfully!"
+            echo "Deployment completed!"
           EOF
