@@ -212,12 +212,12 @@ jobs:
             cd booklio-deploy
 
             echo "Verifying Docker image tags before pulling..."
-            echo "Frontend Image: $DOCKER_USERNAME/booklio-frontend:latest"
-            echo "Backend Image: $DOCKER_USERNAME/booklio-backend:latest"
+            echo "Frontend Image: rohanv7/booklio-frontend:latest"
+            echo "Backend Image: rohanv7/booklio-backend:latest"
 
             # Pull Docker images
-            docker pull $DOCKER_USERNAME/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
-            docker pull $DOCKER_USERNAME/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
+            docker pull rohanv7/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
+            docker pull rohanv7/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
 
             echo "Cleaning up unused Docker resources..."
             docker system prune -af || { echo 'Failed to prune Docker system'; exit 1; }
