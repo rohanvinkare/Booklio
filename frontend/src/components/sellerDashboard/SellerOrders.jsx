@@ -15,21 +15,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"; // Fixed typo in import path
 
 const SellerOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
-
   const { sellerData } = useOutletContext();
   const sellerId = sellerData?.sellerId;
-
   const dispatch = useDispatch();
-
-  // Get orders from Redux
-  const { sellerOrders, loading, error } = useSelector((state) => state.seller);
-
-  console.log(sellerOrders, "sellerOrders")
+  const { sellerOrders = [], loading, error } = useSelector((state) => state.seller);
 
   useEffect(() => {
     if (sellerId) {
@@ -37,10 +30,21 @@ const SellerOrders = () => {
     }
   }, [sellerId, dispatch]);
 
-  if (loading)
-    return <div className="text-center p-6 text-lg">Loading orders...</div>;
-  if (!sellerOrders || sellerOrders.length === 0)
-    return <div className="text-center">No orders available.</div>;
+  // Status color mapping
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: "orange",
+      shipped: "purple",
+      delivered: "blue",
+      cancelled: "red",
+      completed: "green"
+    };
+    return colors[status] || "gray";
+  };
+
+  if (loading) return <div className="text-center p-6 text-lg">Loading orders...</div>;
+  if (error) return <div className="text-center p-6 text-red-500">Error: {error}</div>;
+  if (!sellerOrders?.length) return <div className="text-center">No orders available.</div>;
 
   return (
     <div className="p-6 bg-[#232323] rounded-lg shadow-md">
@@ -72,7 +76,9 @@ const SellerOrders = () => {
               <TableCell className="py-3 px-6 font-semibold">
                 {order.quantity}
               </TableCell>
-              <TableCell className={`py-3 px-6 text-${order.status == "pending" ? "orange" : order.status == "shipped" ? "purple" : order.status == "delivered" ? "blue" : order.status == "cancelled" ? "red" : order.status == "completed" ? "green" : ""}-500 font-semibold`}>
+              <TableCell 
+                className={`py-3 px-6 text-${getStatusColor(order.status)}-500 font-semibold`}
+              >
                 {order.status}
               </TableCell>
               <TableCell className="py-3 px-6">
@@ -116,7 +122,7 @@ const SellerOrders = () => {
               </p>
               <p>
                 <strong className="text-gray-100">Book:</strong>{" "}
-                {selectedOrder.bookInfo.data.volumeInfo.title || "N/A"}
+                {selectedOrder.bookInfo?.volumeInfo?.title || "N/A"}
               </p>
               <p>
                 <strong className="text-gray-100">Customer:</strong>{" "}

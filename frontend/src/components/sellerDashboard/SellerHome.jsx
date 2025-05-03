@@ -1,25 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";  // Remove useState since it's not used
 import { useOutletContext } from "react-router-dom";
 import { fetchSellerBooks, fetchSellerOrders } from "../../store/sellerSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
-  FaArrowUp,
-  FaRegFileAlt,
-  FaRegClock,
-  FaRegCheckCircle,
   FaChartLine,
-  FaRegFolder,
+  FaRegCheckCircle,
   FaMoneyCheck,
-  FaDollarSign,
   FaRupeeSign,
-  FaFacebookSquare,
   FaBook,
-  FaSalesforce,
-  FaSellcast,
-  FaShopify,
-  FaShoppingBag,
-  FaShoppingBasket,
   FaShoppingCart
 } from "react-icons/fa";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -57,7 +46,7 @@ const SellerHome = () => {
 
   const sellerBooks = useSelector(state => state.seller.sellerBookData);
   const books = sellerBooks?.books || []; // Ensure books is always an array
-
+  console.log("Books:", books);
   const genreCounts = books.reduce((acc, book) => {
     book.genre.forEach((genre) => {
       acc[genre] = (acc[genre] || 0) + 1;
@@ -70,27 +59,32 @@ const SellerHome = () => {
 
   // Get orders from Redux
   const { sellerOrders, loading, error, mostOrderedBook } = useSelector((state) => state.seller);
-
-  useEffect(() => {
-    if (sellerId) {
-      dispatch(fetchSellerOrders(sellerId));
-    }
-  }, [sellerId, dispatch]);
+  // Add these debug logs
+  console.log("Sample Order Data:", sellerOrders?.[0]);
+  console.log("Sample Book Info:", sellerOrders?.[0]?.book);
+  console.log("Seller Orders:", sellerOrders);
+  console.log("Most Ordered Book:", mostOrderedBook);
+  console.log("Loading:", loading);
+  console.log("Error:", error);
 
   useEffect(() => {
     if (sellerId) {
       dispatch(fetchSellerBooks(sellerId));
+      dispatch(fetchSellerOrders(sellerId));
+      console.log("Fetching data for seller:", sellerId);
     }
-  }, [sellerId, dispatch]);
+  }, [sellerId, dispatch]); // Remove sellerOrders from dependencies
 
   const totalRevenue = sellerOrders?.reduce((sum, order) => sum + Number(order.price), 0) || 0;
   const monthlyRevenue = sellerOrders?.reduce((sum, order) => sum + Number(order.price) / 12, 0) || 0;
   const totalProfit = sellerOrders?.reduce((sum, order) => sum + Number(order.price) * 0.04, 0) || 0;
 
-  // Calculate book-wise revenue and sales
+  // Update the bookStats calculation
   const bookStats = sellerOrders?.reduce((acc, order) => {
     const isbn = order.isbn;
-    const bookTitle = order.bookInfo?.data?.volumeInfo?.title || "Unknown Book";
+    // Find the book details from the books array
+    const bookDetails = books.find(book => book.isbn === isbn);
+    const bookTitle = bookDetails?.data?.volumeInfo?.title || "Unknown Book";
     const price = Number(order.price) || 0;
 
     if (!acc[isbn]) {
@@ -320,7 +314,9 @@ const SellerHome = () => {
                   <tr key={index} className="border-b border-gray-700 hover:bg-gray-800/50">
                     <td className="py-3 px-4 text-white">
                       <div className="flex flex-col">
-                        <span className="font-medium">{order.bookInfo?.data?.volumeInfo?.title || "N/A"}</span>
+                        <span className="font-medium">
+                          {books.find(book => book.isbn === order.isbn)?.data?.volumeInfo?.title || "N/A"}
+                        </span>
                         <span className="text-sm text-gray-400">ISBN: {order.isbn}</span>
                       </div>
                     </td>
