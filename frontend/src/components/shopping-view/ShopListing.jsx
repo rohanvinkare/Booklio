@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import GenreFilter from "./GenreFilter";
-import notAvailable from "../../../public/notAvailable.png";
-import { Search, BookOpen, ShoppingCart, Star, X, Calendar, Building, Hash, Filter } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "@/components/ui/input";
+import notAvailable from "../../assets/notAvailable.png";
+import { Search, BookOpen, ShoppingCart, Star, Calendar, Building, Hash, Filter } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +15,6 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetClose
 } from "@/components/ui/sheet";
 
 const ShopListing = () => {
@@ -209,7 +206,7 @@ const ShopListing = () => {
                   No Books Found
                 </h3>
                 <p className="text-gray-400 text-center max-w-md">
-                  We couldn't find any books matching your search criteria. Try adjusting your filters or search terms.
+                  We couldn&apos;t find any books matching your search criteria. Try adjusting your filters or search terms.
                 </p>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import arrowUrl from "@public/arrow.svg";
+import arrowUrl from "../../assets/arrow.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 

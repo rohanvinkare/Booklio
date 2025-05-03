@@ -3,6 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
+import PropTypes from "prop-types";
 
 const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
   const handleGenreChange = (genre, checked) => {
@@ -108,6 +109,12 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
       )}
     </motion.div>
   );
+};
+
+GenreFilter.propTypes = {
+  bookData: PropTypes.object.isRequired,
+  selectedGenres: PropTypes.array.isRequired,
+  setSelectedGenres: PropTypes.func.isRequired
 };
 
 export default GenreFilter;

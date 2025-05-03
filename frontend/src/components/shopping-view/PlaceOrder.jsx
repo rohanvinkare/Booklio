@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
-import placeOrder from "../../../public/placeOrder.png";
+import toast from "react-hot-toast";
+import placeOrder from "../../assets/placeOrder.png";
 import { Minus, Plus, MapPin, Package, CreditCard, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,7 +12,6 @@ const PlaceOrder = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
   } = useForm();
   const location = useLocation();
   const { sellerUniqueId, isbnId } = location.state || {};
