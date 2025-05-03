@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const connectDB = require("./config/db-config.js");
+const { connectDB } = require("./config/db-config.js");
 const { connectRedis } = require('./cache/redis_config.js');
 
 const app = express();
@@ -74,6 +74,13 @@ app.use("/", bookRoute);
 app.use("/", orderRoute);
 app.use("/", tokenRoute);
 
+
+// Define the /health route
+app.get('/health', (req, res) => {
+  res.status(200).send('Hello Booklio!');
+});
+
+
 app.get("/", (req, res) => {
   res.send(`
     <html>
@@ -119,6 +126,7 @@ app.get("/", (req, res) => {
 });
 
 
+
 setupSwagger(app);
 
 
@@ -136,3 +144,4 @@ app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
   console.log(`Server is Running on http://localhost:${process.env.PORT}`);
   console.log(`Api Doc http://localhost:${process.env.PORT}/api-docs`);
 });
+
