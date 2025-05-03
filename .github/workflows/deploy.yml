@@ -278,7 +278,7 @@ jobs:
 
       - name: Deploy on EC2 with SSH Git clone
         env:
-          DOCKER_USERNAME: rohanv7  # Replace with your Docker username
+          DOCKER_USERNAME: rohanv7
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Deploying on EC2..."
@@ -289,7 +289,6 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" > ~/.ssh/booklio-deploy-key
             chmod 600 ~/.ssh/booklio-deploy-key
 
-            # Check if 'booklio-deploy' directory exists, and remove it if it does
             if [ -d "booklio-deploy" ]; then
               echo "'booklio-deploy' directory already exists. Removing it..."
               rm -rf booklio-deploy
@@ -299,19 +298,23 @@ jobs:
             git clone https://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@github.com/rohanvinkare/Booklio.git booklio-deploy || { echo 'Git clone failed'; exit 1; }
             cd booklio-deploy
 
-            echo "Verifying Docker image tags before pulling..."
-            echo "Frontend Image: rohanv7/booklio-frontend:latest"
-            echo "Backend Image: rohanv7/booklio-backend:latest"
+            echo "Stopping and removing existing containers..."
+            docker-compose down || echo "Docker Compose down failed"
 
-            # Pull Docker images
-            docker pull rohanv7/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
-            docker pull rohanv7/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
+            echo "Removing old images..."
+            docker rmi rohanv7/booklio-frontend:latest || echo "Frontend image removal failed"
+            docker rmi rohanv7/booklio-backend:latest || echo "Backend image removal failed"
 
             echo "Cleaning up unused Docker resources..."
             docker system prune -af || { echo 'Failed to prune Docker system'; exit 1; }
+
+            echo "Pulling latest images..."
+            docker pull rohanv7/booklio-frontend:latest || { echo 'Failed to pull frontend image'; exit 1; }
+            docker pull rohanv7/booklio-backend:latest || { echo 'Failed to pull backend image'; exit 1; }
 
             echo "Starting Docker containers with Docker Compose..."
             docker-compose up -d || { echo 'Failed to start Docker containers'; exit 1; }
 
             echo "Deployment completed successfully!"
           EOF
+
