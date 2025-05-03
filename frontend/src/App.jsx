@@ -37,7 +37,7 @@ import PlaceOrder from "./components/shopping-view/PlaceOrder";
 import UserLayout from "./pages/userDashboard/UserLayout";
 import UserHome from "./components/userDashboard/UserHome";
 import AdminSales from "./components/adminDashboard/AdminSales";
-import { Team } from "./pages/Team";
+import { Team } from "./pages/team";
 import { About } from "./pages/About";
 
 function App() {
