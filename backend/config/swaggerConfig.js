@@ -15,6 +15,10 @@ const options = {
                 description: "Base URL of the application",
             },
             {
+                url: "https://booklio.onrender.com",
+                description: "Render server (IP address)",
+            },
+            {
                 url: "http://13.203.251.217:3000",
                 description: "Production server (IP address)",
             },

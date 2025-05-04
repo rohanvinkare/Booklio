@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import placeOrder from "../../assets/placeOrder.png";
-import { Minus, Plus, MapPin, Package, CreditCard, Loader2 } from "lucide-react";
+import { Minus, Plus, MapPin, Package, CreditCard} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PlaceOrder = () => {
@@ -27,8 +27,6 @@ const PlaceOrder = () => {
   const [isOrderSuccess, setIsOrderSuccess] = useState(false);
   const [zipCodeSuggestions, setZipCodeSuggestions] = useState([]);
   const [showZipCodeSuggestions, setShowZipCodeSuggestions] = useState(false);
-  const [isValidatingPincode, setIsValidatingPincode] = useState(false);
-  const [pincodeError, setPincodeError] = useState("");
 
   const increment = () => setQuantity((prev) => prev + 1);
   const decrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
@@ -119,57 +117,11 @@ const PlaceOrder = () => {
     setShowSuggestions(false);
   };
 
-  // Handle ZIP code selection
-  const handleZipCodeSelect = (zipCode) => {
-    setValue("zipCode", zipCode);
-    setZipCodeSuggestions([]);
-    setShowZipCodeSuggestions(false);
-  };
-
-  // Function to validate pincode
-  const validatePincode = async (pincode) => {
-    if (!pincode) return false;
-    
-    setIsValidatingPincode(true);
-    setPincodeError("");
-    
-    try {
-      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-      const data = await response.json();
-      
-      if (data[0]?.Status === "Success") {
-        const postOffices = data[0]?.PostOffice || [];
-        if (postOffices.length > 0) {
-          // Auto-fill city and state if available
-          const firstPostOffice = postOffices[0];
-          setValue("city", firstPostOffice.District);
-          setValue("state", firstPostOffice.State);
-          setValue("country", "India");
-          return true;
-        }
-      }
-      
-      setPincodeError("Invalid pincode. Please enter a valid Indian pincode.");
-      return false;
-    } catch (error) {
-      console.error("Error validating pincode:", error);
-      setPincodeError("Error validating pincode. Please try again.");
-      return false;
-    } finally {
-      setIsValidatingPincode(false);
-    }
-  };
 
   const onSubmit = async (data) => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
       toast.error("User is not authenticated. Please log in.");
-      return;
-    }
-
-    // Validate pincode before proceeding
-    const isPincodeValid = await validatePincode(data.zipCode);
-    if (!isPincodeValid) {
       return;
     }
 
@@ -201,7 +153,6 @@ const PlaceOrder = () => {
       if (response.ok && result.success) {
         setIsOrderSuccess(true);
         toast.success("Order placed successfully!");
-        // Wait for the success animation to complete
         await new Promise((resolve) => setTimeout(resolve, 1500));
         navigate("/user");
       } else {
@@ -406,36 +357,21 @@ const PlaceOrder = () => {
                     <label htmlFor="zipCode" className="block text-sm font-medium text-gray-300 mb-1">
                       Zip Code
                     </label>
-                    <div className="relative">
-                      <input
-                        id="zipCode"
-                        type="text"
-                        {...register("zipCode", { 
-                          required: "Zip Code is required",
-                          pattern: {
-                            value: /^[1-9][0-9]{5}$/,
-                            message: "Please enter a valid 6-digit Indian pincode"
-                          }
-                        })}
-                        className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
-                        placeholder="Enter your zip code"
-                        onBlur={async (e) => {
-                          if (e.target.value) {
-                            await validatePincode(e.target.value);
-                          }
-                        }}
-                      />
-                      {isValidatingPincode && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                        </div>
-                      )}
-                    </div>
+                    <input
+                      id="zipCode"
+                      type="text"
+                      {...register("zipCode", { 
+                        required: "Zip Code is required",
+                        pattern: {
+                          value: /^[1-9][0-9]{5}$/,
+                          message: "Please enter a valid 6-digit pincode"
+                        }
+                      })}
+                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-300"
+                      placeholder="Enter your zip code"
+                    />
                     {errors.zipCode && (
                       <p className="text-red-400 text-sm mt-1">{errors.zipCode.message}</p>
-                    )}
-                    {pincodeError && (
-                      <p className="text-red-400 text-sm mt-1">{pincodeError}</p>
                     )}
                   </div>
 

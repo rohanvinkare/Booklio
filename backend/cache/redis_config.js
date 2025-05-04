@@ -55,6 +55,18 @@ async function setCache(key, value, ttlSeconds = 600) {
     }
 }
 
+// Delete cached data by key
+async function delCache(key) {
+    if (redisConnected) {
+        try {
+            await redisClient.del(key);
+            console.log(`Cache deleted for key: ${key}`);
+        } catch (err) {
+            console.error('Redis delete error:', err.message);
+        }
+    }
+}
+
 // Close Redis connection (optional, for graceful shutdown)
 async function disconnectRedis() {
     if (redisConnected) {
@@ -66,6 +78,7 @@ module.exports = {
     connectRedis,
     getCache,
     setCache,
+    delCache, 
     disconnectRedis,
     redisConnected
 };

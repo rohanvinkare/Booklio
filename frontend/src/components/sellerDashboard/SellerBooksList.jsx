@@ -148,7 +148,7 @@ const SellerBooksList = () => {
             const authors = volumeInfo?.authors?.join(", ") || "Unknown Author";
             const description = volumeInfo?.description || "No description available.";
             const imageUrl = volumeInfo?.imageLinks?.thumbnail || "/default-image.jpg";
-            const isbn = volumeInfo?.industryIdentifiers?.[0]?.identifier || "N/A";
+            const isbn = book.isbn;
             const publishedDate = volumeInfo?.publishedDate || "N/A";
             const publisher = volumeInfo?.publisher || "N/A";
             const language = volumeInfo?.language || "N/A";

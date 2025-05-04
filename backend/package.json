@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --coverage",
+    "test": "NODE_ENV=test jest --coverage",
     "generateDoc": "node swagger/swagger.js  "
   },
   "keywords": [],
