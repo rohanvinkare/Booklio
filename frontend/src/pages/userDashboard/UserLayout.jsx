@@ -3,6 +3,10 @@ import { Outlet } from "react-router-dom";
 import Navbar from "@/components/userDashboard/navbar"; // Adjust the path as needed
 import { Footer } from "@/components/landingPage/Footer";
 
+
+
+
+
 const UserLayout = () => {
   const [userData, setUserData] = useState({
     name: "",
@@ -58,13 +62,18 @@ const UserLayout = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-backgroundContrast text-white">
-      <Navbar userData={userData} />
-      <div className="flex-1 p-6">
-        <Outlet context={userData} />
-      </div>
-    <Footer/>
-    </div>
+
+    <div className="flex flex-col min-h-screen bg-[#060606] text-white">
+
+        <Navbar userData={userData} />
+        <div className="flex-1 p-6">
+          <Outlet context={userData} />
+        </div>
+        <Footer />
+     
+
+    </div >
+
   );
 };
 

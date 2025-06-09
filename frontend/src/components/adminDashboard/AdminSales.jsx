@@ -53,6 +53,7 @@ const AdminSales = () => {
                 ?.details || [],
           });
         }
+     
       })
       .catch((error) => console.error("Error fetching pay cut data:", error))
       .finally(() => setLoading(false));

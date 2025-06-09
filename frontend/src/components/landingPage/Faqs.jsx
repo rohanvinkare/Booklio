@@ -23,11 +23,13 @@ export const Faqs = () => {
         setClickedIndex(clickedIndex === index ? null : index);
     };
 
+
     return (
-        <div className="min-h-[1/2] bg-backgroundContrast py-10">
+        <div className="min-h-[1/2] bg-[#060606] py-10">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <h2 className="text-4xl font-bold text-blue-400 mb-4">Frequently Asked Questions</h2>
+
                     <p className="text-gray-400">Everything you need to know about Booklio</p>
                 </div>
 
@@ -36,7 +38,7 @@ export const Faqs = () => {
                         <div
                             key={index}
                             onClick={() => handleClick(index)}
-                            className="bg-gray-600/50 backdrop-blur-sm rounded-lg overflow-hidden hover:bg-gray-700/70 transition-all duration-300"
+                            className="bg-[#0d0d0d] backdrop-blur-sm rounded-lg overflow-hidden hover:bg-gray-700/70 transition-all duration-300"
                         >
                             <button
                                 className="w-full px-6 py-4 text-left flex items-center justify-between"
@@ -53,11 +55,10 @@ export const Faqs = () => {
                             </button>
 
                             <div
-                                className={`transition-all duration-300 ease-in-out ${
-                                    clickedIndex === index 
-                                        ? 'max-h-48 opacity-100' 
-                                        : 'max-h-0 opacity-0'
-                                }`}
+                                className={`transition-all duration-300 ease-in-out ${clickedIndex === index
+                                    ? 'max-h-48 opacity-100'
+                                    : 'max-h-0 opacity-0'
+                                    }`}
                             >
                                 <div className="px-6 pb-4">
                                     <p className="text-blue-300 text-base leading-relaxed">

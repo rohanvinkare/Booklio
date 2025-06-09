@@ -3,6 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PropTypes from "prop-types";
 import { useLocation } from "react-router-dom";
 import { FaArrowCircleRight, FaShoppingBasket } from "react-icons/fa";
+import GradientText from '../ui/GradientText.jsx'
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 
 // Utility function to generate a random color
 const getRandomColor = () => {
@@ -33,15 +35,29 @@ const Navbar = ({ userData }) => {
   }, [userData]);
 
   return (
-    <nav className="bg-backgroundContrast text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_1px_0_rgba(0,0,0,0.08)]">
+    <nav className="bg-[#060606] text-white shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_1px_0_rgba(0,0,0,0.08)]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-4 gap-4 sm:gap-0">
           {/* Logo */}
+          {/* 
           <div className="flex items-center">
             <a href="/shop" className="text-2xl sm:text-3xl md:text-4xl font-unbounded font-bold text-white">
               Booklio
             </a>
-          </div>
+          </div> */}
+
+          <a href="/shop">
+            {/* <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p> */}
+
+            <GradientText
+              colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+              animationSpeed={10}
+              showBorder={false}
+              className="font-unbounded py-4 text-4xl font-semibold"
+            >
+              Booklio
+            </GradientText>
+          </a>
 
           {/* Navigation */}
           <div className="flex items-center justify-center gap-2 sm:gap-4">
@@ -49,9 +65,8 @@ const Navbar = ({ userData }) => {
               <li>
                 <a
                   href="/user"
-                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${
-                    location.pathname === "/user" ? "hidden" : ""
-                  } ${isActive("/user") ? "bg-blue-600" : "bg-blue-600"}`}
+                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${location.pathname === "/user" ? "hidden" : ""
+                    } ${isActive("/user") ? "bg-blue-600" : "bg-blue-600"}`}
                 >
                   My Account
                 </a>
@@ -59,21 +74,19 @@ const Navbar = ({ userData }) => {
               <li>
                 <a
                   href="/shop/listing"
-                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${
-                    isActive("/shop/listing") ? "bg-blue-700" : "bg-blue-600"
-                  } text-white`}
+                  className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${isActive("/shop/listing") ? "bg-blue-700" : "bg-blue-600"
+                    } text-white`}
                 >
                   Shop
                   <FaArrowCircleRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </a>
               </li>
               <li>
-                <a
-                  onClick={handleLogout}
-                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer bg-red-600 hover:bg-red-700 transition-colors"
-                >
-                  Logout
+                <a onClick={handleLogout} >
+                  <InteractiveHoverButton > Logout</InteractiveHoverButton>
                 </a>
+
+
               </li>
             </ul>
           </div>

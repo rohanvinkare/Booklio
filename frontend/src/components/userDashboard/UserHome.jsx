@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "react-hot-toast";
+import { BoxReveal } from "@/components/magicui/box-reveal";
+import { BorderBeam } from "@/components/magicui/border-beam";
+import { NumberTicker } from "@/components/magicui/number-ticker";
+import { FlipText } from "@/components/magicui/flip-text";
 
 const UserHome = () => {
   const userData = useOutletContext();
@@ -105,16 +109,16 @@ const UserHome = () => {
 
       if (response.ok && data.success) {
         toast.success("Order cancelled successfully!");
-        
+
         // Update the order's status rather than removing it
-        const updatedOrders = orders.map(order => 
-          order.orderId === selectedOrder.orderId 
-            ? {...order, status: "cancelled"} 
+        const updatedOrders = orders.map(order =>
+          order.orderId === selectedOrder.orderId
+            ? { ...order, status: "cancelled" }
             : order
         );
-        
+
         setOrders(updatedOrders);
-        setSelectedOrder({...selectedOrder, status: "cancelled"});
+        setSelectedOrder({ ...selectedOrder, status: "cancelled" });
         setShowCancelConfirmation(false);
       } else {
         console.error("Error response:", data);
@@ -133,50 +137,61 @@ const UserHome = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Profile Header */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
           {/* Profile Card */}
-          <Card className="md:col-span-1 bg-gray-800 border-gray-700">
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center">
-                <Avatar className="w-24 h-24 border-4 border-blue-500 shadow-lg">
-                  <AvatarImage src={userData.image} alt={userData.name} />
-                  <AvatarFallback className="bg-blue-500 text-xl">
-                    {userData.name?.[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <h2 className="mt-4 text-2xl font-bold text-white">{userData.name}</h2>
-                <div className="mt-2 flex items-center">
-                  {userData.is_verified ? (
-                    <ShieldCheck className="w-5 h-5 text-green-400 mr-2" />
-                  ) : (
-                    <ShieldX className="w-5 h-5 text-red-400 mr-2" />
-                  )}
-                  <span className={`text-sm ${userData.is_verified ? "text-green-400" : "text-red-400"}`}>
-                    {userData.is_verified ? "Verified Account" : "Not Verified"}
-                  </span>
-                </div>
-              </div>
+          <div className="relative">
+            <Card className="md:col-span-1 bg-[#060606]/80 border-blue-950/60 h-full">
+              <CardContent className="p-6 m-3">
 
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center text-gray-300">
-                  <Mail className="w-5 h-5 mr-3 text-gray-400" />
-                  <span className="text-sm">{userData.email}</span>
+                <div className="flex flex-col items-center">
+                  <Avatar className="w-24 h-24 border-4 border-blue-500 shadow-lg">
+                    <AvatarImage src={userData.image} alt={userData.name} />
+                    <AvatarFallback className="bg-blue-500 text-xl">
+                      {userData.name?.[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h2 className="mt-4 text-2xl font-bold text-white"> {userData.name}</h2>
+                  <div className="mt-2 flex items-center">
+                    {userData.is_verified ? (
+                      <ShieldCheck className="w-5 h-5 text-green-400 mr-2" />
+                    ) : (
+                      <ShieldX className="w-5 h-5 text-red-400 mr-2" />
+                    )}
+                    <span className={`text-sm ${userData.is_verified ? "text-green-400" : "text-red-400"}`}>
+                      {userData.is_verified ? "Verified Account" : "Not Verified"}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-300">
-                  <Phone className="w-5 h-5 mr-3 text-gray-400" />
-                  <span className="text-sm">{userData.mobile}</span>
-                </div>
-                <div className="flex items-center text-gray-300">
-                  <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
-                  <span className="text-sm">{address}</span>
-                </div>
-              </div>
 
-            </CardContent>
-          </Card>
+                <div className="mt-6 space-y-4">
+                  <div className="flex items-center text-gray-300">
+                    <Mail className="w-5 h-5 mr-3 text-gray-400" />
+                    <span className="text-sm"> {userData.email}</span>
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <Phone className="w-5 h-5 mr-3 text-gray-400" />
+                    <span className="text-sm">{userData.mobile}</span>
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
+                    <span className="text-sm">{address}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <BorderBeam
+              size={120}
+              duration={8}
+              colorFrom="#40ffaa"
+              colorTo="#4079ff"
+              className="rounded-xl"
+            />
+          </div>
+
 
           {/* Stats Cards */}
           <div className="md:col-span-2">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-[#060606] border-blue-950">
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="flex items-center space-x-4">
@@ -184,7 +199,14 @@ const UserHome = () => {
                     <div>
                       <p className="text-sm text-gray-400">Total Orders</p>
                       <h3 className="text-3xl font-bold text-white mt-1">
-                        {loading ? "..." : totalOrders}
+                        {loading ? "..." : (
+                          <>
+                            <NumberTicker
+                              value={totalOrders}
+                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-black dark:text-white"
+                            />
+                          </>
+                        )}
                       </h3>
                     </div>
                   </div>
@@ -193,7 +215,16 @@ const UserHome = () => {
                     <div>
                       <p className="text-sm text-gray-400">Total Spent</p>
                       <h3 className="text-3xl font-bold text-white mt-1">
-                        {loading ? "..." : `₹${totalSpent}`}
+                        {/* {loading ? "..." : `₹${totalSpent}`} */}
+                        {loading ? "..." :
+                          <>
+                            <NumberTicker
+                              value={totalSpent}
+                              prefix="₹ "
+                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-black dark:text-white"
+                            />
+                          </>
+                        }
                       </h3>
                     </div>
                   </div>
@@ -202,12 +233,12 @@ const UserHome = () => {
             </Card>
 
             {/* Recent Orders Section */}
-            <Card className="bg-gray-800 border-gray-700 mt-6">
+            <Card className="bg-[#060606] border-blue-950 mt-6">
               <CardContent className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-xl font-bold text-white">Recent Orders</h3>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
                     onClick={() => setShowAllOrders(true)}
                   >
@@ -228,8 +259,8 @@ const UserHome = () => {
                         animate={{ opacity: 1, translateY: 0 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <Card 
-                          className="bg-gray-700/50 border-gray-600 hover:bg-gray-700 transition-colors cursor-pointer"
+                        <Card
+                          className="bg-[#060606] border-gray-600 hover:bg-gray-700 transition-colors cursor-pointer"
                           onClick={() => handleOrderClick(order)}
                         >
                           <CardContent className="p-4">
@@ -243,13 +274,12 @@ const UserHome = () => {
                                     <h4 className="text-white font-semibold">
                                       {order.seller.storeName}
                                     </h4>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${
-                                      order.status === "completed" 
-                                        ? "bg-green-500/10 text-green-400"
-                                        : order.status === "cancelled"
+                                    <span className={`text-xs px-2 py-1 rounded-full ${order.status === "completed"
+                                      ? "bg-green-500/10 text-green-400"
+                                      : order.status === "cancelled"
                                         ? "bg-red-500/10 text-red-400"
                                         : "bg-blue-500/10 text-blue-400"
-                                    }`}>
+                                      }`}>
                                       {order.status === "pending" ? "Placed" : order.status}
                                     </span>
                                   </div>
@@ -259,9 +289,9 @@ const UserHome = () => {
                                 </div>
                               </div>
                               <div className="flex items-end justify-between sm:flex-col sm:items-end gap-2">
-                                <p className="text-white font-semibold">₹{order.price}</p>
+                                <p className="text-green-500 font-semibold">₹{order.price}</p>
                                 <p className="text-sm text-gray-400">
-                                  <Clock className="w-4 h-4 inline mr-1" />
+                                  <Clock className="w-4 h-4 inline mr-1 text-white/80" />
                                   {new Date(order.createdAt).toLocaleDateString()}
                                 </p>
                               </div>
@@ -284,7 +314,7 @@ const UserHome = () => {
 
         {/* Order Details Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh] bg-gray-800 text-white border-gray-700">
+          <DialogContent className="max-w-4xl max-h-[90vh]  bg-[#060606] text-white border-blue-950">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold mb-2">
                 Order Details
@@ -293,7 +323,7 @@ const UserHome = () => {
                 Order ID: {selectedOrder?.orderId}
               </DialogDescription>
             </DialogHeader>
-            
+
             <ScrollArea className="h-[70vh] pr-4">
               <div className="space-y-6">
                 {/* Order Status */}
@@ -302,19 +332,18 @@ const UserHome = () => {
                     <Package className="w-5 h-5 text-blue-500" />
                     <span className="text-white font-medium">Order Status</span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    selectedOrder?.status === "completed" 
-                      ? "bg-green-500/10 text-green-400"
-                      : selectedOrder?.status === "cancelled"
+                  <span className={`px-3 py-1 rounded-full text-sm ${selectedOrder?.status === "completed"
+                    ? "bg-green-500/10 text-green-400"
+                    : selectedOrder?.status === "cancelled"
                       ? "bg-red-500/10 text-red-400"
                       : "bg-blue-500/10 text-blue-400"
-                  }`}>
+                    }`}>
                     {selectedOrder?.status === "pending" ? "Placed" : selectedOrder?.status}
                   </span>
                 </div>
 
                 {/* Book Details */}
-                <div className="p-4 bg-gray-700/50 rounded-lg">
+                <div className="p-4 bg-[#060606] border-blue-950 rounded-lg">
                   <h3 className="text-lg font-semibold text-white mb-4">Book Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -329,15 +358,20 @@ const UserHome = () => {
                       <p className="text-gray-400">ISBN</p>
                       <p className="text-white">{selectedOrder?.isbn}</p>
                     </div>
-                    <div>
+
+                    <div className="flex flex-col items-start space-y-2">
                       <p className="text-gray-400">Quantity</p>
-                      <p className="text-white">{selectedOrder?.quantity}</p>
+                      <div className="flex items-center space-x-2">
+                        <img src="icons/stock.png" alt="Stock" className="w-7 h-7" />
+                        <p className="text-green-500 text-xl font-bold">{selectedOrder?.quantity}</p>
+                      </div>
                     </div>
+
                   </div>
                 </div>
 
                 {/* Shipping Details */}
-                <div className="p-4 bg-gray-700/50 rounded-lg">
+                <div className="p-4 bg-[#060606] border-blue-950 rounded-lg">
                   <h3 className="text-lg font-semibold text-white mb-4">Shipping Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -364,17 +398,23 @@ const UserHome = () => {
                 </div>
 
                 {/* Payment Details */}
-                <div className="p-4 bg-gray-700/50 rounded-lg">
+                <div className="p-4 bg-[#060606] rounded-lg">
                   <h3 className="text-lg font-semibold text-white mb-4">Payment Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+
+                    <div className="flex flex-col items-start space-y-1">
                       <p className="text-gray-400">Total Amount</p>
-                      <p className="text-white">₹{selectedOrder?.price}</p>
+                      <div className="flex items-center space-x-2">
+                        <img src="icons/rs.png" alt="rs" className="w-7 h-7" />
+                        <p className="text-green-500 font-mono text-lg">₹{selectedOrder?.price}</p>
+                      </div>
                     </div>
+
                     <div>
                       <p className="text-gray-400">Payment Status</p>
-                      <p className="text-green-400">Completed</p>
+                      <p className="text-[#00ff88] ">Completed</p>
                     </div>
+
                     <div>
                       <p className="text-gray-400">Order Date</p>
                       <p className="text-white">
@@ -411,11 +451,12 @@ const UserHome = () => {
 
         {/* All Orders Dialog */}
         <Dialog open={showAllOrders} onOpenChange={setShowAllOrders}>
-          <DialogContent className="max-w-4xl max-h-[80vh] bg-gray-800 text-white border-gray-700">
+          <DialogContent className="max-w-4xl max-h-[80vh] bg-[#060606] text-white border-blue-950">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold mb-4">All Orders</DialogTitle>
             </DialogHeader>
-            <div className="overflow-y-auto max-h-[60vh] pr-4 space-y-4">
+            <div className="overflow-y-auto max-h-[60vh] pr-4 space-y-4 scrollbar-thin scrollbar-thumb-white scrollbar-track-black scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+
               {loading ? (
                 <div className="flex justify-center items-center py-10">
                   <Loader className="animate-spin text-gray-400" size={32} />
@@ -428,8 +469,8 @@ const UserHome = () => {
                     animate={{ opacity: 1, translateY: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Card 
-                      className="bg-gray-800 border-gray-700 hover:bg-gray-700/80 transition-colors cursor-pointer"
+                    <Card
+                      className="bg-[#060606] border-blue-950 hover:bg-gray-700/80 transition-colors cursor-pointer"
                       onClick={() => handleOrderClick(order)}
                     >
                       <CardContent className="p-6">
@@ -443,13 +484,12 @@ const UserHome = () => {
                                 <h4 className="text-white font-semibold">
                                   {order.seller.storeName}
                                 </h4>
-                                <span className={`text-sm px-2 py-1 rounded-full ${
-                                  order.status === "completed" 
-                                    ? "bg-green-500/10 text-green-400"
-                                    : order.status === "cancelled"
+                                <span className={`text-sm px-2 py-1 rounded-full ${order.status === "completed"
+                                  ? "bg-green-500/10 text-green-400"
+                                  : order.status === "cancelled"
                                     ? "bg-red-500/10 text-red-400"
                                     : "bg-blue-500/10 text-blue-400"
-                                }`}>
+                                  }`}>
                                   {order.status === "pending" ? "Placed" : order.status}
                                 </span>
                               </div>
@@ -477,8 +517,11 @@ const UserHome = () => {
                 </div>
               )}
             </div>
+
+
           </DialogContent>
         </Dialog>
+
 
         {/* Cancel Order Confirmation Dialog */}
         <Dialog open={showCancelConfirmation} onOpenChange={setShowCancelConfirmation}>

@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { toast } from 'react-hot-toast'
 import { Container } from "./Container";
 import { useNavigate } from "react-router-dom";
+import GradientText from '../ui/GradientText'
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+
 
 export const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,22 +26,53 @@ export const Header = () => {
         navigate("/"); // Redirect to homepage after logout
     };
 
+
     return (
         <>
-            <header id="header" className="bg-backgroundContrast text-white relative z-20">
-            <div className="sticky top-0 z-20 bg-backgroundContrast text-white">
-                <Container className="flex justify-between items-center min-h-[--header-row-height]">
-                    <a href="/">
-                        <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p>
-                    </a>
-                    {isLoggedIn ? (
-                        <a className="text-xs px-2 py-1 rounded cursor-pointer bg-red-600" onClick={handleLogout}>Logout</a>
-                    ) : (
-                        <a className="text-xs px-2 py-1 rounded cursor-pointer bg-blue-600" onClick={() => navigate("/auth/login")}>Login Now</a>
-                    )}
-                </Container>
-            </div>
+            <header id="header" className="bg-[#060606] text-white relative z-20">
+                <div className="sticky top-0 z-20 bg-[#060606] text-white">
+                    <Container className="flex justify-between items-center min-h-[--header-row-height]">
+                        <a href="/">
+                            {/* <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p> */}
+
+                            <GradientText
+                                colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+                                animationSpeed={10}
+                                showBorder={false}
+                                className="font-unbounded py-4 text-4xl font-semibold"
+                            >
+                                Booklio
+                            </GradientText>
+                        </a>
+                        {isLoggedIn ? (
+                            <div className="flex items-center space-x-2 text-sm">
+                                <a onClick={() => navigate("/user")}>
+                                    <InteractiveHoverButton>My Account</InteractiveHoverButton>
+                                </a>
+                                <a onClick={() => navigate("/shop")} >
+                                    <InteractiveHoverButton> Store</InteractiveHoverButton>
+                                </a>
+                                <a onClick={handleLogout} >
+                                    <InteractiveHoverButton>Logout</InteractiveHoverButton>
+                                </a>
+                            </div>
+
+                        ) : (
+
+                            <div className="flex items-center space-x-2 text-sm">
+                                <a onClick={() => navigate("/shop")} >
+                                    <InteractiveHoverButton> Store</InteractiveHoverButton>
+                                </a>
+                                <a onClick={() => navigate("/auth/login")}>
+                                        <InteractiveHoverButton className="bg-gradient-to-r from-[#40ffaa]/80 to-[#4079ff]/80 text-white">Login Now</InteractiveHoverButton></a>
+                            </div>
+
+                        )}
+                    </Container>
+                </div>
             </header>
         </>
     );
 };
+
+

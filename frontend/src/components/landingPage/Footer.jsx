@@ -1,19 +1,33 @@
 import { Facebook, Github, Mail, Linkedin, Users } from 'lucide-react';
 
+import GradientText from '../ui/GradientText'
+
+
+
 export const Footer = () => {
     return (
-        <footer className="bg-backgroundContrast text-gray-300 sticky">
+        <footer className="bg-[#060606] text-gray-300 sticky">
             <div className="container mx-auto px-5 py-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 justify-items-center text-center">
                     {/* Brand Section - Full width on mobile, 2 cols on tablet, 1 col on desktop */}
                     <div className="space-y-4 col-span-1 sm:col-span-2 lg:col-span-1">
                         <a href="/" className="inline-block">
-                            <h2 className="font-unbounded text-4xl font-bold bg-blue-500 bg-clip-text text-transparent">
+                            {/* <h2 className="font-unbounded text-4xl font-bold bg-blue-500 bg-clip-text text-transparent">
                                 Booklio
-                            </h2>
+                            </h2> */}
+
+                            <GradientText
+                                colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+                                animationSpeed={10}
+                                showBorder={false}
+                                // className="custom-class"
+                                className="custom-class font-unbounded text-4xl font-bold bg-blue-500 bg-clip-text text-transparent"
+                            >
+                               Booklio
+                            </GradientText>
                         </a>
-                        <a 
-                            href="/team" 
+                        <a
+                            href="/team"
                             className="flex items-center justify-center gap-2 text-gray-400 hover:text-blue-400 transition-colors group"
                         >
                             <Users className="h-5 w-5 group-hover:scale-110 transition-transform" />
@@ -26,8 +40,8 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Get To Know Us</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a 
-                                href="/about" 
+                            <a
+                                href="/about"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 About Booklio
@@ -39,14 +53,14 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Make Money With Us</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a 
-                                href="/auth/seller/login" 
+                            <a
+                                href="/auth/seller/login"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Sell on Booklio
                             </a>
-                            <a 
-                                href="/auth/admin/login" 
+                            <a
+                                href="/auth/admin/login"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Management Account
@@ -59,8 +73,8 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Let Us Help You</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a 
-                                href="/user" 
+                            <a
+                                href="/user"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Your Account
@@ -72,29 +86,29 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Connect With Us</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="flex gap-4 justify-center">
-                            <a 
-                                href="#" 
+                            <a
+                                href="#"
                                 className="text-gray-400 hover:text-blue-400 transition-colors"
                                 aria-label="Facebook"
                             >
                                 <Facebook className="h-6 w-6 hover:scale-110 transition-transform" />
                             </a>
-                            <a 
-                                href="#" 
+                            <a
+                                href="#"
                                 className="text-gray-400 hover:text-blue-400 transition-colors"
                                 aria-label="Github"
                             >
                                 <Github className="h-6 w-6 hover:scale-110 transition-transform" />
                             </a>
-                            <a 
-                                href="#" 
+                            <a
+                                href="#"
                                 className="text-gray-400 hover:text-blue-400 transition-colors"
                                 aria-label="Gmail"
                             >
                                 <Mail className="h-6 w-6 hover:scale-110 transition-transform" />
                             </a>
-                            <a 
-                                href="#" 
+                            <a
+                                href="#"
                                 className="text-gray-400 hover:text-blue-400 transition-colors"
                                 aria-label="LinkedIn"
                             >

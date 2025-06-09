@@ -67,7 +67,7 @@ export default function VideoCarousel() {
 
     return (
         <>
-            <motion.div animate={carouselVariant} className="bg-backgroundContrast text-black">
+            <motion.div animate={carouselVariant} className="bg-[#060606] text-black">
 
                 {
                     location.pathname == "/shop" && 
@@ -78,7 +78,7 @@ export default function VideoCarousel() {
                     location.pathname !== "/shop" && <ZoomOutCarousel />
                 }
 
-                <div className='relative overflow-hidden h-[300px] w-full bg-backgroundContrast'>
+                <div className='relative overflow-hidden h-[300px] w-full bg-[#060606]'>
                     <motion.div
                         className="absolute left-0 top-0 flex gap-4"
                         ref={ref}

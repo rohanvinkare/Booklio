@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { addData } from "@/store/authSlice/user";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
+import GradientText from '@/components/ui/GradientText'
+import TrueFocus from '@/components/ui/TrueFocus';
 
 const AuthLogin = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -99,40 +101,75 @@ const AuthLogin = () => {
 
 
   return (
-    <div className="w-full flex flex-col justify-center items-center max-w-md space-y-6">
-      <a href="/">
-        <p className="text-[4rem] text-blue-500 font-bold font-unbounded">Booklio</p>
+
+
+    <div className="min-h-screen w-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 bg-[#000003]">
+      {/* Brand / Logo */}
+      <a href="/" className="mb-6 text-center">
+        <GradientText
+          colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+          animationSpeed={10}
+          showBorder={false}
+          className="font-unbounded text-4xl sm:text-5xl md:text-[4rem] font-bold bg-blue-500 bg-clip-text text-transparent"
+        >
+          Booklio
+        </GradientText>
       </a>
-      <div className="bg-white w-[100%] shadow-md rounded-lg">
-        <Card>
-          <CardHeader>
-            <h2 className="text-2xl font-semibold text-center text-gray-800">Login User</h2>
+
+      {/* Login Card */}
+      <div className="w-full max-w-md">
+        <Card className="bg-[#000003] border-2 border-[#40ffaa] shadow-lg shadow-[#000003]/20">
+
+          <CardHeader className="my-6 text-center text-white">
+            {/* Animated Welcome Text */}
+            <TrueFocus
+              sentence="Welcome Back"
+              manualMode={false}
+              blurAmount={3}
+              borderColor="#4079ff"
+              animationDuration={2}
+              pauseBetweenAnimations={1}
+            />
+
+            {/* Manual spacer to ensure visual gap */}
+            <div className="h-5" />
+
+            {/* Subheading */}
+            <p className="text-white text-base sm:text-lg">
+              Login in to your account
+            </p>
           </CardHeader>
+
+
+
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="email" className="text-gray-600">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-[#40ffaa]">
                   Email
                 </Label>
                 <Input
                   type="email"
                   id="email"
-                  {...register("email", { required: "Email is required" })}
                   placeholder="Enter your email"
-                  className="mt-2 text-white"
+                  {...register("email", { required: "Email is required" })}
+                  className="bg-black/50 border-2 border-[#4079ff] text-white placeholder:text-gray-400 focus:border-[#40ffaa] focus:outline-none transition-all"
                 />
                 {errors.email && (
                   <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="password" className="text-gray-600">
+              {/* Password */}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-[#40ffaa]">
                   Password
                 </Label>
                 <Input
                   type="password"
                   id="password"
+                  placeholder="Enter your password"
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
@@ -140,30 +177,41 @@ const AuthLogin = () => {
                       message: "Password must be at least 6 characters long",
                     },
                   })}
-                  placeholder="Enter your password"
-                  className="mt-2 text-white"
+                  className="bg-black/50 border-2 border-[#4079ff] text-white placeholder:text-gray-400 focus:border-[#40ffaa] focus:outline-none transition-all"
                 />
                 {errors.password && (
                   <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
                 )}
               </div>
 
-              <Button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 mt-4">
-                Login
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                className="w-1/3 ml-[33%] bg-white hover:bg-white/70 hover:opacity-90 text-black  font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
+              >
+                Sign In
               </Button>
+
+
             </form>
           </CardContent>
-          <CardFooter className="text-center text-sm text-gray-600">
-            <p>
-              Don't have an account?{" "}
-              <Link to="/auth/register" className="font-medium text-blue-600 hover:underline">
-                Register here
+
+          <CardFooter className="text-center">
+            <p className="text-white/80 text-sm sm:text-base">
+              Don’t have an account? {" "}
+              <Link
+                to="/auth/register"
+                className="text-[#40ffaa] hover:text-red-600 transition-colors font-medium"
+              >
+                Create account
               </Link>
             </p>
           </CardFooter>
         </Card>
       </div>
     </div>
+
+
   );
 }
 

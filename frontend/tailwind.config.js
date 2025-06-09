@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-export const content = ["./src/**/*.{html,js,jsx}"];
+export const content = ["./src/**/*.{html,js,jsx,ts,tsx}"];
 export const theme = {
   extend: {
     colors: {
@@ -94,4 +94,7 @@ export const theme = {
     },
   },
 };
-export const plugins = [];
+export const plugins = [
+  'tailwind-scrollbar',
+];
+

@@ -35,6 +35,7 @@ import { Faqs } from "@/components/landingPage/Faqs";
 import { Footer } from "@/components/landingPage/Footer";
 import VideoCarousel from "@/components/landingPage/VideoCarousel";
 
+
 const genreIcon = [
   { id: "horror", label: "Horror", icon: Ghost, color: "text-red-400" },
   { id: "fantasy", label: "Fantasy", icon: Wand2, color: "text-purple-400" },
@@ -127,7 +128,7 @@ function ShoppingHome() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
+    <div className="min-h-screen bg-[#060606] text-gray-100">
 
       {/* Hero Section with Parallax */}
       <div
@@ -180,7 +181,7 @@ function ShoppingHome() {
       </div>
 
       {/* Genres Section */}
-      <section className="py-16 bg-backgroundContrast">
+      <section className="py-16 bg-[#060606]">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-4 text-blue-400">Explore Genres</h2>
           <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -210,7 +211,7 @@ function ShoppingHome() {
       <VideoCarousel />
 
       {/* FAQ Section */}
-      <section className="py-16 bg-backgroundContrast">
+      <section className="py-16 bg-[#060606]">
         <div className="container mx-auto px-4">
           <Faqs />
         </div>
