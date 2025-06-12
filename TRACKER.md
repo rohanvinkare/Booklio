@@ -14,3 +14,10 @@ used tools  = -> {https://www.reactbits.dev/components/animated-list}
 
 updated the user dashbord beam and icons 
 updated the shop view and ther header 
+
+
+
+
+//--------------------------- jun 13 
+
+updated the our team page 
