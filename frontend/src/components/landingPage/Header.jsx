@@ -64,7 +64,9 @@ export const Header = () => {
                                     <InteractiveHoverButton> Store</InteractiveHoverButton>
                                 </a>
                                 <a onClick={() => navigate("/auth/login")}>
-                                        <InteractiveHoverButton className="bg-gradient-to-r from-[#40ffaa]/80 to-[#4079ff]/80 text-white">Login Now</InteractiveHoverButton></a>
+                                    <InteractiveHoverButton className=" text-white">Login Now</InteractiveHoverButton></a>
+                                <a onClick={() => navigate("/auth/register")}>
+                                    <InteractiveHoverButton className=" text-white">Register</InteractiveHoverButton></a>
                             </div>
 
                         )}

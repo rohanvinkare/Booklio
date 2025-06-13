@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import GradientText from '@/components/ui/GradientText'
 import TrueFocus from '@/components/ui/TrueFocus';
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const AuthLogin = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -47,6 +49,8 @@ const AuthLogin = () => {
       localStorage.removeItem("accessToken");
     }
   };
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // On component mount, check if a token exists in localStorage
   useEffect(() => {
@@ -97,12 +101,7 @@ const AuthLogin = () => {
     }
   };
 
-  // console.log("Data From Redux Store:", reduxData);
-
-
   return (
-
-
     <div className="min-h-screen w-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 bg-[#000003]">
       {/* Brand / Logo */}
       <a href="/" className="mb-6 text-center">
@@ -121,7 +120,6 @@ const AuthLogin = () => {
         <Card className="bg-[#000003] border-2 border-[#40ffaa] shadow-lg shadow-[#000003]/20">
 
           <CardHeader className="my-6 text-center text-white">
-            {/* Animated Welcome Text */}
             <TrueFocus
               sentence="Welcome Back"
               manualMode={false}
@@ -130,17 +128,11 @@ const AuthLogin = () => {
               animationDuration={2}
               pauseBetweenAnimations={1}
             />
-
-            {/* Manual spacer to ensure visual gap */}
             <div className="h-5" />
-
-            {/* Subheading */}
             <p className="text-white text-base sm:text-lg">
               Login in to your account
             </p>
           </CardHeader>
-
-
 
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -162,12 +154,12 @@ const AuthLogin = () => {
               </div>
 
               {/* Password */}
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Label htmlFor="password" className="text-[#40ffaa]">
                   Password
                 </Label>
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
                   {...register("password", {
@@ -177,8 +169,18 @@ const AuthLogin = () => {
                       message: "Password must be at least 6 characters long",
                     },
                   })}
-                  className="bg-black/50 border-2 border-[#4079ff] text-white placeholder:text-gray-400 focus:border-[#40ffaa] focus:outline-none transition-all"
+                  className="bg-black/50 border-2 border-[#4079ff] text-white placeholder:text-gray-400 focus:border-[#40ffaa] focus:outline-none transition-all pr-10"
                 />
+                {/* Eye Icon */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-9 text-red-500 hover:text-blue-500 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+
                 {errors.password && (
                   <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
                 )}
@@ -187,18 +189,16 @@ const AuthLogin = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-1/3 ml-[33%] bg-white hover:bg-white/70 hover:opacity-90 text-black  font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
+                className="w-1/3 ml-[33%] bg-white hover:bg-white/70 hover:opacity-90 text-black font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
               >
                 Sign In
               </Button>
-
-
             </form>
           </CardContent>
 
           <CardFooter className="text-center">
             <p className="text-white/80 text-sm sm:text-base">
-              Don’t have an account? {" "}
+              Don’t have an account?{" "}
               <Link
                 to="/auth/register"
                 className="text-[#40ffaa] hover:text-red-600 transition-colors font-medium"
@@ -210,8 +210,6 @@ const AuthLogin = () => {
         </Card>
       </div>
     </div>
-
-
   );
 }
 

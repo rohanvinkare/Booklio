@@ -6,6 +6,7 @@ import heroImg from '../../assets/hero-bg.avif'
 import "@/styles.css"
 import { FcShop } from "react-icons/fc";
 
+
 export const Hero = () => {
     const videoContainerRef = useRef(null);
     const { scrollYProgress } = useScroll({
