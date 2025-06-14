@@ -4,6 +4,7 @@ import { Container } from "./Container";
 import { useNavigate } from "react-router-dom";
 import GradientText from '../ui/GradientText'
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+import { Link } from "react-router-dom";
 
 
 export const Header = () => {
@@ -32,7 +33,7 @@ export const Header = () => {
             <header id="header" className="bg-[#060606] text-white relative z-20">
                 <div className="sticky top-0 z-20 bg-[#060606] text-white">
                     <Container className="flex justify-between items-center min-h-[--header-row-height]">
-                        <a href="/">
+                        <Link to="/">
                             {/* <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p> */}
 
                             <GradientText
@@ -43,33 +44,33 @@ export const Header = () => {
                             >
                                 Booklio
                             </GradientText>
-                        </a>
+                        </Link>
                         {isLoggedIn ? (
                             <div className="flex items-center space-x-2 text-sm">
-                                <a onClick={() => navigate("/user")}>
+                                <Link to="/user">
                                     <InteractiveHoverButton>My Account</InteractiveHoverButton>
-                                </a>
-                                <a onClick={() => navigate("/shop")} >
-                                    <InteractiveHoverButton> Store</InteractiveHoverButton>
-                                </a>
-                                <a onClick={handleLogout} >
+                                </Link>
+                                <Link to="/shop">
+                                    <InteractiveHoverButton>Store</InteractiveHoverButton>
+                                </Link>
+                                <button onClick={handleLogout}>
                                     <InteractiveHoverButton>Logout</InteractiveHoverButton>
-                                </a>
+                                </button>
                             </div>
-
                         ) : (
-
                             <div className="flex items-center space-x-2 text-sm">
-                                <a onClick={() => navigate("/shop")} >
-                                    <InteractiveHoverButton> Store</InteractiveHoverButton>
-                                </a>
-                                <a onClick={() => navigate("/auth/login")}>
-                                    <InteractiveHoverButton className=" text-white">Login Now</InteractiveHoverButton></a>
-                                <a onClick={() => navigate("/auth/register")}>
-                                    <InteractiveHoverButton className=" text-white">Register</InteractiveHoverButton></a>
+                                <Link to="/shop">
+                                    <InteractiveHoverButton>Store</InteractiveHoverButton>
+                                </Link>
+                                <Link to="/auth/login">
+                                    <InteractiveHoverButton className=" text-white">Login Now</InteractiveHoverButton>
+                                </Link>
+                                <Link to="/auth/register">
+                                    <InteractiveHoverButton className=" text-white">Register</InteractiveHoverButton>
+                                </Link>
                             </div>
-
                         )}
+
                     </Container>
                 </div>
             </header>

@@ -1,149 +1,158 @@
 import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
-import AuthLayout from "./pages/auth/authLayout";
-import AuthLogin from "./components/auth/user/login";
-import AuthRegisters from "./components/auth/user/register";
-import AdminLogin from "./components/auth/admin/adminLogin";
-import SellerLogin from "./components/auth/seller/sellerLogin";
-import SellerRegister from "./components/auth/seller/sellerRegister";
-
-import AdminLayout from "./pages/adminDashboard/adminLayout";
-import AdminHome from './components/adminDashboard/AdminHome'
-import BooksList from './components/adminDashboard/BooksList'
-import UsersList from './components/adminDashboard/UsersList'
-import SellersList from './components/adminDashboard/SellersList'
-import ManagementList from './components/adminDashboard/ManagementList'
-
-import SellerHome from "./components/sellerDashboard/SellerHome";
-import SellerLayout from "./pages/sellerDashboard/sellerLayout";
-import SellerBooksList from "./components/sellerDashboard/SellerBooksList";
-import AddBook from "./components/sellerDashboard/AddBook";
-import SellerAccount from "./components/sellerDashboard/SellerAccount";
-
-import UnauthPage from "./pages/unauth/Unauth";
-import NotFound from "./pages/notFound/NotFound"
-
+// Common
 import CheckAuth from "./common/checkAuth";
 
-import ShoppingHome from "./pages/shopping-view/ShopHome";
-import ShoppingLayout from "./components/shopping-view/layout";
-import ShopListing from "./components/shopping-view/ShopListing";
-import BookDetails from "./components/shopping-view/BookDetails";
-import SellerOrders from "./components/sellerDashboard/SellerOrders";
+// Lazy-loaded components
+const AuthLayout = lazy(() => import("./pages/auth/authLayout"));
+const AuthLogin = lazy(() => import("./components/auth/user/login"));
+const AuthRegisters = lazy(() => import("./components/auth/user/register"));
+const AdminLogin = lazy(() => import("./components/auth/admin/adminLogin"));
+const SellerLogin = lazy(() => import("./components/auth/seller/sellerLogin"));
+const SellerRegister = lazy(() => import("./components/auth/seller/sellerRegister"));
 
-import Format from "./common/Format";
-import Landing from "./pages/landingPage/Landing";
-import PlaceOrder from "./components/shopping-view/PlaceOrder";
-import UserLayout from "./pages/userDashboard/UserLayout";
-import UserHome from "./components/userDashboard/UserHome";
-import AdminSales from "./components/adminDashboard/AdminSales";
-import { Team } from "./pages/Team";
-import { About } from "./pages/About";
+const AdminLayout = lazy(() => import("./pages/adminDashboard/adminLayout"));
+const AdminHome = lazy(() => import('./components/adminDashboard/AdminHome'));
+const BooksList = lazy(() => import('./components/adminDashboard/BooksList'));
+const UsersList = lazy(() => import('./components/adminDashboard/UsersList'));
+const SellersList = lazy(() => import('./components/adminDashboard/SellersList'));
+const ManagementList = lazy(() => import('./components/adminDashboard/ManagementList'));
+const AdminSales = lazy(() => import('./components/adminDashboard/AdminSales'));
+
+const SellerLayout = lazy(() => import("./pages/sellerDashboard/sellerLayout"));
+const SellerHome = lazy(() => import("./components/sellerDashboard/SellerHome"));
+const SellerBooksList = lazy(() => import("./components/sellerDashboard/SellerBooksList"));
+const AddBook = lazy(() => import("./components/sellerDashboard/AddBook"));
+const SellerAccount = lazy(() => import("./components/sellerDashboard/SellerAccount"));
+const SellerOrders = lazy(() => import("./components/sellerDashboard/SellerOrders"));
+
+const ShoppingLayout = lazy(() => import("./components/shopping-view/layout"));
+const ShoppingHome = lazy(() => import("./pages/shopping-view/ShopHome"));
+const ShopListing = lazy(() => import("./components/shopping-view/ShopListing"));
+const BookDetails = lazy(() => import("./components/shopping-view/BookDetails"));
+const PlaceOrder = lazy(() => import("./components/shopping-view/PlaceOrder"));
+
+const UserLayout = lazy(() => import("./pages/userDashboard/UserLayout"));
+const UserHome = lazy(() => import("./components/userDashboard/UserHome"));
+
+const Format = lazy(() => import("./common/Format"));
+const Landing = lazy(() => import("./pages/landingPage/Landing"));
+const UnauthPage = lazy(() => import("./pages/unauth/Unauth"));
+const NotFound = lazy(() => import("./pages/notFound/NotFound"));
+
+const Team = lazy(() => import("./pages/Team"));
+const About = lazy(() => import("./pages/About"));
+
+import Loader from "@/components/Loader";
 
 function App() {
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
-      <Routes>
-        {/* Base */}
-        <Route path='/' element={<Format />} >
-          <Route index element={<Landing />} />
-          <Route path="team" element={<Team />} />
-          <Route path="about" element={<About />} />
-        </Route>
+      {/* for lazy loading  and*/}
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          {/* Base */}
+          <Route path='/' element={<Format />} >
+            <Route index element={<Landing />} />
+            <Route path="team" element={<Team />} />
+            <Route path="about" element={<About />} />
+          </Route>
 
-        {/* Auth */}
-        <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<AuthLogin />} />
-          <Route path="register" element={<AuthRegisters />} />
-          <Route path="admin/login" element={<AdminLogin />} />
-          <Route path="seller/login" element={<SellerLogin />} />
-          <Route path="seller/register" element={<SellerRegister />} />
-        </Route>
+          {/* Auth */}
+          <Route path="/auth" element={<AuthLayout />}>
+            <Route path="login" element={<AuthLogin />} />
+            <Route path="register" element={<AuthRegisters />} />
+            <Route path="admin/login" element={<AdminLogin />} />
+            <Route path="seller/login" element={<SellerLogin />} />
+            <Route path="seller/register" element={<SellerRegister />} />
+          </Route>
 
-        {/* Admin */}
-        <Route
-          path="/admin"
-          element={
-            <CheckAuth allowedRoles={["admin"]}>
-              <AdminLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="" element={<AdminHome />} />
-          <Route path="sales" element={<AdminSales />} />
-          <Route path="books" element={<BooksList />} />
-          <Route path="users" element={<UsersList />} />
-          <Route path="sellers" element={<SellersList />} />
-          <Route path="management" element={<ManagementList />} />
-        </Route>
+          {/* Admin */}
+          <Route
+            path="/admin"
+            element={
+              <CheckAuth allowedRoles={["admin"]}>
+                <AdminLayout />
+              </CheckAuth>
+            }
+          >
+            <Route path="" element={<AdminHome />} />
+            <Route path="sales" element={<AdminSales />} />
+            <Route path="books" element={<BooksList />} />
+            <Route path="users" element={<UsersList />} />
+            <Route path="sellers" element={<SellersList />} />
+            <Route path="management" element={<ManagementList />} />
+          </Route>
 
-        {/* Shop */}
-        <Route
-          path="/shop"
-          element={
-            <CheckAuth allowedRoles={["user"]}>
+          {/* Shop */}
+          <Route
+            path="/shop"
+            element={
+              <CheckAuth allowedRoles={["user"]}>
+                <ShoppingLayout />
+              </CheckAuth>
+            }
+          >
+            <Route path='' element={<ShoppingHome />} />
+            <Route path='listing' element={<ShopListing />} />
+          </Route>
+
+          {/* Book details */}
+          <Route
+            path="/seller/:sellerId/isbn/:isbn"
+            element={
               <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path='' element={<ShoppingHome />} />
-          <Route path='listing' element={<ShopListing />} />
-        </Route>
+            }
+          >
+            <Route index element={<BookDetails />} />
+          </Route>
 
-        {/* Book details */}
-        <Route
-          path="/seller/:sellerId/isbn/:isbn"
-          element={
-            <ShoppingLayout />
-          }
-        >
-          <Route index element={<BookDetails />} />
-        </Route>
+          {/* Place Order */}
+          <Route
+            path="placeOrder"
+            element={
+              <ShoppingLayout />
+            }
+          >
+            <Route path="" element={<PlaceOrder />} />
+          </Route>
 
-        {/* Place Order */}
-        <Route
-          path="placeOrder"
-          element={
-            <ShoppingLayout />
-          }
-        >
-          <Route path="" element={<PlaceOrder />} />
-        </Route>
-
-        {/* Seller */}
-        <Route
-          path="/seller"
-          element={
-            <CheckAuth allowedRoles={["seller"]}>
-              <SellerLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="" element={<SellerHome />} />
-          <Route path="books" element={<SellerBooksList />} />
-          <Route path="add-book" element={<AddBook />} />
-          <Route path="Orders" element={<SellerOrders />} />
-          <Route path="Account" element={<SellerAccount />} />
-        </Route>
+          {/* Seller */}
+          <Route
+            path="/seller"
+            element={
+              <CheckAuth allowedRoles={["seller"]}>
+                <SellerLayout />
+              </CheckAuth>
+            }
+          >
+            <Route path="" element={<SellerHome />} />
+            <Route path="books" element={<SellerBooksList />} />
+            <Route path="add-book" element={<AddBook />} />
+            <Route path="Orders" element={<SellerOrders />} />
+            <Route path="Account" element={<SellerAccount />} />
+          </Route>
 
 
-        {/* User */}
-        <Route
-          path="/user"
-          element={
-            <CheckAuth allowedRoles={["user"]}>
-              <UserLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="" element={<UserHome />} />
-        </Route>
+          {/* User */}
+          <Route
+            path="/user"
+            element={
+              <CheckAuth allowedRoles={["user"]}>
+                <UserLayout />
+              </CheckAuth>
+            }
+          >
+            <Route path="" element={<UserHome />} />
+          </Route>
 
-        {/* Unauth & Notfound */}
-        <Route path="/unauth-page" element={<UnauthPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Unauth & Notfound */}
+          <Route path="/unauth-page" element={<UnauthPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div >
   );
 }

@@ -5,6 +5,7 @@ import { useRef } from "react"
 import heroImg from '../../assets/hero-bg.avif'
 import "@/styles.css"
 import { FcShop } from "react-icons/fc";
+import { Link } from "react-router-dom"
 
 
 export const Hero = () => {
@@ -40,12 +41,12 @@ export const Hero = () => {
                         All Books Orginals. <br />
                         Only On Booklio.
                     </h1>
-                    <a href="/shop">
+                    <Link to="/shop">
                         <Button className="mb-16 text-white bg-blue-700 px-6 py-3 rounded-xl shadow-md flex items-center gap-2">
                             <span>Go To Shop</span>
                             <FcShop className="text-xl" />
                         </Button>
-                    </a>
+                    </Link>
                     <p className="font-semibold">Buy it now from our 🛒 store.</p>
                 </motion.div>
             </Container>

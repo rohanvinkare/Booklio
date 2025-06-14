@@ -19,7 +19,7 @@ export const Format = () => {
     return (
         <>
             <LoadingBar
-                color='#f11946'
+                color="#3B82F6"
                 progress={progress}
                 onLoaderFinished={() => setProgress(0)}
             />
@@ -28,6 +28,7 @@ export const Format = () => {
             <Outlet />
 
             <ScrollToTopBtn />
+            
             <Footer />
         </>
     );

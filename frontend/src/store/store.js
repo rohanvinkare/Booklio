@@ -17,18 +17,33 @@ import shopOrderSlice from "./shop/order-slice";
 import shopSearchSlice from "./shop/search-slice";
 import shopReviewSlice from "./shop/review-slice";
 
+
+import BooksReducer from './user/books'
+import userProfileReducer from './user/profile'
+import userOrderReducer from './user/order'
+
 const store = configureStore({
     reducer: {
+
+        // Authentication related reducers
+        auth: authReducer,
+        adminAuth: adminAuthReducer,
+        sellerAuth: sellerAuthReducer,
+
+        // Admin related reducers
         adminBooksData: adminBooksReducer,
         adminManagementsData: adminManagementsReducer,
         adminSellersData: adminSellersReducer,
         adminUsersData: adminUsersReducer,
 
-        auth: authReducer,
-        adminAuth: adminAuthReducer,
-        sellerAuth: sellerAuthReducer,
 
+        // Seller related reducers
         seller: sellerReducer,
+
+        // User related reducers
+        booksListing: BooksReducer,
+        userProfile: userProfileReducer,
+        userOrder: userOrderReducer,
 
         shopProducts: shopProductsSlice,
         shopCart: shopCartSlice,

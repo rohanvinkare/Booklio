@@ -158,7 +158,7 @@ function AuthRegisters() {
     // </div>
 
     <div className="min-h-screen w-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 bg-[#000003] space-y-6">
-      <a href="/" className="text-center">
+      <Link to="/" className="text-center">
         <GradientText
           colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
           animationSpeed={10}
@@ -167,7 +167,7 @@ function AuthRegisters() {
         >
           Booklio
         </GradientText>
-      </a>
+      </Link>
 
       <div className="w-full max-w-md">
         <Card className="bg-[#000003] border-2 border-[#40ffaa] shadow-lg shadow-[#000003]/20">

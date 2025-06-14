@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import store from "./store/store.js";
 import { Toaster } from "react-hot-toast";
 import ClickSpark from '@/components/ui/ClickSpark.jsx';
+import ScrollToTop from '@/components/ScrollToTop.jsx';
 
 createRoot(document.getElementById('root')).render(
   <ClickSpark
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
   >
     <BrowserRouter>
       <Provider store={store} >
+        <ScrollToTop />
         <App />
         <Toaster />
       </Provider>

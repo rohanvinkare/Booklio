@@ -1,16 +1,16 @@
 import { motion } from 'framer-motion';
-import { 
-    BookOpen, 
-    ShoppingBag, 
-    Truck, 
-    Shield, 
-    Users, 
-    Store, 
-    CreditCard, 
-    HeartHandshake 
+import {
+    BookOpen,
+    ShoppingBag,
+    Truck,
+    Shield,
+    Users,
+    Store,
+    CreditCard,
+    HeartHandshake
 } from 'lucide-react';
 
-export const About = () => {
+const About = () => {
     const features = [
         {
             icon: <BookOpen className="h-8 w-8" />,
@@ -62,7 +62,7 @@ export const About = () => {
             {/* Hero Section */}
             <section className="relative py-20 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <motion.div 
+                    <motion.div
                         className="text-center"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export const About = () => {
                             Welcome to <span className="text-blue-500 font-unbounded">Booklio</span>
                         </h1>
                         <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                            Your premier destination for discovering, buying, and selling books online. 
+                            Your premier destination for discovering, buying, and selling books online.
                             We connect readers with their next favorite book and sellers with their perfect audience.
                         </p>
                     </motion.div>
@@ -82,7 +82,7 @@ export const About = () => {
             {/* Mission Section */}
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800/50">
                 <div className="max-w-7xl mx-auto">
-                    <motion.div 
+                    <motion.div
                         className="text-center mb-16"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -90,7 +90,7 @@ export const About = () => {
                     >
                         <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
                         <p className="text-gray-400 max-w-2xl mx-auto">
-                            To create a vibrant community where book lovers can easily access their favorite reads 
+                            To create a vibrant community where book lovers can easily access their favorite reads
                             while providing a platform for sellers to grow their business in the digital age.
                         </p>
                     </motion.div>
@@ -100,7 +100,7 @@ export const About = () => {
             {/* Features Section */}
             <section className="py-16 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <motion.div 
+                    <motion.div
                         className="text-center mb-12"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -131,7 +131,7 @@ export const About = () => {
             {/* Services Section */}
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-800/50">
                 <div className="max-w-7xl mx-auto">
-                    <motion.div 
+                    <motion.div
                         className="text-center mb-12"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ export const About = () => {
 
             {/* Call to Action */}
             <section className="py-16 px-4 sm:px-6 lg:px-8">
-                <motion.div 
+                <motion.div
                     className="max-w-3xl mx-auto text-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -169,18 +169,18 @@ export const About = () => {
                 >
                     <h2 className="text-3xl font-bold mb-6">Ready to Start Your Journey?</h2>
                     <p className="text-gray-400 mb-8">
-                        Join our community of book lovers and sellers today. Whether you're looking to find your next read 
+                        Join our community of book lovers and sellers today. Whether you're looking to find your next read
                         or want to start selling books online, Booklio is here to help.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <a 
-                            href="/shop" 
+                        <a
+                            href="/shop"
                             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-300"
                         >
                             Start Shopping
                         </a>
-                        <a 
-                            href="/auth/seller/register" 
+                        <a
+                            href="/auth/seller/register"
                             className="px-6 py-3 border border-blue-600 hover:bg-blue-600/10 rounded-lg transition-colors duration-300"
                         >
                             Become a Seller
@@ -191,3 +191,5 @@ export const About = () => {
         </div>
     );
 }
+
+export default About;

@@ -1,57 +1,50 @@
+import { useSelector, useDispatch } from "react-redux";
+import { profileData } from "@/store/user/profile";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "@/components/userDashboard/navbar"; // Adjust the path as needed
+import Navbar from "@/components/userDashboard/navbar";
 import { Footer } from "@/components/landingPage/Footer";
 
-
-
-
-
 const UserLayout = () => {
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    avatarUrl: "",
-  });
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.userProfile?.profile);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem("accessToken");
+      if (userData) {
+        setLoading(false);
+        return;
+      }
 
+      const token = localStorage.getItem("accessToken");
       if (!token) {
         console.error("No access token found");
+        setLoading(false);
         return;
       }
 
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/user/api/v1/profile`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user/api/v1/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const result = await response.json();
+        const result = await res.json();
         if (result.success) {
-          setUserData(result.data);
+          dispatch(profileData(result.data));
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+      } catch (err) {
+        console.error("Failed to fetch user data", err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [dispatch, userData]);
 
   if (loading) {
     return (
@@ -62,18 +55,13 @@ const UserLayout = () => {
   }
 
   return (
-
     <div className="flex flex-col min-h-screen bg-[#060606] text-white">
-
-        <Navbar userData={userData} />
-        <div className="flex-1 p-6">
-          <Outlet context={userData} />
-        </div>
-        <Footer />
-     
-
-    </div >
-
+      {userData && <Navbar userData={userData} />}
+      <div className="flex-1 p-6">
+        <Outlet context={userData || {}} />
+      </div>
+      <Footer />
+    </div>
   );
 };
 

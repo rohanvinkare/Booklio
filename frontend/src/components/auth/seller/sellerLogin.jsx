@@ -107,7 +107,7 @@ const SellerLogin = () => {
   return (
     <div className="min-h-screen w-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 bg-[#000003]">
       {/* Brand / Logo */}
-      <a href="/" className="mb-6 text-center">
+      <Link to="/" className="mb-6 text-center">
         <GradientText
           colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
           animationSpeed={10}
@@ -116,7 +116,7 @@ const SellerLogin = () => {
         >
           Booklio
         </GradientText>
-      </a>
+      </Link>
 
       {/* Login Card */}
       <div className="w-full max-w-md">

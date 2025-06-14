@@ -364,7 +364,7 @@ const cancelOrder = async (req, res) => {
     }
 
     // Check if the order status is already canceled
-    if (order.status === "canceled") {
+    if (order.status === "cancelled") {
       return res.status(400).json({
         success: false,
         msg: `Order with ID ${orderId} is already canceled!`,
@@ -372,21 +372,21 @@ const cancelOrder = async (req, res) => {
     }
 
     // Cancel the order
-    order.status = "canceled";
+    order.status = "cancelled";
     await order.save();
 
     // Find the associated PayCut entry
     const payCut = await PayCut.findOne({ orderId });
     if (payCut) {
       // Optionally, update the PayCut status or perform additional logic if needed
-      payCut.status = "canceled";
+      payCut.status = "cancelled";
       await payCut.save();
     }
 
     // Return success response
     return res.status(200).json({
       success: true,
-      msg: `Order with ID ${orderId} has been canceled successfully.`,
+      msg: `Order with ID ${orderId} has been cancelled successfully.`,
       order, // Optionally return the updated order details
       // payCut, // Optionally return the updated PayCut details
     });

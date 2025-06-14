@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { FaArrowCircleRight, FaShoppingBasket } from "react-icons/fa";
 import GradientText from '../ui/GradientText.jsx'
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+import { Link } from "react-router-dom";
 
 // Utility function to generate a random color
 const getRandomColor = () => {
@@ -46,7 +47,7 @@ const Navbar = ({ userData }) => {
             </a>
           </div> */}
 
-          <a href="/shop">
+          <Link to="/shop">
             {/* <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p> */}
 
             <GradientText
@@ -57,29 +58,29 @@ const Navbar = ({ userData }) => {
             >
               Booklio
             </GradientText>
-          </a>
+          </Link>
 
           {/* Navigation */}
           <div className="flex items-center justify-center gap-2 sm:gap-4">
             <ul className="flex flex-wrap justify-center gap-2 sm:gap-4">
               <li>
-                <a
-                  href="/user"
+                <Link
+                  to="/user"
                   className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${location.pathname === "/user" ? "hidden" : ""
                     } ${isActive("/user") ? "bg-blue-600" : "bg-blue-600"}`}
                 >
                   My Account
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/shop/listing"
+                <Link
+                  to="/shop/listing"
                   className={`flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded cursor-pointer transition-colors ${isActive("/shop/listing") ? "bg-blue-700" : "bg-blue-600"
                     } text-white`}
                 >
                   Shop
                   <FaArrowCircleRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                </a>
+                </Link>
               </li>
               <li>
                 <a onClick={handleLogout} >

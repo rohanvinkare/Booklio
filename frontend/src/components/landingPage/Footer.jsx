@@ -2,6 +2,8 @@ import { Facebook, Github, Mail, Linkedin, Users } from 'lucide-react';
 
 import GradientText from '../ui/GradientText'
 
+import { Link } from "react-router-dom";
+
 
 
 export const Footer = () => {
@@ -11,7 +13,9 @@ export const Footer = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 justify-items-center text-center">
                     {/* Brand Section - Full width on mobile, 2 cols on tablet, 1 col on desktop */}
                     <div className="space-y-4 col-span-1 sm:col-span-2 lg:col-span-1">
-                        <a href="/" className="inline-block">
+
+
+                        <Link to="/" className="inline-block">
                             {/* <h2 className="font-unbounded text-4xl font-bold bg-blue-500 bg-clip-text text-transparent">
                                 Booklio
                             </h2> */}
@@ -23,16 +27,18 @@ export const Footer = () => {
                                 // className="custom-class"
                                 className="custom-class font-unbounded text-4xl font-bold bg-blue-500 bg-clip-text text-transparent"
                             >
-                               Booklio
+                                Booklio
                             </GradientText>
-                        </a>
-                        <a
-                            href="/team"
+                        </Link>
+
+
+                        <Link to="/team"
                             className="flex items-center justify-center gap-2 text-gray-400 hover:text-blue-400 transition-colors group"
                         >
                             <Users className="h-5 w-5 group-hover:scale-110 transition-transform" />
                             <span className="text-sm">Our Team</span>
-                        </a>
+                        </Link>
+
                     </div>
 
                     {/* Left column on tablet */}
@@ -40,12 +46,11 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Get To Know Us</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a
-                                href="/about"
+                            <Link to="/about"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 About Booklio
-                            </a>
+                            </Link>
                         </div>
                     </div>
 
@@ -53,18 +58,19 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Make Money With Us</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a
-                                href="/auth/seller/login"
+
+                            <Link to="/auth/seller/login"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Sell on Booklio
-                            </a>
-                            <a
-                                href="/auth/admin/login"
+                            </Link>
+
+                            <Link to="/auth/admin/login"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Management Account
-                            </a>
+                            </Link>
+
                         </div>
                     </div>
 
@@ -73,12 +79,13 @@ export const Footer = () => {
                         <h3 className="text-lg font-semibold text-blue-400">Let Us Help You</h3>
                         <div className="h-px w-12 bg-blue-400 mx-auto"></div>
                         <div className="space-y-2">
-                            <a
-                                href="/user"
+
+                            <Link to="/user"
                                 className="block text-sm hover:text-blue-400 transition-colors"
                             >
                                 Your Account
-                            </a>
+                            </Link>
+
                         </div>
                     </div>
 
@@ -125,8 +132,8 @@ export const Footer = () => {
                             © {new Date().getFullYear()} Booklio. All rights reserved.
                         </p>
                         <div className="flex gap-4 text-sm text-gray-500">
-                            <a href="/privacy" className="hover:text-blue-400 transition-colors">Privacy Policy</a>
-                            <a href="/terms" className="hover:text-blue-400 transition-colors">Terms of Service</a>
+                            <Link to="/privacy" className="hover:text-blue-400 transition-colors">Privacy Policy</Link>
+                            <Link to="/terms" className="hover:text-blue-400 transition-colors">Terms of Service</Link>
                         </div>
                     </div>
                 </div>

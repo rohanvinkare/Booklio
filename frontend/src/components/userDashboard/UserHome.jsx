@@ -1,5 +1,8 @@
 import { useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { orderData } from "@/store/user/order"; //  Your redux slice
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,11 +14,11 @@ import {
   Phone,
   ShieldCheck,
   ShieldX,
-  Edit,
   CreditCard,
   Clock,
   ChevronRight,
-  Loader
+  Loader,
+  CheckCircle2, XCircle, Truck, IndianRupee
 } from "lucide-react";
 import {
   Dialog,
@@ -26,14 +29,14 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "react-hot-toast";
-import { BoxReveal } from "@/components/magicui/box-reveal";
 import { BorderBeam } from "@/components/magicui/border-beam";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-import { FlipText } from "@/components/magicui/flip-text";
 
 const UserHome = () => {
   const userData = useOutletContext();
-  const [orders, setOrders] = useState([]);
+  const dispatch = useDispatch();
+
+  const orders = useSelector((state) => state.userOrder.value); //  Redux order state
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState(
     "No address provided. Add your address below."
@@ -55,9 +58,12 @@ const UserHome = () => {
           }
         );
         const data = await response.json();
+
         if (data.success) {
-          setOrders(data.orderData[0]?.orders || []);
-          const firstOrderAddress = data.orderData[0]?.orders[0]?.shippingAddress;
+          const fetchedOrders = data.orderData[0]?.orders || [];
+
+          dispatch(orderData(fetchedOrders)); // Store in Redux
+          const firstOrderAddress = fetchedOrders[0]?.shippingAddress;
           if (firstOrderAddress) {
             setAddress(
               `${firstOrderAddress.street}, ${firstOrderAddress.city}, ${firstOrderAddress.state}, ${firstOrderAddress.country} - ${firstOrderAddress.zipCode}`
@@ -71,57 +77,76 @@ const UserHome = () => {
       }
     };
 
-    if (userData.userId) {
-      fetchOrders();
+    if (userData.userId && orders.length === 0) {
+      fetchOrders(); // Only fetch if Redux doesn't have orders
+    } else {
+      setLoading(false);
     }
-  }, [userData.userId]);
+  }, [userData.userId, orders.length, dispatch]);
+
+
+  //----------- claculating total orders and spent -----------
+  const statusTotals = orders.reduce((totals, order) => {
+    const status = order.status.toLowerCase(); // normalize just in case
+    if (!totals[status]) {
+      totals[status] = 0;
+    }
+    totals[status] += order.price;
+    return totals;
+  }, {});
 
   const totalOrders = orders.length;
-  const totalSpent = orders.reduce((sum, order) => sum + order.price, 0);
+  const totalPending = statusTotals.pending || 0;
+  const totalCompleted = statusTotals.completed || 0;
+  const totalCancelled = statusTotals.cancelled || 0;
+  const totalPlaced = statusTotals.placed || 0;
 
-  const recentOrders = orders.slice(0, 3); // Get last 3 orders
+  const recentOrders = orders.slice(-3);
 
+  //----------------------------------------------------------------------
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
-    // Close the all orders dialog if it's open
-    if (showAllOrders) {
-      setShowAllOrders(false);
-    }
+    if (showAllOrders) setShowAllOrders(false);
   };
 
   const handleCancelOrder = async () => {
     try {
       setLoading(true);
+
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/order/api/v1/cancel-order/${selectedOrder?.orderId}`,
+        `${import.meta.env.VITE_BASE_URL}/order/api/v1/cancel-order`,
         {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            orderId: selectedOrder?.orderId,
+          }),
         }
       );
 
-      const data = await response.json();
-      console.log("Cancel order response:", data);
+      const contentType = response.headers.get("content-type");
+      const data = contentType?.includes("application/json")
+        ? await response.json()
+        : { success: false, message: "Invalid response format" };
 
       if (response.ok && data.success) {
         toast.success("Order cancelled successfully!");
 
-        // Update the order's status rather than removing it
-        const updatedOrders = orders.map(order =>
+        // Update Redux store
+        const updatedOrders = orders.map((order) =>
           order.orderId === selectedOrder.orderId
             ? { ...order, status: "cancelled" }
             : order
         );
+        dispatch(orderData(updatedOrders));
 
-        setOrders(updatedOrders);
         setSelectedOrder({ ...selectedOrder, status: "cancelled" });
         setShowCancelConfirmation(false);
       } else {
-        console.error("Error response:", data);
         toast.error(data.message || "Failed to cancel order");
       }
     } catch (error) {
@@ -132,6 +157,7 @@ const UserHome = () => {
     }
   };
 
+
   return (
     <div className="min-h-screen p-6 md:p-10">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -139,7 +165,7 @@ const UserHome = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* Profile Card */}
-          <div className="relative">
+          <div className="relative h-[70%]">
             <Card className="md:col-span-1 bg-[#060606]/80 border-blue-950/60 h-full">
               <CardContent className="p-6 m-3">
 
@@ -164,19 +190,25 @@ const UserHome = () => {
                 </div>
 
                 <div className="mt-6 space-y-4">
+                  {/* Email */}
                   <div className="flex items-center text-gray-300">
-                    <Mail className="w-5 h-5 mr-3 text-gray-400" />
-                    <span className="text-sm"> {userData.email}</span>
+                    <Mail className="w-5 h-5 mr-3 text-blue-600 drop-shadow-[0_0_6px_#3b82f6]" />
+                    <span className="text-sm text-white">{userData.email}</span>
                   </div>
+
+                  {/* Phone */}
                   <div className="flex items-center text-gray-300">
-                    <Phone className="w-5 h-5 mr-3 text-gray-400" />
-                    <span className="text-sm">{userData.mobile}</span>
+                    <Phone className="w-5 h-5 mr-3 text-green-500 drop-shadow-[0_0_6px_#22c55e]" />
+                    <span className="text-sm text-white">{userData.mobile}</span>
                   </div>
+
+                  {/* Location */}
                   <div className="flex items-center text-gray-300">
-                    <MapPin className="w-5 h-5 mr-3 text-gray-400 flex-shrink-0" />
-                    <span className="text-sm">{address}</span>
+                    <MapPin className="w-5 h-5 mr-3 text-red-700 drop-shadow-[0_0_6px_#ec4899] flex-shrink-0" />
+                    <span className="text-sm text-white">{address}</span>
                   </div>
                 </div>
+
               </CardContent>
             </Card>
             <BorderBeam
@@ -189,47 +221,128 @@ const UserHome = () => {
           </div>
 
 
-          {/* Stats Cards */}
           <div className="md:col-span-2">
+            {/* Stats Cards */}
             <Card className="bg-[#060606] border-blue-950">
+
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 gap-6">
+                  {/* Total Orders */}
                   <div className="flex items-center space-x-4">
-                    <Package className="w-12 h-12 text-blue-500" />
+                    <Package className="w-10 h-10 text-blue-500" />
                     <div>
                       <p className="text-sm text-gray-400">Total Orders</p>
                       <h3 className="text-3xl font-bold text-white mt-1">
                         {loading ? "..." : (
+                          <NumberTicker
+                            value={totalOrders}
+                            className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-white"
+                          />
+                        )}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Total Spent */}
+                  {/* <div className="flex items-center space-x-4">
+                    <CreditCard className="w-10 h-10 text-green-500" />
+                    <div>
+                      <p className="text-sm text-gray-400">Total Spent</p>
+                      <h3 className="text-3xl font-bold text-white mt-1 flex items-center gap-2">
+                        {loading ? "..." : (
                           <>
+                            <IndianRupee className="w-5 h-5 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
                             <NumberTicker
-                              value={totalOrders}
-                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-black dark:text-white"
+                              value={totalSpent}
+                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-white"
+                            />
+                          </>
+                        )}
+                      </h3>
+                    </div>
+                  </div> */}
+
+                  {/* Pending */}
+                  <div className="flex items-center space-x-4">
+                    <Clock className="w-10 h-10 text-yellow-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Pending</p>
+                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
+                        {loading ? "..." : (
+                          <>
+                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
+                            <NumberTicker
+                              value={totalPending}
+                              className="text-2xl font-medium tracking-tight text-white"
                             />
                           </>
                         )}
                       </h3>
                     </div>
                   </div>
+
+                  {/* Completed */}
                   <div className="flex items-center space-x-4">
-                    <CreditCard className="w-12 h-12 text-green-500" />
+                    <CheckCircle2 className="w-10 h-10 text-emerald-400" />
                     <div>
-                      <p className="text-sm text-gray-400">Total Spent</p>
-                      <h3 className="text-3xl font-bold text-white mt-1">
-                        {/* {loading ? "..." : `₹${totalSpent}`} */}
-                        {loading ? "..." :
+                      <p className="text-sm text-gray-400">Completed</p>
+                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
+                        {loading ? "..." : (
                           <>
+                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
                             <NumberTicker
-                              value={totalSpent}
-                              prefix="₹ "
-                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-black dark:text-white"
+                              value={totalCompleted}
+                              className="text-2xl font-medium tracking-tight text-white"
                             />
                           </>
-                        }
+                        )}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Cancelled */}
+                  <div className="flex items-center space-x-4">
+                    <XCircle className="w-10 h-10 text-red-500" />
+                    <div>
+                      <p className="text-sm text-gray-400">Cancelled</p>
+                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
+                        {loading ? "..." : (
+                          <>
+                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
+                            <NumberTicker
+                              value={totalCancelled}
+                              className="text-2xl font-medium tracking-tight text-white"
+                            />
+                          </>
+                        )}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Placed */}
+                  <div className="flex items-center space-x-4">
+                    <Truck className="w-10 h-10 text-cyan-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">Placed</p>
+                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
+                        {loading ? "..." : (
+                          <>
+                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
+                            <NumberTicker
+                              value={totalPlaced}
+                              className="text-2xl font-medium tracking-tight text-white"
+                            />
+                          </>
+                        )}
                       </h3>
                     </div>
                   </div>
                 </div>
               </CardContent>
+
+
+
+
             </Card>
 
             {/* Recent Orders Section */}
@@ -274,15 +387,30 @@ const UserHome = () => {
                                     <h4 className="text-white font-semibold">
                                       {order.seller.storeName}
                                     </h4>
-                                    <span className={`text-xs px-2 py-1 rounded-full ${order.status === "completed"
-                                      ? "bg-green-500/10 text-green-400"
-                                      : order.status === "cancelled"
-                                        ? "bg-red-500/10 text-red-400"
-                                        : "bg-blue-500/10 text-blue-400"
-                                      }`}>
-                                      {order.status === "pending" ? "Placed" : order.status}
+
+
+                                    <span
+                                      className={`text-xs px-2 py-1 rounded-full font-semibold capitalize
+                                             ${order.status === "completed"
+                                          ? "bg-green-500/10 text-green-400"
+                                          : order.status === "pending"
+                                            ? "bg-yellow-500/10 text-yellow-400"
+                                            : order.status === "cancelled"
+                                              ? "bg-red-500/10 text-red-400"
+                                              : order.status === "placed"
+                                                ? "bg-blue-500/10 text-blue-400"
+                                                : "bg-gray-500/10 text-gray-300"
+                                        }`}
+                                    >
+                                      {order.status}
                                     </span>
+
+
                                   </div>
+                                  <p className="text-sm text-emerald-400/90 mt-1 font-medium">
+                                    <span className="text-gray-300">Book Title:</span>{" "}
+                                    {order.bookInfo?.data?.volumeInfo?.title || "N/A"}
+                                  </p>
                                   <p className="text-sm text-gray-400 mt-1">
                                     Delivered to: {order.shippingAddress?.city}
                                   </p>
@@ -332,14 +460,25 @@ const UserHome = () => {
                     <Package className="w-5 h-5 text-blue-500" />
                     <span className="text-white font-medium">Order Status</span>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${selectedOrder?.status === "completed"
-                    ? "bg-green-500/10 text-green-400"
-                    : selectedOrder?.status === "cancelled"
-                      ? "bg-red-500/10 text-red-400"
-                      : "bg-blue-500/10 text-blue-400"
-                    }`}>
-                    {selectedOrder?.status === "pending" ? "Placed" : selectedOrder?.status}
+
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
+                    ${selectedOrder?.status === "completed"
+                        ? "bg-green-500/10 text-green-400"
+                        : selectedOrder?.status === "pending"
+                          ? "bg-yellow-500/10 text-yellow-400"
+                          : selectedOrder?.status === "cancelled"
+                            ? "bg-red-500/10 text-red-400"
+                            : selectedOrder?.status === "placed"
+                              ? "bg-blue-500/10 text-blue-400"
+                              : "bg-gray-500/10 text-gray-300"
+                      }`}
+                  >
+                    {selectedOrder?.status}
                   </span>
+
+
                 </div>
 
                 {/* Book Details */}
@@ -484,18 +623,41 @@ const UserHome = () => {
                                 <h4 className="text-white font-semibold">
                                   {order.seller.storeName}
                                 </h4>
-                                <span className={`text-sm px-2 py-1 rounded-full ${order.status === "completed"
-                                  ? "bg-green-500/10 text-green-400"
-                                  : order.status === "cancelled"
-                                    ? "bg-red-500/10 text-red-400"
-                                    : "bg-blue-500/10 text-blue-400"
-                                  }`}>
-                                  {order.status === "pending" ? "Placed" : order.status}
+
+
+                                <span
+                                  className={`text-sm font-semibold capitalize px-2 py-1 rounded-full
+                                     ${order.status === "completed"
+                                      ? "bg-green-500/10 text-green-400"
+                                      : order.status === "pending"
+                                        ? "bg-yellow-500/10 text-yellow-400"
+                                        : order.status === "cancelled"
+                                          ? "bg-red-500/10 text-red-400"
+                                          : order.status === "placed"
+                                            ? "bg-blue-500/10 text-blue-400"
+                                            : "bg-gray-500/10 text-gray-300"
+                                    }`}
+                                >
+                                  {order.status}
                                 </span>
+
+
                               </div>
-                              <p className="text-sm text-gray-400 mt-1">
-                                Delivered to: {order.shippingAddress?.city}
+                              <p className="text-sm text-emerald-400 mt-1 font-medium">
+                                <span className="text-gray-200">Book Title:</span>{" "}
+                                {order.bookInfo?.data?.volumeInfo?.title || "N/A"}
                               </p>
+
+                              <p className="text-sm text-gray-400 mt-2 mb-2 leading-tight">
+                                Seller: <span className="text-gray-300">{order.seller.name}</span> |
+                                Contact: <span className="text-gray-300">{order.seller.mobile}</span>
+                              </p>
+
+                              <p className="text-sm text-gray-400 mt-1">
+                                Delivered to: <span className="text-gray-200">{order.shippingAddress?.city}</span>
+                              </p>
+
+
                             </div>
                           </div>
                           <div className="flex items-end justify-between sm:flex-col sm:items-end gap-2">

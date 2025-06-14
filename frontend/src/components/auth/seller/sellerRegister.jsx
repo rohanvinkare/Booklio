@@ -402,9 +402,9 @@ function SellerRegister() {
 
   return (
     <div className="w-full flex flex-col justify-center items-center max-w-md space-y-2">
-      <a href="/">
+      <Link to="/">
         <p className="text-[4rem] text-blue-500 font-bold font-unbounded">Booklio</p>
-      </a>
+      </Link>
       <div className="bg-white w-[140%] shadow-md rounded-lg">
         <Card>
           <CardHeader>

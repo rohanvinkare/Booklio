@@ -4,57 +4,61 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import GenreFilter from "./GenreFilter";
 import notAvailable from "../../assets/notAvailable.png";
-import { Search, BookOpen, ShoppingCart, Star, Calendar, Building, Hash, Filter } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Search, BookOpen, ShoppingCart, Star, Calendar, Building, Hash, Filter
+} from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
+  Sheet, SheetContent, SheetTrigger,
 } from "@/components/ui/sheet";
 
+//--------------------- Redux store 
+import { booksData } from "@/store/user/books/index.js"; // adjust path
+import { useDispatch, useSelector } from "react-redux";
+
 const ShopListing = () => {
-  const [bookData, setBookData] = useState({});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const bookData = useSelector((state) => state.booksListing.value);
   const [selectedGenres, setSelectedGenres] = useState([]);
-  const [books, setBooks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
+  const [books, setBooks] = useState([]);
 
+  // Fetch from API only if Redux store is empty
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`${import.meta.env.VITE_BASE_URL}/book/api/v1/all-genre-book`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          setBookData(data.bookData);
-          setSelectedGenres([]);
-          setBooks(Object.values(data.bookData).flat());
-        }
-      })
-      .catch((error) => console.error("Error fetching data:", error))
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  useEffect(() => {
-    if (selectedGenres.length === 0) {
-      setBooks(Object.values(bookData).flat());
+    if (Object.keys(bookData).length === 0) {
+      setIsLoading(true);
+      fetch(`${import.meta.env.VITE_BASE_URL}/book/api/v1/all-genre-book`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            dispatch(booksData(data.bookData)); // update Redux
+          }
+        })
+        .catch((error) => console.error("Error fetching data:", error))
+        .finally(() => setIsLoading(false));
     } else {
-      setBooks(selectedGenres.flatMap((g) => bookData[g] || []));
+      setIsLoading(false);
     }
+  }, [dispatch, bookData]);
+
+  // Update `books` from Redux (if genre filters change or store updates)
+  useEffect(() => {
+    if (!bookData || Object.keys(bookData).length === 0) return;
+
+    const updatedBooks = selectedGenres.length === 0
+      ? Object.values(bookData).flat()
+      : selectedGenres.flatMap((genre) => bookData[genre] || []);
+
+    setBooks(updatedBooks);
   }, [selectedGenres, bookData]);
 
-  const handleBuyNowClick = (isbn, sellerId, event) => {
-    event.stopPropagation();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    navigate(`/seller/${sellerId}/isbn/${isbn}`);
-  };
-
+  // Filter by search query
   const filteredBooks = books.filter((book) => {
     const title = book.data.volumeInfo?.title?.toLowerCase() || "";
     const authors = book.data.volumeInfo?.authors?.join(", ").toLowerCase() || "";
@@ -63,6 +67,12 @@ const ShopListing = () => {
       authors.includes(searchQuery.toLowerCase())
     );
   });
+
+  const handleBuyNowClick = (isbn, sellerId, event) => {
+    event.stopPropagation();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate(`/seller/${sellerId}/isbn/${isbn}`);
+  };
 
   return (
     <div className="flex flex-grow bg-gray-900 min-h-screen">
@@ -131,72 +141,72 @@ const ShopListing = () => {
                 const description = book.data.volumeInfo?.description || "No description available";
 
                 return (
-                  <Card 
-                  key={index} 
-                  className="group bg-gray-800 border-gray-700 hover:border-blue-500 transition-all duration-300 overflow-hidden cursor-pointer relative h-full flex flex-col"
-                  onClick={() => setSelectedBook(book)}
-                >
-                  {/* Price Flag */}
-                  {price && (
-                    <div className="absolute z-10 -top-1 -left-2 bg-red-500 text-white text-sm font-bold py-1 px-4 shadow-md before:z-5 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:border-l-8 before:border-l-transparent before:border-t-8 before:border-t-red-700">
-                      ₹{price}
-                    </div>
-                  )}
-              
-                  {/* Image Section - Fixed Height */}
-                  <div className="relative h-[200px] w-full overflow-hidden flex-shrink-0">
-                    {thumbnail ? (
-                      <img
-                        src={thumbnail}
-                        alt={title}
-                        className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-700 flex items-center justify-center">
-                        <BookOpen className="w-12 h-12 text-gray-500" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-              
-                  {/* Content Section - Flexible Height */}
-                  <CardContent className="p-4 flex-grow flex flex-col">
-                    <div className="flex-grow">
-                      <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
-                        {title}
-                      </h3>
-                      <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                        {description}
-                      </p>
-                      
-                      <div className="space-y-1">
-                        <div className="flex items-center text-sm text-gray-400">
-                          <Star className="w-4 h-4 mr-2 text-yellow-500" />
-                          <span className="line-clamp-1">
-                            {book.data.volumeInfo.authors?.join(", ") || "Unknown Author"}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-400">
-                          <BookOpen className="w-4 h-4 mr-2 text-blue-500" />
-                          <span>{book.data.volumeInfo.pageCount || "N/A"} pages</span>
-                        </div>
-                      </div>
-                    </div>
-              
-                    {/* Buy Button - Always at Bottom */}
+                  <Card
+                    key={index}
+                    className="group bg-gray-800 border-gray-700 hover:border-blue-500 transition-all duration-300 overflow-hidden cursor-pointer relative h-full flex flex-col"
+                    onClick={() => setSelectedBook(book)}
+                  >
+                    {/* Price Flag */}
                     {price && (
-                      <div className="mt-3 pt-3 border-t border-gray-700">
-                        <Button
-                          className="w-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center space-x-2 py-2"
-                          onClick={(e) => handleBuyNowClick(book.isbn, book.spCluster?.[0]?.sellerId, e)}
-                        >
-                          <ShoppingCart className="w-4 h-4" />
-                          <span>Buy Now</span>
-                        </Button>
+                      <div className="absolute z-10 -top-1 -left-2 bg-red-500 text-white text-sm font-bold py-1 px-4 shadow-md before:z-5 before:content-[''] before:absolute before:-bottom-2 before:left-0 before:border-l-8 before:border-l-transparent before:border-t-8 before:border-t-red-700">
+                        ₹{price}
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+
+                    {/* Image Section - Fixed Height */}
+                    <div className="relative h-[200px] w-full overflow-hidden flex-shrink-0">
+                      {thumbnail ? (
+                        <img
+                          src={thumbnail}
+                          alt={title}
+                          className="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                          <BookOpen className="w-12 h-12 text-gray-500" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+
+                    {/* Content Section - Flexible Height */}
+                    <CardContent className="p-4 flex-grow flex flex-col">
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
+                          {title}
+                        </h3>
+                        <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                          {description}
+                        </p>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center text-sm text-gray-400">
+                            <Star className="w-4 h-4 mr-2 text-yellow-500" />
+                            <span className="line-clamp-1">
+                              {book.data.volumeInfo.authors?.join(", ") || "Unknown Author"}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-400">
+                            <BookOpen className="w-4 h-4 mr-2 text-blue-500" />
+                            <span>{book.data.volumeInfo.pageCount || "N/A"} pages</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Buy Button - Always at Bottom */}
+                      {price && (
+                        <div className="mt-3 pt-3 border-t border-gray-700">
+                          <Button
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center space-x-2 py-2"
+                            onClick={(e) => handleBuyNowClick(book.isbn, book.spCluster?.[0]?.sellerId, e)}
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            <span>Buy Now</span>
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 );
               })
             ) : (

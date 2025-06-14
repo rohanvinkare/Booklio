@@ -4,6 +4,7 @@ import { motion, useInView } from "motion/react";
 import { FcShop } from "react-icons/fc";
 import { Button } from "@/components/landingPage/Button"
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 
 const World = lazy(() =>
@@ -484,7 +485,7 @@ export function GlobeDemo() {
 
     return (
         <section
-            ref={ref} 
+            ref={ref}
             className="min-h-screen mt-0 mb-0 w-full flex items-center justify-center bg-[#060606] text-white px-4 sm:px-6 md:px-8 py-10 transition-all duration-500"
         >
             <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -504,12 +505,12 @@ export function GlobeDemo() {
                         .
                     </h1>
 
-                    <a href="/shop" className="mx-auto md:mx-0">
+                    <Link to="/shop" className="mx-auto md:mx-0">
                         <Button className="mb-6 text-white bg-blue-700 px-6 py-3 rounded-xl shadow-md flex items-center gap-2">
                             <span>Explore Store</span>
                             <FcShop className="text-xl" />
                         </Button>
-                    </a>
+                    </Link>
 
                     <p className="font-medium text-neutral-300 max-w-md mx-auto md:mx-0">
                         Dive into handpicked originals, delivered right to your shelf 🌍📚

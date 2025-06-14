@@ -49,10 +49,10 @@ function ShoppingHeader() {
           {/* Authentication Actions */}
           <div className="flex items-center gap-2 sm:gap-4  ">
             <div>
-              <a onClick={() => navigate("/user")}
+              <Link to="/user"
               >
                 <InteractiveHoverButton>My Account</InteractiveHoverButton>
-              </a>
+              </Link>
             </div>
             <div >
               {isLoggedIn ? (

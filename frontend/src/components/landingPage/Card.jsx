@@ -2,6 +2,7 @@ import { useState } from "react";
 import arrowUrl from "../../assets/arrow.svg";
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const Card = ({ image }) => {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -14,7 +15,7 @@ const Card = ({ image }) => {
     >
       <AnimatePresence>
         {showOverlay && (
-          <a href="/shop/listing">
+          <Link to="/shop/listing">
             <motion.div
               className="absolute inset-0 z-10 flex justify-center items-center"
               initial={{ opacity: 0 }}
@@ -32,7 +33,7 @@ const Card = ({ image }) => {
                 <img src={arrowUrl} alt="arrow" />
               </motion.h1>
             </motion.div>
-          </a>
+          </Link>
         )}
       </AnimatePresence>
       <img src={image} alt={image} className="w-full h-full object-cover" />
