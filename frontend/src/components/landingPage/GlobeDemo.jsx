@@ -1,5 +1,5 @@
-"use client";
-import React, { Suspense, lazy } from "react";
+
+import { lazy } from "react";
 import { motion, useInView } from "motion/react";
 import { FcShop } from "react-icons/fc";
 import { Button } from "@/components/landingPage/Button"

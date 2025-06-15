@@ -550,8 +550,22 @@ const UserHome = () => {
                     </div>
 
                     <div>
-                      <p className="text-gray-400">Payment Status</p>
-                      <p className="text-[#00ff88] ">Completed</p>
+                      <p className="mb-3 text-gray-400">Payment Status</p>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
+                         ${selectedOrder?.status === "completed"
+                            ? "bg-green-500/10 text-green-400"
+                            : selectedOrder?.status === "pending"
+                              ? "bg-yellow-500/10 text-yellow-400"
+                              : selectedOrder?.status === "cancelled"
+                                ? "bg-red-500/10 text-red-400"
+                                : selectedOrder?.status === "placed"
+                                  ? "bg-blue-500/10 text-blue-400"
+                                  : "bg-gray-500/10 text-gray-300"
+                          }`}
+                      >
+                        {selectedOrder?.status}
+                      </span>
                     </div>
 
                     <div>
