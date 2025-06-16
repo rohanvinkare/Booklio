@@ -123,16 +123,20 @@ const variants = {
 export default function VideoCarousel() {
     const location = useLocation();
 
-    // Image list for the carousel
+
+
     const images = [
-        'booksCoverPage/atomicHabits.png',
-        'booksCoverPage/bhagwatGeeta.jpeg',
-        'booksCoverPage/ikigai.jpeg',
-        'booksCoverPage/psychologyOfMoney.jpeg',
-        'booksCoverPage/richDadPoorDad.jpeg',
-        'booksCoverPage/steveJobs.jpg',
-        'booksCoverPage/thatNight.jpeg',
-        'booksCoverPage/thePowerOfSubconsciousMind.jpeg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068113/atomicHabits_exuqua.png',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068109/bhagwatGeeta_o3dgri.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068106/ikigai_uulma7.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068102/psychologyOfMoney_ejsqmy.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068104/richDadPoorDad_rvsg9w.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068099/steveJobs_lzu4jd.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068101/thatNight_q8r8qo.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068101/subhashChandraBose_krikk1.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068110/dontLookBack_z8nw20.png',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068111/albertEinstein_lokpse.jpg',
+        'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068099/thePowerOfSubconsciousMind_mppef8.jpg',
     ];
 
     const FAST_DURATION = 25;

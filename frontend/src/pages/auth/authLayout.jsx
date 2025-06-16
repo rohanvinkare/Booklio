@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
+
+
 // import backgroundImage from "/loginSideImage.avif"; // Import the image correctly
-import backgroundImage from "/loginpage3.png";
+// import backgroundImage from "/loginpage3.png";
 
 
 // function AuthLayout() {
@@ -44,7 +46,7 @@ function AuthLayout() {
         {/* Background Image */}
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
+          style={{ backgroundImage: `url(https://res.cloudinary.com/djwfg6dgl/image/upload/v1750067506/loginpage3_ukjijd.png)` }}
         />
 
         {/* Overlay for opacity (adjust opacity as needed) */}

@@ -1,52 +1,63 @@
-import { useEffect, useState } from "react";
-import { toast } from 'react-hot-toast'
+import { useEffect, useState, useRef } from "react";
+import { toast } from "react-hot-toast";
 import { Container } from "./Container";
-import { useNavigate } from "react-router-dom";
-import GradientText from '../ui/GradientText'
+import { useNavigate, Link } from "react-router-dom";
+import GradientText from "../ui/GradientText";
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
-import { Link } from "react-router-dom";
-
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 export const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [popupOpen, setPopupOpen] = useState(false);
     const navigate = useNavigate();
+    const popupRef = useRef(null);
 
-    // Check if both token and role exist in localStorage on component mount
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
         const role = localStorage.getItem("role");
         setIsLoggedIn(!!token && !!role);
     }, []);
 
-    // Handle logout by clearing the token and role from localStorage
     const handleLogout = () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("role");
         setIsLoggedIn(false);
         toast.success("Logout successful!");
-        navigate("/"); // Redirect to homepage after logout
+        navigate("/");
     };
 
+    // Close popup on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (popupRef.current && !popupRef.current.contains(e.target)) {
+                setPopupOpen(false);
+            }
+        };
+        if (popupOpen) document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [popupOpen]);
 
     return (
-        <>
-            <header id="header" className="bg-[#060606] text-white relative z-20">
-                <div className="sticky top-0 z-20 bg-[#060606] text-white">
-                    <Container className="flex justify-between items-center min-h-[--header-row-height]">
-                        <Link to="/">
-                            {/* <p className="font-unbounded py-4 text-4xl font-semibold">Booklio</p> */}
+        <header className="bg-[#060606] text-white relative z-[60]">
+            {/* Sticky only on mobile */}
+            <div className="sticky top-0 z-50 bg-[#060606] md:relative md:top-auto">
+                <Container className="flex justify-between items-center min-h-[--header-row-height] py-3 px-4">
+                    <Link to="/">
+                        <GradientText
+                            colors={["#40ffaa", "#4079ff", "#40ffaa"]}
+                            animationSpeed={10}
+                            showBorder={false}
+                            className="font-unbounded text-3xl font-semibold"
+                        >
+                            Booklio
+                        </GradientText>
+                    </Link>
 
-                            <GradientText
-                                colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
-                                animationSpeed={10}
-                                showBorder={false}
-                                className="font-unbounded py-4 text-4xl font-semibold"
-                            >
-                                Booklio
-                            </GradientText>
-                        </Link>
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center space-x-2 text-sm">
                         {isLoggedIn ? (
-                            <div className="flex items-center space-x-2 text-sm">
+                            <>
                                 <Link to="/user">
                                     <InteractiveHoverButton>My Account</InteractiveHoverButton>
                                 </Link>
@@ -56,26 +67,96 @@ export const Header = () => {
                                 <button onClick={handleLogout}>
                                     <InteractiveHoverButton>Logout</InteractiveHoverButton>
                                 </button>
-                            </div>
+                            </>
                         ) : (
-                            <div className="flex items-center space-x-2 text-sm">
+                            <>
                                 <Link to="/shop">
                                     <InteractiveHoverButton>Store</InteractiveHoverButton>
                                 </Link>
                                 <Link to="/auth/login">
-                                    <InteractiveHoverButton className=" text-white">Login Now</InteractiveHoverButton>
+                                    <InteractiveHoverButton>Login Now</InteractiveHoverButton>
                                 </Link>
                                 <Link to="/auth/register">
-                                    <InteractiveHoverButton className=" text-white">Register</InteractiveHoverButton>
+                                    <InteractiveHoverButton>Register</InteractiveHoverButton>
                                 </Link>
-                            </div>
+                            </>
                         )}
+                    </div>
 
-                    </Container>
-                </div>
-            </header>
-        </>
+                    {/* Mobile Hamburger */}
+                    <button
+                        className="md:hidden text-white"
+                        onClick={() => setPopupOpen(true)}
+                        aria-label="Toggle Menu"
+                    >
+                        <Menu size={28} />
+                    </button>
+                </Container>
+            </div>
+
+            {/* Backdrop */}
+            <AnimatePresence>
+                {popupOpen && (
+                    <>
+                        <motion.div
+                            className="fixed inset-0 bg-black/40 z-40"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setPopupOpen(false)}
+                        />
+
+                        {/* Slide-in Drawer */}
+                        <motion.div
+                            ref={popupRef}
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "tween", duration: 0.3 }}
+                            className="fixed top-0 right-0 h-full w-[80vw] max-w-xs z-50 bg-[#111] shadow-lg p-4 overflow-y-auto rounded-l-xl"
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <p className="text-lg font-semibold">Menu</p>
+                                <button onClick={() => setPopupOpen(false)}>
+                                    <X size={22} />
+                                </button>
+                            </div>
+                            <div className="flex flex-col space-y-2">
+                                {isLoggedIn ? (
+                                    <>
+                                        <Link to="/user" onClick={() => setPopupOpen(false)}>
+                                            <InteractiveHoverButton className="w-full">My Account</InteractiveHoverButton>
+                                        </Link>
+                                        <Link to="/shop" onClick={() => setPopupOpen(false)}>
+                                            <InteractiveHoverButton className="w-full">Store</InteractiveHoverButton>
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                handleLogout();
+                                                setPopupOpen(false);
+                                            }}
+                                        >
+                                            <InteractiveHoverButton className="w-full">Logout</InteractiveHoverButton>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to="/shop" onClick={() => setPopupOpen(false)}>
+                                            <InteractiveHoverButton className="w-full">Store</InteractiveHoverButton>
+                                        </Link>
+                                        <Link to="/auth/login" onClick={() => setPopupOpen(false)}>
+                                            <InteractiveHoverButton className="w-full">Login</InteractiveHoverButton>
+                                        </Link>
+                                        <Link to="/auth/register" onClick={() => setPopupOpen(false)}>
+                                            <InteractiveHoverButton className="w-full">Register</InteractiveHoverButton>
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </header>
     );
 };
-
-

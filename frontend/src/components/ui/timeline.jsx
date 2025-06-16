@@ -1,8 +1,8 @@
 "use client";;
 import { useScroll, useTransform, motion } from "motion/react";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuroraText } from "@/components/magicui/aurora-text";
-import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
+
 
 export const Timeline = ({
     data
