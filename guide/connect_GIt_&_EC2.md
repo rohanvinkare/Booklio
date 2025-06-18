@@ -1,9 +1,9 @@
-
 # Connect EC2 with GitHub Actions for CI/CD
 
 ## Step-by-Step Guide
 
 ### 1. **Create an SSH Key Pair**
+
 If you don’t have one already:
 
 ```bash
@@ -15,6 +15,7 @@ ssh-keygen -t rsa -b 4096 -C "github-actions" -f ~/.ssh/github-action-key
   - **Public key**: `github-action-key.pub`
 
 ### 2. **Copy the Public Key to EC2**
+
 SSH into your EC2 instance:
 
 ```bash
@@ -31,13 +32,16 @@ chmod 700 ~/.ssh
 ```
 
 ### 3. **Add the Private Key to GitHub Secrets**
+
 In your GitHub repo:
+
 - Go to **Settings → Secrets → Actions**.
 - Add a new secret:
   - Name: `EC2_SSH_KEY`
   - Value: **Contents of `github-action-key`** (private key)
 
 Also add these:
+
 - `EC2_USER` → e.g., `ec2-user`
 - `EC2_HOST` → Public IP or DNS of your EC2 instance
 
@@ -67,6 +71,7 @@ jobs:
 ```
 
 ### Tips for Security
+
 - Never expose your private key in logs (`chmod 600 ~/.ssh/id_rsa` prevents this).
 - Use a **deploy user** on EC2 with limited access if possible.
 - Optionally, use a deployment script on EC2 (`deploy.sh`) to keep the GitHub workflow clean.

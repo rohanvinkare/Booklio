@@ -31,7 +31,7 @@ export const theme = {
 
       // Surface colors (for cards, modals, etc.)
       surface: {
-        DEFAULT: "#262626", // Default surface color
+        DEFAULT: "#262626", // Defaul t surface color
         light: "#2E2E2E", // Lighter surface
         dark: "#1A1A1A", // Darker surface
       },
