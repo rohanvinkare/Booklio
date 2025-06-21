@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend: 
-    # For pushing in to Docker Hub 
+    # For pushing into Docker Hub 
     image: rohanv7/dev-booklio-backend:latest
 
     build:
@@ -13,10 +13,7 @@ services:
       - "3000:3000"
     depends_on:
       - redis
-    env_file:
-      - .env
     restart: unless-stopped
-
 
   redis:
     image: redis:alpine
