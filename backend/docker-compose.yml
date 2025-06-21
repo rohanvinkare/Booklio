@@ -2,10 +2,13 @@ version: '3.8'
 
 services:
   backend:
+
+    image: rohanv7/dev-booklio-backend:latest
+
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dev-booklio-backend
+    container_name: dev-booklio-backend 
     ports:
       - "3000:3000"
     depends_on:
@@ -13,6 +16,8 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+
+
 
   redis:
     image: redis:alpine
