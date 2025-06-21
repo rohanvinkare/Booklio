@@ -39,14 +39,27 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker stop dev || true
-            
-            docker rm dev || true
+            echo "🔐 Logging in to Docker Hub..."
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-            docker rmi rohanv7/dev-booklio-backend:latest || true
+            echo "🛑 Checking for existing container..."
+            if [ "$(docker ps -aq -f name=dev)" ]; then
+              echo "Stopping and removing existing container 'dev'..."
+              docker stop dev
+              docker rm dev
+            else
+              echo "No existing container named 'dev'."
+            fi
 
+            echo "🧹 Cleaning up old image if exists..."
+            if docker image inspect rohanv7/dev-booklio-backend:latest > /dev/null 2>&1; then
+              docker rmi rohanv7/dev-booklio-backend:latest
+            fi
+
+            echo "📦 Pulling latest image..."
             docker pull rohanv7/dev-booklio-backend:latest
 
+            echo "🚀 Starting container with env file..."
             docker run -d \
               --name dev \
               --env-file /home/${{ secrets.EC2_USER }}/dev/.env \
