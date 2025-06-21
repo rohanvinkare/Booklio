@@ -173,7 +173,7 @@ const sellerRegister = async (req, res) => {
       </div>
       <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
         <p>© 2024 Booklio. All rights reserved.</p>
-        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+        <p><a href="https://booklio.codenix.space" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
       </div>
     </div>
   `;
@@ -342,7 +342,7 @@ const sellerRegisterV4 = async (req, res) => {
       </div>
       <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
         <p>© 2024 Booklio. All rights reserved.</p>
-        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+        <p><a href="https://booklio.codenix.space" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
       </div>
     </div>
   `;
@@ -508,7 +508,7 @@ const sendMailVerification = async (req, res) => {
       </div>
       <div style="background-color: #333; padding: 15px; text-align: center; color: #fff; font-size: 14px;">
         <p>© 2024 Booklio. All rights reserved.</p>
-        <p><a href="https://booklio.com" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
+        <p><a href="https://booklio.codenix.space" style="color: #4CAF50; text-decoration: none;">Visit our website</a></p>
       </div>
     </div>
   `;

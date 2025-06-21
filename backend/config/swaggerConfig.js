@@ -9,7 +9,15 @@ const options = {
             version: "1.0.0",
             description: "API documentation for the Booklio book website",
         },
-        servers: [
+        servers: [   
+            {
+                url: "https://booklio-backend.codenix.space/",
+                description: "Production server (IP address)",
+            },
+            {
+                url: "https://booklio-backend-dev.codenix.space/",
+                description: "Devlopment server (IP address)",
+            },
             {
                 url: "http://localhost:3000",
                 description: "Base URL of the application",
@@ -18,10 +26,7 @@ const options = {
                 url: "https://booklio.onrender.com",
                 description: "Render server (IP address)",
             },
-            {
-                url: "http://13.203.251.217:3000",
-                description: "Production server (IP address)",
-            },
+         
         ],
         components: {
             securitySchemes: {
