@@ -51,5 +51,5 @@ jobs:
       - name: Build and Push Docker Images (Backend)
         working-directory: ./backend
         run: |
-          docker-compose -f docker-compose.yml build
-          docker-compose -f docker-compose.yml push
+         docker compose -f docker-compose.yml build
+         docker compose -f docker-compose.yml push
