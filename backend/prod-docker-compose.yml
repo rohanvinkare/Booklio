@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend: 
+    # For pushing into Docker Hub 
+    image: rohanv7/prod-booklio-backend:latest
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: prod-booklio-backend 
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: prod-redis
+    ports:
+      - "6379:6379"

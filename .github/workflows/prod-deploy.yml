@@ -1,16 +1,16 @@
-name: Dev Deploy (Backend + Frontend)
+name: Prod Deploy (Backend + Frontend)
 
 on:
   push:
     branches:
-      - dev
+      - main
     paths:
       - "backend/**"
-      - ".github/workflows/dev-deploy.yml"
+      - ".github/workflows/prod-deploy.yml"
 
 jobs:
   build_and_push:
-    name: 🏗️ DEV :- Build & Push Docker Image
+    name: 🏗️ PROD :- Build & Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
@@ -30,12 +30,12 @@ jobs:
         working-directory: ./backend
         run: |
           echo "📦 Building Docker image for backend..."
-          docker compose -f dev-docker-compose.yml build
+          docker compose -f prod-docker-compose.yml build
           echo "☁️ Pushing image to Docker Hub..."
-          docker compose -f dev-docker-compose.yml push
+          docker compose -f prod-docker-compose.yml push
 
   deploy_to_ec2:
-    name: 🚀 DEV :- Deploy to EC2
+    name: 🚀 PROD :- Deploy to EC2
     runs-on: ubuntu-latest
     needs: build_and_push
 
@@ -51,17 +51,17 @@ jobs:
             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
             echo "🛑 [EC2] Removing existing container (if any)..."
-            docker rm -f dev 2>/dev/null || echo "No running container to remove."
+            docker rm -f prod 2>/dev/null || echo "No running container to remove."
 
             echo "🧹 [EC2] Removing old image (if exists)..."
-            docker rmi rohanv7/dev-booklio-backend:latest 2>/dev/null || true
+            docker rmi rohanv7/prod-booklio-backend:latest 2>/dev/null || true
 
             echo "📥 [EC2] Pulling latest image..."
-            docker pull rohanv7/dev-booklio-backend:latest
+            docker pull rohanv7/prod-booklio-backend:latest
 
             echo "🚀 [EC2] Starting new container..."
             docker run -d \
-              --name dev \
-              --env-file /home/${{ secrets.EC2_USER }}/dev/.env \
-              -p 3001:3000 \
-              rohanv7/dev-booklio-backend:latest
+              --name prod \
+              --env-file /home/${{ secrets.EC2_USER }}/prod/.env \
+              -p 3000:3000 \
+              rohanv7/prod-booklio-backend:latest
