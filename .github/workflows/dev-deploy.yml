@@ -1,3 +1,86 @@
+# name: Dev Deploy (Backend + Frontend)
+
+# on:
+#   push:
+#     branches:
+#       - dev
+#     paths:
+#       - "backend/**"
+#       - ".github/workflows/dev-deploy.yml"
+
+# jobs:
+#   build_and_push:
+#     name: 🏗️ DEV :- Build & Push Docker Image
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: 📦 Checkout Repository
+#         uses: actions/checkout@v3
+
+#       - name: 🛠️ Set Up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
+
+#       - name: 🔐 Login to Docker Hub
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
+
+#       - name: 📤 Build & Push Backend Image
+#         working-directory: ./backend
+#         run: |
+#           echo "📦 Building Docker image for backend..."
+#           docker compose -f dev-docker-compose.yml build
+#           echo "☁️ Pushing image to Docker Hub..."
+#           docker compose -f dev-docker-compose.yml push
+
+#   deploy_to_ec2:
+#     name: 🚀 DEV :- Deploy to EC2
+#     runs-on: ubuntu-latest
+#     needs: build_and_push
+
+#     steps:
+#       - name: 📡 SSH into EC2 & Deploy Container
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USER }}
+#           key: ${{ secrets.EC2_SSH_KEY }}
+#           script: |
+#             echo "🔐 [EC2] Logging in to Docker Hub..."
+#             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+#             echo "🛑 [EC2] Removing existing containers..."
+#             docker rm -f dev dev-redis 2>/dev/null || true
+
+#             echo "🧹 [EC2] Removing old images..."
+#             docker rmi rohanv7/dev-booklio-backend:latest 2>/dev/null || true
+
+#             echo "🐳 [EC2] Starting Redis for DEV..."
+#             docker run -d \
+#               --name dev-redis \
+#               -p 6380:6379 \
+#               redis:alpine
+
+#             echo "📥 [EC2] Pulling latest backend image..."
+#             docker pull rohanv7/dev-booklio-backend:latest
+
+#             echo "🚀 [EC2] Starting DEV backend container..."
+#             docker run -d \
+#               --name dev \
+#               --env-file /home/${{ secrets.EC2_USER }}/dev/.env \
+#               --link dev-redis:redis \
+#               -p 3001:3000 \
+#               rohanv7/dev-booklio-backend:latest
+
+#             # This links the Redis container to the backend container
+#             # The backend can talk to Redis using the name 'redis'
+#             # Inside the Redis container, it always listens on port 6379
+#             # So we must use 6379 in .env (not the host port like 6380 or 6381)
+
+#             # also in port also 3001 : 3000 ===> Host : container
+#             # so in container code is running so use deafult port only not the one maped on host
+
 name: Dev Deploy (Backend + Frontend)
 
 on:
@@ -6,18 +89,19 @@ on:
       - dev
     paths:
       - "backend/**"
+      - "frontend/**"
       - ".github/workflows/dev-deploy.yml"
 
 jobs:
   build_and_push:
-    name: 🏗️ DEV :- Build & Push Docker Image
+    name: 📽️ DEV :- Build & Push Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Checkout Repository
+      - name: 📆 Checkout Repository
         uses: actions/checkout@v3
 
-      - name: 🛠️ Set Up Docker Buildx
+      - name: 💪 Set Up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: 🔐 Login to Docker Hub
@@ -29,7 +113,7 @@ jobs:
       - name: 📤 Build & Push Backend Image
         working-directory: ./backend
         run: |
-          echo "📦 Building Docker image for backend..."
+          echo "📆 Building Docker image for backend..."
           docker compose -f dev-docker-compose.yml build
           echo "☁️ Pushing image to Docker Hub..."
           docker compose -f dev-docker-compose.yml push
@@ -50,10 +134,10 @@ jobs:
             echo "🔐 [EC2] Logging in to Docker Hub..."
             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
-            echo "🛑 [EC2] Removing existing containers..."
+            echo "👑 [EC2] Removing existing containers..."
             docker rm -f dev dev-redis 2>/dev/null || true
 
-            echo "🧹 [EC2] Removing old images..."
+            echo "🚹 [EC2] Removing old images..."
             docker rmi rohanv7/dev-booklio-backend:latest 2>/dev/null || true
 
             echo "🐳 [EC2] Starting Redis for DEV..."
@@ -62,7 +146,7 @@ jobs:
               -p 6380:6379 \
               redis:alpine
 
-            echo "📥 [EC2] Pulling latest backend image..."
+            echo "📅 [EC2] Pulling latest backend image..."
             docker pull rohanv7/dev-booklio-backend:latest
 
             echo "🚀 [EC2] Starting DEV backend container..."
@@ -73,10 +157,57 @@ jobs:
               -p 3001:3000 \
               rohanv7/dev-booklio-backend:latest
 
-            # This links the Redis container to the backend container
-            # The backend can talk to Redis using the name 'redis'
-            # Inside the Redis container, it always listens on port 6379
-            # So we must use 6379 in .env (not the host port like 6380 or 6381)
-             
-            # also in port also 3001 : 3000 ===> Host : container
-            # so in container code is running so use deafult port only not the one maped on host
+  build_and_deploy_frontend:
+    name: 🌟 DEV :- Build & Deploy Frontend to S3 + CDN
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: 📦 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: 🔄 Set Build Env Vars
+        run: |
+          echo "VITE_BASE_URL=https://booklio-backend-dev.codenix.space" >> .env
+          echo "GEOCODE_API=b6b5a9c356a54d6aaeb80b98fa63aa75" >> .env
+          cat .env
+
+      - name: 📅 Install Dependencies
+        run: npm ci
+
+      - name: 🔧 Build React App
+        run: npm run build
+
+      - name: 📤 Upload to S3 (dev/ folder)
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: build
+          DEST_DIR: dev
+
+      - name: ❌ Invalidate CloudFront Cache (dev/)
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.DEV_CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/dev/*"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: 🪜 Purge Cloudflare Cache (Entire Zone)
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}'
