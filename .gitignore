@@ -34,9 +34,6 @@ Thumbs.db
 dist/
 build/
 
-# Ignore npm package-lock
-package-lock.json
-yarn.lock
 
 frontendold
 
