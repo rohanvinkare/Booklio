@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     container_name: dev-booklio-backend 
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - redis
     restart: unless-stopped
@@ -19,4 +19,4 @@ services:
     image: redis:alpine
     container_name: dev-redis
     ports:
-      - "6379:6379"
+      - "6380:6379"

@@ -50,18 +50,25 @@ jobs:
             echo "🔐 [EC2] Logging in to Docker Hub..."
             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
-            echo "🛑 [EC2] Removing existing container (if any)..."
-            docker rm -f prod 2>/dev/null || echo "No running container to remove."
+            echo "🛑 [EC2] Removing existing containers..."
+            docker rm -f prod prod-redis 2>/dev/null || true
 
-            echo "🧹 [EC2] Removing old image (if exists)..."
+            echo "🧹 [EC2] Removing old images..."
             docker rmi rohanv7/prod-booklio-backend:latest 2>/dev/null || true
 
-            echo "📥 [EC2] Pulling latest image..."
+            echo "🐳 [EC2] Starting Redis for PROD..."
+            docker run -d \
+              --name prod-redis \
+              -p 6379:6379 \
+              redis:alpine
+
+            echo "📥 [EC2] Pulling latest backend image..."
             docker pull rohanv7/prod-booklio-backend:latest
 
-            echo "🚀 [EC2] Starting new container..."
+            echo "🚀 [EC2] Starting PROD backend container..."
             docker run -d \
               --name prod \
               --env-file /home/${{ secrets.EC2_USER }}/prod/.env \
+              --link prod-redis:redis \
               -p 3000:3000 \
               rohanv7/prod-booklio-backend:latest
