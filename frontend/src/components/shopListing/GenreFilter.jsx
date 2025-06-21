@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,16 +20,14 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-[120px] left-4 w-60 bg-gray-800/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-700 overflow-hidden"
+      className="fixed top-[120px] left-4 w-60 bg-[#060606]/80 backdrop-blur-sm rounded-xl shadow-xl border border-blue-950/60 overflow-hidden"
     >
-      <div className="p-4 bg-gray-900/50 border-b border-gray-700">
+      <div className="p-4 bg-[#060606]/90 border-b border-blue-950/60">
         <div className="flex items-center space-x-2">
           <BookOpen className="w-5 h-5 text-blue-400" />
-          <h2 className="text-lg font-semibold text-gray-100">Genre Filters</h2>
+          <h2 className="text-lg font-semibold text-white">Genre Filters</h2>
         </div>
-        <p className="text-sm text-gray-400 mt-1">
-          Select genres to filter books
-        </p>
+        <p className="text-sm text-gray-400 mt-1">Select genres to filter books</p>
       </div>
 
       <ScrollArea className="h-[calc(100vh-250px)] px-4 py-2">
@@ -43,7 +42,7 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
             />
             <Label
               htmlFor="all-books"
-              className="text-sm font-medium leading-none group-hover:text-blue-400 transition-colors cursor-pointer"
+              className="text-sm font-medium leading-none group-hover:text-blue-400 text-gray-300 transition-colors cursor-pointer"
             >
               All Books
             </Label>
@@ -55,7 +54,7 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
             )}
           </div>
 
-          <div className="h-px bg-gray-700/50" /> {/* Divider */}
+          <div className="h-px bg-blue-950/60" />
 
           {/* Genre Options */}
           <div className="space-y-3">
@@ -72,7 +71,7 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
                 />
                 <Label
                   htmlFor={genre.replace(/\s+/g, "-").toLowerCase()}
-                  className="text-sm font-medium leading-none group-hover:text-blue-400 transition-colors cursor-pointer"
+                  className="text-sm font-medium leading-none group-hover:text-blue-400 text-gray-300 transition-colors cursor-pointer"
                 >
                   {genre.charAt(0).toUpperCase() + genre.slice(1)}
                 </Label>
@@ -91,12 +90,12 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
         </div>
       </ScrollArea>
 
-      {/* Selected Filters Summary */}
+      {/* Footer Summary */}
       {selectedGenres.length > 0 && (
-        <div className="p-4 bg-gray-900/50 border-t border-gray-700">
+        <div className="p-4 bg-[#060606]/90 border-t border-blue-950/60">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-400">
-              {selectedGenres.length} genre{selectedGenres.length > 1 ? 's' : ''} selected
+              {selectedGenres.length} genre{selectedGenres.length > 1 ? "s" : ""} selected
             </span>
             <button
               onClick={() => setSelectedGenres([])}
@@ -114,8 +113,7 @@ const GenreFilter = ({ bookData, selectedGenres, setSelectedGenres }) => {
 GenreFilter.propTypes = {
   bookData: PropTypes.object.isRequired,
   selectedGenres: PropTypes.array.isRequired,
-  setSelectedGenres: PropTypes.func.isRequired
+  setSelectedGenres: PropTypes.func.isRequired,
 };
 
 export default GenreFilter;
-  

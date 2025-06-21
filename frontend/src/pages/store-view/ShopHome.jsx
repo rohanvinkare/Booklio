@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Faqs } from "@/components/landingPage/Faqs";
 import VideoCarousel from "@/components/landingPage/VideoCarousel";
-import { HeroParallaxDemo } from "@/components/shopping-view/HeroParallaxDemo";
-import { AnimatedPinDemo } from "@/components/shopping-view/AnimatedPinDemo";
+import { HeroParallaxDemo } from "@/components/store-view/HeroParallaxDemo";
+import { AnimatedPinDemo } from "@/components/store-view/AnimatedPinDemo";
 import { AuroraText } from "@/components/magicui/aurora-text";
 
 function ShoppingHome() {

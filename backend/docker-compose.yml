@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dev-booklio-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: dev-redis
+    ports:
+      - "6379:6379"

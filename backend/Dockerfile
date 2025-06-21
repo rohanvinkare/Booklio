@@ -1,20 +1,23 @@
-# Use an official Node.js image if your backend is Node.js (adjust if it's different)
-FROM node:20
+# 🔹 Use a minimal Node.js base image
+FROM node:20-alpine
 
-# Set working directory
+# 🔹 Set working directory inside container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# 🔹 Install system packages required for native modules like bcrypt
+RUN apk add --no-cache python3 make g++
+
+# 🔹 Copy only package files first (leverage Docker layer caching)
 COPY package*.json ./
 
-# Install dependencies
+# 🔹 Install dependencies (cache will work until package files change)
 RUN npm install
 
-# Copy all other backend files
+# 🔹 Now copy the rest of the application code
 COPY . .
 
-# Expose the port your app runs on (example 5000)
+# 🔹 Expose backend port
 EXPOSE 3000
 
-# Start the application
+# 🔹 Default command to run the app
 CMD ["npm", "start"]

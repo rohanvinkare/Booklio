@@ -27,11 +27,16 @@ const AddBook = lazy(() => import("./components/sellerDashboard/AddBook"));
 const SellerAccount = lazy(() => import("./components/sellerDashboard/SellerAccount"));
 const SellerOrders = lazy(() => import("./components/sellerDashboard/SellerOrders"));
 
-const ShoppingLayout = lazy(() => import("./components/shopping-view/layout"));
-const ShoppingHome = lazy(() => import("./pages/shopping-view/ShopHome"));
-const ShopListing = lazy(() => import("./components/shopping-view/ShopListing"));
-const BookDetails = lazy(() => import("./components/shopping-view/BookDetails"));
-const PlaceOrder = lazy(() => import("./components/shopping-view/PlaceOrder"));
+
+const ShoppingHome = lazy(() => import("./pages/store-view/ShopHome"));
+
+const ShoppingLayout = lazy(() => import("./pages/shopingLayout/layout.jsx"));
+// const ShopListing = lazy(() => import("./components/store-view/ShopListing"));
+const ShopListing = lazy(() => import("./pages/shopListing/ShopListing.jsx"));
+
+
+const BookDetails = lazy(() => import("./components/store-view/BookDetails"));
+const PlaceOrder = lazy(() => import("./components/store-view/PlaceOrder"));
 
 const UserLayout = lazy(() => import("./pages/userDashboard/UserLayout"));
 const UserHome = lazy(() => import("./components/userDashboard/UserHome"));

@@ -4,7 +4,7 @@ name: Build and Deploy Docker Images to EC2
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build_and_push:
