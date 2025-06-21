@@ -72,3 +72,8 @@ jobs:
               --link prod-redis:redis \
               -p 3000:3000 \
               rohanv7/prod-booklio-backend:latest
+              
+            # This links the Redis container to the backend container
+            # The backend can talk to Redis using the name 'redis'
+            # Inside the Redis container, it always listens on port 6379
+            # So we must use 6379 in .env (not the host port like 6380 or 6381)
