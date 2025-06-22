@@ -1,11 +1,7 @@
-import React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { IoCloseCircle } from "react-icons/io5";
 import { FaBook, FaCalendar, FaLanguage, FaInfoCircle, FaStore, FaStar, FaRupeeSign, FaTag, FaUser, FaMapMarkerAlt } from "react-icons/fa";
@@ -47,6 +43,8 @@ const BookDetailView = ({ book, selectedBook, setSelectedBook, getSellerInfo }) 
                     <img
                       src={imageUrl}
                       alt={title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </div>

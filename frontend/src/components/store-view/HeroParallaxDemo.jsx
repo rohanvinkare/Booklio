@@ -10,9 +10,9 @@ export const products = [
         thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/animated-book-cover-design-template-14d2a489bef792d8a065d525ad4c8c63_screen.jpg?ts=1698303891",
     },
     {
-        title: "Escape Room",
+        title: "Soul",
         link: "/shop/listing",
-        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/escape-room-fiction-thriller-book-cover-design-template-62e0fd4c8cb025948da890343a7984e4_screen.jpg?ts=1737397366",
+        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/modern-%26-minimal-encrypted-soul-wattpad-kind-design-template-41b19b6755dc353c08843d060ced30a1_screen.jpg?ts=1718510419",
     },
     {
         title: "Parallel Universe",
@@ -55,9 +55,9 @@ export const products = [
         thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/cover-book-crown-design-template-01522d547cb082f76d5437bf6c6d3f4b.webp?ts=1721685688",
     },
     {
-        title: "The Power",
+        title: "Dragon Hide",
         link: "/shop/listing",
-        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/book-cover-design-template-75787feabf29b152e933300fcd458156_screen.jpg?ts=1698304091",
+        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/kindle-book-cover-fantasy-design-template-c6e3521885a44688939c1c2505cd0494_screen.jpg?ts=1737145969",
     },
     {
         title: "Rise",

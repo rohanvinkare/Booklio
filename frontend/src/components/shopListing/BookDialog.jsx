@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Building, BookOpen, Star, Hash, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import PropTypes from "prop-types";
 import notAvailable from "@/assets/notAvailable.png";
 
 const BookDialog = ({ book, onClose, handleBuyNowClick }) => {
@@ -25,6 +24,8 @@ const BookDialog = ({ book, onClose, handleBuyNowClick }) => {
                 <img
                   src={book?.data.volumeInfo?.imageLinks?.thumbnail || notAvailable}
                   alt={book?.data.volumeInfo?.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full aspect-[3/4] object-cover rounded-lg shadow-xl"
                 />
               </div>

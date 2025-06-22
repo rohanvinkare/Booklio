@@ -49,6 +49,8 @@ const Testimonials = () => {
                                     className="size-8 rounded-full"
                                     src="https://randomuser.me/api/portraits/women/68.jpg"
                                     alt="Reviewer"
+                                    loading="lazy"
+                                    decoding="async"
                                 />
                                 <div>
                                     <div className="font-semibold text-gray-800 dark:text-neutral-200">
@@ -99,6 +101,8 @@ const Testimonials = () => {
                                         <img
                                             src="/icons/star.png"
                                             alt="star"
+                                            loading="lazy"
+                                            decoding="async"
                                             className="w-full h-full object-contain"
                                         />
                                     </div>
@@ -319,7 +323,7 @@ const Testimonials = () => {
                                     <path
                                         d="M6.07776 24.2885C2.79433 24.2186 0.0697788 26.8035 -8.15348e-05 30.017C-0.0699418 33.2306 2.51489 35.9552 5.79832 36.0949C9.08176 36.1647 11.7364 33.5799 11.8762 30.2965C11.8762 27.0829 9.29134 24.3584 6.07776 24.2885ZM7.89413 32.3224H3.91209V28.3404H7.89413V32.3224Z"
                                         fill="white"
-                                        fill-opacity="0.2"
+                                        fillOpacity={0.3}
                                     ></path>
                                     <path
                                         d="M5.93812 19.1189C9.21766 19.1189 11.8762 16.4603 11.8762 13.1808C11.8762 9.90126 9.21766 7.24268 5.93812 7.24268C2.65859 7.24268 0 9.90126 0 13.1808C0 16.4603 2.65859 19.1189 5.93812 19.1189Z"

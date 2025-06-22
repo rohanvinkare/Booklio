@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { Link } from "react-router-dom";
 
@@ -59,20 +59,25 @@ export const HeroParallax = ({
 
 
 export const Header = () => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const timeout = setTimeout(() => setMounted(true), 1000); // After LCP
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <div className="max-w-7xl relative mx-auto py-24 md:py-48 px-4 w-full">
       <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 1, y: 0 }}
+        animate={mounted ? { opacity: 1, y: 0 } : false}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="text-3xl md:text-6xl font-extrabold text-white drop-shadow-lg leading-tight"
       >
         What will you discover today?
       </motion.h1>
-
       <motion.p
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 1, y: 0 }}
+        animate={mounted ? { opacity: 1, y: 0 } : false}
         transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
         className="mt-6 max-w-xl text-base md:text-xl text-gray-200 drop-shadow-md"
       >
@@ -84,32 +89,73 @@ export const Header = () => {
 
 
 
-export const ProductCard = ({
-  product,
-  translate
-}) => {
+// export const ProductCard = ({
+//   product,
+//   translate
+// }) => {
+//   return (
+//     <motion.div
+//       style={{
+//         x: translate,
+//       }}
+//       whileHover={{
+//         y: -20,
+//       }}
+//       key={product.title}
+//       className="group/product h-[24rem] w-[16rem] relative shrink-0 rounded-xl overflow-hidden shadow-md">
+//       <Link to={product.link} className="block group-hover/product:shadow-2xl">
+//         <img
+//           src={product.thumbnail}
+//           alt={product.title}
+//           loading="lazy"
+//           decoding="async"
+//           className="object-cover absolute h-full w-full inset-0 rounded-xl"
+//         />
+//       </Link>
+//       <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black/60 pointer-events-none transition-opacity duration-300"></div>
+//       <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-semibold text-lg transition-opacity duration-300">
+//         {product.title}
+//       </h2>
+//     </motion.div>
+
+//   );
+// };
+
+
+export const ProductCard = ({ product, translate, index }) => {
+  const isLCPImage = index === 0;
+
   return (
     <motion.div
-      style={{
-        x: translate,
-      }}
-      whileHover={{
-        y: -20,
-      }}
       key={product.title}
-      className="group/product h-[24rem] w-[16rem] relative shrink-0 rounded-xl overflow-hidden shadow-md">
-      <Link to={product.link} className="block group-hover/product:shadow-2xl">
-        <img
-          src={product.thumbnail}
-          alt={product.title}
-          className="object-cover absolute h-full w-full inset-0 rounded-xl"
-        />
+      style={{ x: translate }}
+      whileHover={{ y: -20 }}
+      className="group/product relative shrink-0 w-[14rem] sm:w-[16rem] h-[22rem] sm:h-[24rem] rounded-xl overflow-hidden shadow-md"
+    >
+      <Link to={product.link} className="block group-hover/product:shadow-2xl h-full w-full">
+        <picture className="block h-full w-full">
+          <source srcSet={product.thumbnail} type="image/webp" />
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            loading={isLCPImage ? "eager" : "lazy"}
+            fetchpriority={isLCPImage ? "high" : "auto"}
+            decoding="async"
+            width="256" // 16rem
+            height="384" // 24rem
+            className="h-full w-full object-cover rounded-xl"
+            style={{ display: "block" }} // Prevent CLS
+          />
+        </picture>
       </Link>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black/60 pointer-events-none transition-opacity duration-300"></div>
-      <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-semibold text-lg transition-opacity duration-300">
+
+      {/* Hover Overlay */}
+      <div className="absolute inset-0 opacity-0 group-hover/product:opacity-80 bg-black/60 transition-opacity duration-300 pointer-events-none" />
+
+      {/* Title */}
+      <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-semibold text-base sm:text-lg transition-opacity duration-300">
         {product.title}
       </h2>
     </motion.div>
-
   );
 };

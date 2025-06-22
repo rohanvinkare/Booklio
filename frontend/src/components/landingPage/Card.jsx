@@ -30,13 +30,13 @@ const Card = ({ image }) => {
                 exit={{ y: 10 }}
               >
                 <span>Shop Now</span>
-                <img src={arrowUrl} alt="arrow" />
+                <img src={arrowUrl} alt="arrow" loading="lazy" decoding="async" />
               </motion.h1>
             </motion.div>
           </Link>
         )}
       </AnimatePresence>
-      <img src={image} alt={image} className="w-full h-full object-cover" />
+      <img src={image} alt={image} className="w-full h-full object-cover" loading="lazy" decoding="async" />
     </motion.div>
   );
 };

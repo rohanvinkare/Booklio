@@ -1,4 +1,4 @@
-"use client";;
+
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { memo } from "react";
@@ -240,7 +240,7 @@ const TextAnimateBase = ({
   variants,
   className,
   segmentClassName,
-  as: Component = "p",
+  as: Component = "span",
   startOnView = true,
   once = false,
   by = "word",

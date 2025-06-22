@@ -1,10 +1,7 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"; // ShadCN card components
+import { Card, CardHeader, CardContent } from "@/components/ui/card"; // ShadCN card components
 import { Avatar } from "@/components/ui/avatar";
-import { Button } from "../ui/button";
-import { MdModeEditOutline } from "react-icons/md";
-import { MdDeleteForever } from "react-icons/md";
 
 // Helper function to generate random color
 const getRandomColor = () => {

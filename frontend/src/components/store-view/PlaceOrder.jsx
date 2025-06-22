@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import placeOrder from "../../assets/placeOrder.png";
-import { Minus, Plus, MapPin, Package, CreditCard} from "lucide-react";
+import { Minus, Plus, MapPin, Package, CreditCard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const PlaceOrder = () => {
@@ -97,11 +97,11 @@ const PlaceOrder = () => {
     const cityName = suggestion.display_name.split(",")[0];
     const country = suggestion.address.country || "";
     const state = suggestion.address.state || "";
-    
+
     setValue("city", cityName);
     setValue("state", state);
     setValue("country", country);
-    
+
     // Fetch ZIP codes for the selected city
     const zipCodes = await fetchZipCodes(country, cityName);
     if (zipCodes.length > 0) {
@@ -112,7 +112,7 @@ const PlaceOrder = () => {
       // If no ZIP codes found, use the one from OpenStreetMap
       setValue("zipCode", suggestion.address.postcode || "");
     }
-    
+
     setCitySuggestions([]);
     setShowSuggestions(false);
   };
@@ -167,7 +167,7 @@ const PlaceOrder = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -234,9 +234,11 @@ const PlaceOrder = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-3xl"></div>
             <div className="relative bg-gray-800/30 backdrop-blur-md border border-gray-700/50 rounded-2xl px-8 pb-8 shadow-2xl">
               <div className="flex items-center justify-center mb-8">
-                <img 
-                  src={placeOrder} 
-                  alt="Place Order" 
+                <img
+                  src={placeOrder}
+                  alt="Place Order"
+                  loading="lazy"
+                  decoding="async"
                   className="w-100 h-80 object-contain"
                 />
               </div>
@@ -360,7 +362,7 @@ const PlaceOrder = () => {
                     <input
                       id="zipCode"
                       type="text"
-                      {...register("zipCode", { 
+                      {...register("zipCode", {
                         required: "Zip Code is required",
                         pattern: {
                           value: /^[1-9][0-9]{5}$/,
@@ -427,14 +429,13 @@ const PlaceOrder = () => {
                 <button
                   type="submit"
                   disabled={isOrderPlacing}
-                  className={`w-full relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform ${
-                    isOrderPlacing ? "cursor-not-allowed" : "hover:scale-105"
-                  }`}
+                  className={`w-full relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform ${isOrderPlacing ? "cursor-not-allowed" : "hover:scale-105"
+                    }`}
                 >
                   <span className={`flex items-center justify-center gap-2 ${isOrderPlacing ? "opacity-0" : "opacity-100"}`}>
                     Place Order
                   </span>
-                  
+
                   {/* Loading Spinner */}
                   {isOrderPlacing && !isOrderSuccess && (
                     <div className="absolute inset-0 flex items-center justify-center">

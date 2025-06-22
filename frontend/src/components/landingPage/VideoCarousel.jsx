@@ -8,15 +8,16 @@ import {
     useScroll
 } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useLocation } from "react-router-dom";
+
 
 const variants = {
     active: { opacity: 1, scale: 1 },
     inactive: { opacity: 0.8, scale: 0.95 },
 };
 
-export default function VideoCarousel() {
-    const location = useLocation();
+
+const VideoCarousel = () => {
+
 
     const images = [
         'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068113/atomicHabits_exuqua.png',
@@ -107,3 +108,4 @@ export default function VideoCarousel() {
     );
 }
 
+export default VideoCarousel;

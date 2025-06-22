@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { FaHome, FaBook, FaStore, FaSignOutAlt, FaSearchDollar, FaChartLine, FaBookOpen, FaBookReader, FaBookmark } from "react-icons/fa";
-import { MdFormatIndentIncrease, MdManageAccounts } from "react-icons/md";
+import { FaHome, FaStore, FaChartLine, FaBookmark } from "react-icons/fa";
+import { MdManageAccounts } from "react-icons/md";
 import { PiUsersFill } from "react-icons/pi";
 
 const Sidebar = () => {

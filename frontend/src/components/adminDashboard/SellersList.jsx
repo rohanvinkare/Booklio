@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
@@ -8,22 +8,16 @@ import {
 } from "@/components/ui/card"; // ShadCN card components
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { MdModeEditOutline } from "react-icons/md";
-import { IoCloseCircle } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
 import { FaFacebook, FaInstagram, FaLinkedin, FaBook, FaRupeeSign, FaChartLine, FaUser, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import toast from "react-hot-toast"; // Import React Hot Toast
 import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
+
 
 // Helper function to generate random color
 const getRandomColor = () => {
@@ -74,7 +68,7 @@ const SellersList = () => {
   // Fetch orders for all sellers
   const fetchAllSellerOrders = async () => {
     try {
-      const ordersPromises = members.map(seller => 
+      const ordersPromises = members.map(seller =>
         fetch(`${import.meta.env.VITE_BASE_URL}/order/seller-order-list/${seller.sellerId}`)
           .then(res => res.json())
           .then(data => ({
@@ -101,7 +95,7 @@ const SellersList = () => {
       const totalRevenue = orders.reduce((sum, order) => sum + order.price, 0);
       const totalProfit = totalRevenue * 0.95; // 95% of revenue goes to seller (5% platform fee)
       const booksSold = orders.reduce((sum, order) => sum + order.quantity, 0);
-      
+
       stats[sellerId] = {
         totalRevenue,
         totalProfit,

@@ -503,7 +503,8 @@ const UserHome = () => {
                     <div className="flex flex-col items-start space-y-2">
                       <p className="text-gray-400">Quantity</p>
                       <div className="flex items-center space-x-2">
-                        <img src="icons/stock.png" alt="Stock" className="w-7 h-7" />
+                        <img src="icons/stock.png" alt="Stock" className="w-7 h-7" loading="lazy"
+                          decoding="async" />
                         <p className="text-green-500 text-xl font-bold">{selectedOrder?.quantity}</p>
                       </div>
                     </div>
@@ -546,7 +547,8 @@ const UserHome = () => {
                     <div className="flex flex-col items-start space-y-1">
                       <p className="text-gray-400">Total Amount</p>
                       <div className="flex items-center space-x-2">
-                        <img src="icons/rs.png" alt="rs" className="w-7 h-7" />
+                        <img src="icons/rs.png" alt="rs" className="w-7 h-7" loading="lazy"
+                          decoding="async" />
                         <p className="text-green-500 font-mono text-lg">₹{selectedOrder?.price}</p>
                       </div>
                     </div>

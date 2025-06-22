@@ -17,6 +17,8 @@ const PageNotFound = () => {
                     <img
                         src={pageNotFoundImage}
                         alt="Page not found illustration"
+                        loading="lazy"
+                        decoding="async"
                         className="mx-auto w-3/4 mb-6 rounded-lg shadow-md"
                     />
                     <button

@@ -12,10 +12,6 @@ import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -35,7 +31,7 @@ const SellerBooksList = () => {
         }/book/api/v1/books-by-seller/${sellerId}`
       );
       const data = await response.json();
-      
+
       if (data.success && Array.isArray(data.books)) {
         setBooks(data.books);
       } else {
@@ -178,6 +174,8 @@ const SellerBooksList = () => {
                       <img
                         src={imageUrl}
                         alt={title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       />
                     </div>
@@ -229,6 +227,8 @@ const SellerBooksList = () => {
                                 <img
                                   src={imageUrl}
                                   alt={title}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                                 />
                               </div>

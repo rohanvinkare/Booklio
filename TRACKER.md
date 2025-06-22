@@ -24,3 +24,18 @@ updated the our team page
 
 
 
+- ======================== removes packages =========================
+
+npm uninstall @react-three/drei @react-three/fiber @tabler/icons-react react-toastify react-use tailwind-scrollbar tailwindcss-animate three three-globe use-debounce xlsx
+
+npm uninstall @testing-library/react @testing-library/jest-dom @vitest/coverage-v8 jest supertest resize-observer-polyfill
+
+
+
+deepcheck     =>> this can be used to check used and not used packages 
+
+
+
+
+
+

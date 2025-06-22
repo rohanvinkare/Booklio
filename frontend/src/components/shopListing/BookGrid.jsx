@@ -5,7 +5,8 @@ const BookGrid = ({ books, handleBuyNowClick, setSelectedBook }) => {
   if (!books.length) {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-16">
-        <img src={notAvailable} alt="No books available" className="h-48 mb-6 opacity-50" />
+        <img src={notAvailable} alt="No books available" className="h-48 mb-6 opacity-50" loading="lazy"
+          decoding="async" />
         <h3 className="text-xl font-semibold text-gray-300 mb-2">No Books Found</h3>
         <p className="text-gray-400 text-center max-w-md">
           Try adjusting your filters or search terms.

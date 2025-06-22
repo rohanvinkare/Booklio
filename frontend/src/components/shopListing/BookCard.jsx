@@ -1,8 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { BookOpen, Star, ShoppingCart } from "lucide-react";
+import { BookOpen, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import PropTypes from "prop-types";
-import notAvailable from "@/assets/notAvailable.png";
+
 
 const BookCard = ({ book, onClick, handleBuyNowClick }) => {
     const price = book.spCluster?.[0]?.price;
@@ -131,6 +130,8 @@ const BookCard = ({ book, onClick, handleBuyNowClick }) => {
                     <img
                         src={thumbnail}
                         alt={title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                 ) : (

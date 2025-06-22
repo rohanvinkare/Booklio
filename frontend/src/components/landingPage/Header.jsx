@@ -64,9 +64,14 @@ export const Header = () => {
                                 <Link to="/shop">
                                     <InteractiveHoverButton>Store</InteractiveHoverButton>
                                 </Link>
-                                <button onClick={handleLogout}>
+
+                                {/* <button onClick={handleLogout}>
                                     <InteractiveHoverButton>Logout</InteractiveHoverButton>
-                                </button>
+                                </button> */}
+                                <InteractiveHoverButton onClick={handleLogout}>
+                                    Logout
+                                </InteractiveHoverButton>
+
                             </>
                         ) : (
                             <>
@@ -130,14 +135,24 @@ export const Header = () => {
                                         <Link to="/shop" onClick={() => setPopupOpen(false)}>
                                             <InteractiveHoverButton className="w-full">Store</InteractiveHoverButton>
                                         </Link>
-                                        <button
+                                        {/* <button
                                             onClick={() => {
                                                 handleLogout();
                                                 setPopupOpen(false);
                                             }}
                                         >
                                             <InteractiveHoverButton className="w-full">Logout</InteractiveHoverButton>
-                                        </button>
+                                        </button> */}
+
+                                        <InteractiveHoverButton
+                                            className="w-full"
+                                            onClick={() => {
+                                                handleLogout();
+                                                setPopupOpen(false);
+                                            }}
+                                        >
+                                            Logout
+                                        </InteractiveHoverButton>
                                     </>
                                 ) : (
                                     <>

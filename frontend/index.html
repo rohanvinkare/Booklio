@@ -2,28 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Favicon -->
     <link
       rel="icon"
       type="image/svg+xml"
       href="https://thumbs.dreamstime.com/b/set-book-icons-flat-design-style-isolated-black-background-set-book-icons-flat-design-style-isolated-black-162021592.jpg"
     />
+
+    <!-- Responsive viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Booklio</title>
 
-    <!-- Fonts -->
+    <!-- Preconnect to Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Preload Google Fonts CSS without blocking render -->
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Darker+Grotesque:wght@300..900&family=Gloock&family=Unbounded:wght@200..900&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet';"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Darker+Grotesque:wght@300..900&family=Gloock&family=Unbounded:wght@200..900&display=swap"
+      />
+    </noscript>
+
+    <!-- Preload .woff2 font (Darker Grotesque) -->
     <link
-      href="https://fonts.cdnfonts.com/css/helvetica-neue-55"
-      rel="stylesheet"
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href="https://fonts.gstatic.com/s/darkergrotesque/v16/P5sEzZCDf9_T_zwYc1Qkcfqds4tt5MnUN5eF.woff2"
     />
 
-    <!-- <link href="./dist/output.css" rel="stylesheet" /> -->
-     <!-- we are using tailwind so dont need this -->
+    <!-- Preload Vite-generated CSS -->
+    <link rel="preload" as="style" type="text/css" href="/assets/index.css" />
+    <link rel="stylesheet" href="/assets/index.css" />
+
+    <!-- Preload Vite JS entrypoint -->
+    <link rel="preload" as="script" href="/src/main.jsx" type="module" />
   </head>
   <body>
     <div id="root"></div>

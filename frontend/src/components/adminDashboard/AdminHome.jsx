@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { booksData } from "@/store/adminSlice/booksData";
 import { sellersData } from "@/store/adminSlice/sellerData";
@@ -20,23 +20,14 @@ import {
   LineElement,
 } from "chart.js";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Users, 
-  BookOpen, 
-  Store, 
-  TrendingUp, 
-  TrendingDown, 
-  ArrowUpRight, 
-  ArrowDownRight, 
-  Award, 
+import {
+  Users,
+  BookOpen,
+  Store,
+  ArrowUpRight,
+  ArrowDownRight,
+  Award,
   DollarSign,
-  Calendar,
-  BarChart3,
-  PieChart,
-  Users2,
-  BookMarked,
-  ShoppingCart,
-  Star
 } from "lucide-react";
 
 // Register Chart.js components
@@ -79,7 +70,7 @@ const AdminHome = () => {
   // Fetch orders for all sellers
   const fetchAllSellerOrders = async () => {
     try {
-      const ordersPromises = sellers.map(seller => 
+      const ordersPromises = sellers.map(seller =>
         fetch(`${import.meta.env.VITE_BASE_URL}/order/seller-order-list/${seller.sellerId}`)
           .then(res => res.json())
           .then(data => ({
@@ -144,7 +135,7 @@ const AdminHome = () => {
       const totalRevenue = orders.reduce((sum, order) => sum + order.price, 0);
       const totalProfit = totalRevenue * 0.95;
       const booksSold = orders.reduce((sum, order) => sum + order.quantity, 0);
-      
+
       sellerProfits[sellerId] = {
         totalRevenue,
         totalProfit,
@@ -232,7 +223,7 @@ const AdminHome = () => {
   const processOrdersPerMonth = () => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const ordersPerMonth = new Array(12).fill(0);
-    
+
     Object.values(sellerOrders).forEach(orders => {
       orders.forEach(order => {
         const orderDate = new Date(order.createdAt);
@@ -280,7 +271,7 @@ const AdminHome = () => {
           family: 'Inter, sans-serif'
         },
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `Orders: ${context.parsed.y}`;
           }
         }
@@ -600,6 +591,8 @@ const AdminHome = () => {
                     <img
                       src={bestSellingBook.image}
                       alt={bestSellingBook.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.onerror = null;

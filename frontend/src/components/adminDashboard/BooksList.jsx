@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { booksData } from "@/store/adminSlice/booksData";
 import {
@@ -65,8 +65,8 @@ const BooksList = () => {
     const genre = book.data?.volumeInfo?.categories?.[0]?.toLowerCase() || "";
 
     const matchesSearch = title.includes(searchQuery.toLowerCase()) ||
-                         authors.includes(searchQuery.toLowerCase()) ||
-                         description.includes(searchQuery.toLowerCase());
+      authors.includes(searchQuery.toLowerCase()) ||
+      description.includes(searchQuery.toLowerCase());
     const matchesGenre = genreFilter === "all" || genre.includes(genreFilter.toLowerCase());
     return matchesSearch && matchesGenre;
   });
@@ -163,6 +163,8 @@ const BooksList = () => {
                           src={imageUrl}
                           alt={title}
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       </div>
                     </CardHeader>

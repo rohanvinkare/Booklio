@@ -131,14 +131,23 @@ const Navbar = ({ userData }) => {
                 <Link to="/shop/listing" onClick={() => setPopupOpen(false)}>
                   <InteractiveHoverButton className="w-full">Shop</InteractiveHoverButton>
                 </Link>
-                <button
+                {/* <button
                   onClick={() => {
                     handleLogout();
                     setPopupOpen(false);
                   }}
                 >
                   <InteractiveHoverButton className="w-full">Logout</InteractiveHoverButton>
-                </button>
+                </button> */}
+                <InteractiveHoverButton
+                  className="w-full"
+                  onClick={() => {
+                    handleLogout();
+                    setPopupOpen(false);
+                  }}
+                >
+                  Logout
+                </InteractiveHoverButton>
               </div>
             </motion.div>
           </>

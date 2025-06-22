@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  BarChart,
-  Bar,
+
   XAxis,
   YAxis,
   Tooltip,
@@ -11,8 +10,7 @@ import {
   Pie,
   Cell,
   Legend,
-  LineChart,
-  Line,
+
   CartesianGrid,
   Area,
   AreaChart
@@ -53,7 +51,7 @@ const AdminSales = () => {
                 ?.details || [],
           });
         }
-     
+
       })
       .catch((error) => console.error("Error fetching pay cut data:", error))
       .finally(() => setLoading(false));

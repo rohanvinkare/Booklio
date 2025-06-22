@@ -1,7 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { FaHome, FaBook, FaUser, FaSignOutAlt, FaPlusCircle } from "react-icons/fa";
 import { IoReceiptOutline } from "react-icons/io5";
-import SellerAccount from "./SellerAccount";
 
 const Sidebar = () => {
   const menuItems = [

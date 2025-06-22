@@ -107,7 +107,7 @@ const BookDetails = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
@@ -124,7 +124,7 @@ const BookDetails = () => {
         </motion.div>
 
         {/* Book Details Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -133,11 +133,11 @@ const BookDetails = () => {
           <div className="relative">
             {/* Background Blur Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-3xl"></div>
-            
+
             <Card className="relative bg-gray-800/30 backdrop-blur-md border border-gray-700/50 shadow-2xl">
               <div className="flex flex-col lg:flex-row gap-8 p-8">
                 {/* Book Cover with 3D Effect */}
-                <motion.div 
+                <motion.div
                   className="lg:w-1/3 flex flex-col items-center gap-4"
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300 }}
@@ -146,10 +146,12 @@ const BookDetails = () => {
                     <img
                       src={book.volumeInfo.imageLinks?.thumbnail}
                       alt={book.volumeInfo.title}
+                      loading="lazy"
+                      decoding="async"
                       className="relative w-64 h-auto object-cover rounded-lg shadow-2xl transform hover:rotate-1 transition-transform duration-300"
                     />
                   </div>
-                  
+
                   {sellerInfo && (
                     <Dialog>
                       <DialogTrigger asChild>
@@ -170,6 +172,8 @@ const BookDetails = () => {
                               <img
                                 src={sellerInfo.image}
                                 alt={sellerInfo.storeName}
+                                loading="lazy"
+                                decoding="async"
                                 className="relative w-32 h-32 object-cover rounded-full border-4 border-blue-500"
                               />
                             </div>
@@ -184,7 +188,7 @@ const BookDetails = () => {
                                 <span className="font-semibold text-blue-400">Store Description:</span> {sellerInfo.storeDescription}
                               </p>
                             </div>
-                            
+
                             <div className="bg-gray-700/30 backdrop-blur-sm p-4 rounded-lg border border-gray-700/50">
                               <p className="text-gray-300">
                                 <span className="font-semibold text-blue-400">Location:</span>{" "}
@@ -243,7 +247,7 @@ const BookDetails = () => {
                     </Dialog>
                   )}
                 </motion.div>
-                
+
                 {/* Book Info */}
                 <div className="lg:w-2/3 space-y-6">
                   <motion.div
@@ -301,8 +305,8 @@ const BookDetails = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <Button 
-                      onClick={handlePlaceOrderClick} 
+                    <Button
+                      onClick={handlePlaceOrderClick}
                       className="w-full bg-gradient-to-r from-blue-500/80 to-purple-500/80 hover:from-blue-600/80 hover:to-purple-600/80 text-white py-6 text-lg font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
                     >
                       <FaBookOpen className="mr-2" />
@@ -317,7 +321,7 @@ const BookDetails = () => {
 
         {/* Other Sellers Section - Only show if there are other sellers */}
         {sellers.filter(seller => seller.sellerId !== sellerId).length > 0 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
@@ -331,130 +335,134 @@ const BookDetails = () => {
                 {sellers
                   .filter(seller => seller.sellerId !== sellerId)
                   .map((seller) => (
-                  <Dialog key={seller.sellerId}>
-                    <DialogTrigger asChild>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        whileHover={{ scale: 1.02, y: -5 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="cursor-pointer"
-                      >
-                        <Card className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300">
-                          <div className="p-4">
-                            <div className="flex flex-col items-center space-y-3">
-                              <div className="relative">
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30"></div>
-                                <img
-                                  src={seller.image}
-                                  alt={seller.storeName}
-                                  className="relative w-20 h-20 object-cover rounded-full border-2 border-blue-500"
-                                />
+                    <Dialog key={seller.sellerId}>
+                      <DialogTrigger asChild>
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          whileHover={{ scale: 1.02, y: -5 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="cursor-pointer"
+                        >
+                          <Card className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div className="p-4">
+                              <div className="flex flex-col items-center space-y-3">
+                                <div className="relative">
+                                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30"></div>
+                                  <img
+                                    src={seller.image}
+                                    alt={seller.storeName}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="relative w-20 h-20 object-cover rounded-full border-2 border-blue-500"
+                                  />
+                                </div>
+                                <h3 className="text-lg font-semibold text-white text-center">
+                                  {seller.storeName}
+                                </h3>
+                                <p className="text-sm text-gray-400 text-center">
+                                  {seller.address.city}, {seller.address.state}
+                                </p>
+                                <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
+                                  View Details
+                                </Button>
                               </div>
-                              <h3 className="text-lg font-semibold text-white text-center">
-                                {seller.storeName}
-                              </h3>
-                              <p className="text-sm text-gray-400 text-center">
-                                {seller.address.city}, {seller.address.state}
-                              </p>
-                              <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white">
-                                View Details
-                              </Button>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      </DialogTrigger>
+                      <DialogContent className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            {seller.storeName}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-6">
+                          <div className="flex justify-center">
+                            <div className="relative">
+                              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30"></div>
+                              <img
+                                src={seller.image}
+                                alt={seller.storeName}
+                                loading="lazy"
+                                decoding="async"
+                                className="relative w-32 h-32 object-cover rounded-full border-4 border-blue-500"
+                              />
                             </div>
                           </div>
-                        </Card>
-                      </motion.div>
-                    </DialogTrigger>
-                    <DialogContent className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 max-w-2xl">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                          {seller.storeName}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-6">
-                        <div className="flex justify-center">
-                          <div className="relative">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-30"></div>
-                            <img
-                              src={seller.image}
-                              alt={seller.storeName}
-                              className="relative w-32 h-32 object-cover rounded-full border-4 border-blue-500"
-                            />
+
+                          <div className="space-y-4">
+                            <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
+                              <p className="text-gray-300">
+                                <span className="font-semibold text-blue-400">Seller:</span> {seller.name}
+                              </p>
+                              <p className="text-gray-300 mt-2">
+                                <span className="font-semibold text-blue-400">Description:</span> {seller.storeDescription}
+                              </p>
+                            </div>
+
+                            <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
+                              <p className="text-gray-300">
+                                <span className="font-semibold text-blue-400">Location:</span>{" "}
+                                {`${seller.address.street}, ${seller.address.city}, ${seller.address.state}, ${seller.address.zipCode}`}
+                              </p>
+                            </div>
+
+                            <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
+                              <p className="text-gray-300">
+                                <span className="font-semibold text-blue-400">Contact:</span> {seller.email}
+                              </p>
+                            </div>
+
+                            <div className="flex justify-center space-x-4">
+                              <motion.a
+                                whileHover={{ scale: 1.2, rotate: 10 }}
+                                href={seller.socialMediaLinks?.facebook}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:text-blue-400 transition-colors duration-300"
+                              >
+                                <FaFacebookF size={24} />
+                              </motion.a>
+                              <motion.a
+                                whileHover={{ scale: 1.2, rotate: -10 }}
+                                href={seller.socialMediaLinks?.instagram}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
+                              >
+                                <FaInstagram size={24} />
+                              </motion.a>
+                              <motion.a
+                                whileHover={{ scale: 1.2, rotate: 10 }}
+                                href={seller.socialMediaLinks?.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 transition-colors duration-300"
+                              >
+                                <FaLinkedin size={24} />
+                              </motion.a>
+                            </div>
+
+                            <Button
+                              onClick={() => alert(`Contacting ${seller.name}`)}
+                              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-lg transition-all duration-300 transform hover:scale-105"
+                            >
+                              Contact Seller
+                            </Button>
                           </div>
                         </div>
-                        
-                        <div className="space-y-4">
-                          <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
-                            <p className="text-gray-300">
-                              <span className="font-semibold text-blue-400">Seller:</span> {seller.name}
-                            </p>
-                            <p className="text-gray-300 mt-2">
-                              <span className="font-semibold text-blue-400">Description:</span> {seller.storeDescription}
-                            </p>
-                          </div>
-                          
-                          <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
-                            <p className="text-gray-300">
-                              <span className="font-semibold text-blue-400">Location:</span>{" "}
-                              {`${seller.address.street}, ${seller.address.city}, ${seller.address.state}, ${seller.address.zipCode}`}
-                            </p>
-                          </div>
-                          
-                          <div className="bg-gray-700/50 p-4 rounded-lg backdrop-blur-sm">
-                            <p className="text-gray-300">
-                              <span className="font-semibold text-blue-400">Contact:</span> {seller.email}
-                            </p>
-                          </div>
-                          
-                          <div className="flex justify-center space-x-4">
-                            <motion.a
-                              whileHover={{ scale: 1.2, rotate: 10 }}
-                              href={seller.socialMediaLinks?.facebook}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 hover:text-blue-400 transition-colors duration-300"
-                            >
-                              <FaFacebookF size={24} />
-                            </motion.a>
-                            <motion.a
-                              whileHover={{ scale: 1.2, rotate: -10 }}
-                              href={seller.socialMediaLinks?.instagram}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-pink-500 hover:text-pink-400 transition-colors duration-300"
-                            >
-                              <FaInstagram size={24} />
-                            </motion.a>
-                            <motion.a
-                              whileHover={{ scale: 1.2, rotate: 10 }}
-                              href={seller.socialMediaLinks?.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300 transition-colors duration-300"
-                            >
-                              <FaLinkedin size={24} />
-                            </motion.a>
-                          </div>
-                          
-                          <Button
-                            onClick={() => alert(`Contacting ${seller.name}`)}
-                            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 rounded-lg transition-all duration-300 transform hover:scale-105"
-                          >
-                            Contact Seller
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                ))}
+                      </DialogContent>
+                    </Dialog>
+                  ))}
               </AnimatePresence>
             </div>
           </motion.div>
         )}
 
         {/* Suggested Books Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 1 }}
@@ -493,6 +501,8 @@ const BookDetails = () => {
                           <img
                             src={thumbnail || "https://via.placeholder.com/200x300"}
                             alt={title}
+                            loading="lazy"
+                            decoding="async"
                             className="relative w-full h-[220px] object-contain rounded-lg"
                           />
                         </div>
@@ -519,7 +529,7 @@ const BookDetails = () => {
             </div>
           )}
           <div className="text-center mt-8">
-            <Button 
+            <Button
               className="bg-gradient-to-r from-blue-500/80 to-purple-500/80 hover:from-blue-600/80 hover:to-purple-600/80 text-white px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
               onClick={handleViewAllBooks}
             >
