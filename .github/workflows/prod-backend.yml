@@ -1,0 +1,84 @@
+name: Prod Deploy - Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/prod-backend.yml"
+
+jobs:
+  build_and_push:
+    name: 🏗️ PROD :- Build & Push Backend Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📦 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 💾 Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-prod-docker-${{ github.ref_name }}-${{ hashFiles('backend/**/Dockerfile', 'backend/**/package*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-prod-docker-${{ github.ref_name }}-
+
+      - name: 🛠️ Set Up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🔐 Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 📤 Build & Push Backend Image (with cache)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: rohanv7/prod-booklio-backend:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+  deploy_to_ec2:
+    name: 🚀 PROD :- Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: 📡 SSH into EC2 & Deploy Container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "🔐 [EC2] Logging in to Docker Hub..."
+            docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+            echo "🛑 [EC2] Removing existing containers..."
+            docker rm -f prod prod-redis 2>/dev/null || true
+
+            echo "🧹 [EC2] Removing old images..."
+            docker rmi rohanv7/prod-booklio-backend:latest 2>/dev/null || true
+
+            echo "🐳 [EC2] Starting Redis for PROD..."
+            docker run -d \
+              --name prod-redis \
+              -p 6379:6379 \
+              redis:alpine
+
+            echo "📥 [EC2] Pulling latest backend image..."
+            docker pull rohanv7/prod-booklio-backend:latest
+
+            echo "🚀 [EC2] Starting PROD backend container..."
+            docker run -d \
+              --name prod \
+              --env-file /home/${{ secrets.EC2_USER }}/prod/.env \
+              --link prod-redis:redis \
+              -p 3000:3000 \
+              rohanv7/prod-booklio-backend:latest
