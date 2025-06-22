@@ -18,9 +18,9 @@ const TimelineDemo = () => {
           </p>
           <div className="grid grid-cols-2 gap-4">
             {[
-              "v1750007870/12_m0ekv0.png",
-              "v1750008125/4_nxxshx.png",
-              "v1750007893/15_xcd2jx.png",
+              "v1750623313/12_m0ekv0_mcycge.png",
+              "v1750623313/4_nxxsh_orhtyd.jpg",
+              "v1750623313/15_xcd2j_vjvotv.jpg",
               "v1750007826/13_qmscz7.png",
             ].map((path, i) => (
               <img
@@ -49,8 +49,8 @@ const TimelineDemo = () => {
           </p>
           <div className="grid grid-cols-2 gap-4">
             {[
-              "v1750007983/7_genue5.png",
-              "v1750007945/5_hjeejq.png",
+              "v1750623313/7_genue_z82vfs.jpg",
+              "v1750623314/5_hjeejq_xgodb7.png",
               "https://assets.aceternity.com/pro/bento-grids.png", // Not Cloudinary
               "v1750007816/16_ypjm3r.png",
             ].map((path, i) => (
@@ -84,10 +84,10 @@ const TimelineDemo = () => {
           </p>
           <div className="grid grid-cols-2 gap-4">
             {[
-              "v1750007871/11_sozi8y.png",
-              "v1750007841/9_waap3y.png",
-              "v1750007870/10_twroyv.png",
-              "v1750007832/14_i1dmlr.png",
+              "v1750623314/11_sozi8y_xtzagn.png",
+              "v1750623314/9_waap3y_fqq1fs.png",
+              "v1750623314/10_twroyv_gvmnxs.png",
+              "v1750623314/14_i1dmlr_nu13z2.png",
             ].map((path, i) => (
               <img
                 key={i}

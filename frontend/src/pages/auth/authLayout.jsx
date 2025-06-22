@@ -6,11 +6,12 @@ function AuthLayout() {
       {/* Left Section (Welcome Message with background image) */}
       <div className="hidden lg:flex w-[55%] relative">
         {/* Background Image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(https://res.cloudinary.com/djwfg6dgl/image/upload/v1750067506/loginpage3_ukjijd.png)` }}
+        <div className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(https://res.cloudinary.com/djwfg6dgl/image/upload/f_auto,q_auto/v1750623314/loginpage3_ukjijd_fti9ds.png)`
+          }}
         />
-
+        
         {/* Overlay for opacity (adjust opacity as needed) */}
         <div className="absolute inset-0 bg-black opacity-40" />
 
