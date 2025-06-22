@@ -132,7 +132,6 @@
 #             -H "Content-Type: application/json" \
 #             --data '{"purge_everything":true}'
 
-
 name: Dev Deploy (Backend + Frontend)
 
 on:
@@ -157,9 +156,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ github.ref_name }}-${{ hashFiles('backend/**/Dockerfile', 'backend/**/package*.json') }}
           restore-keys: |
-            ${{ runner.os }}-docker-
+            ${{ runner.os }}-buildx-${{ github.ref_name }}-
 
       - name: 💪 Set Up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -174,7 +173,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./backend
-          file: ./backend/Dockerfile  # or ./backend/dev-Dockerfile if you use one
+          file: ./backend/Dockerfile
           push: true
           tags: rohanv7/dev-booklio-backend:latest
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -276,6 +275,3 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
-
-
-
