@@ -14,7 +14,6 @@ import {
   Phone,
   ShieldCheck,
   ShieldX,
-  CreditCard,
   Clock,
   ChevronRight,
   Loader,

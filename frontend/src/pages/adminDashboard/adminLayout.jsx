@@ -9,7 +9,7 @@ const AdminLayout = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownButtonRef = useRef(null);
   const dropdownMenuRef = useRef(null);
-  
+
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   // Close dropdown if clicked outside
@@ -57,10 +57,10 @@ const AdminLayout = () => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("role");
         localStorage.removeItem("user");
-        
+
         // Close dropdown
         setIsDropdownOpen(false);
-        
+
         // Redirect to login page
         window.location.href = "/auth/admin/login";
       } else {
@@ -96,14 +96,14 @@ const AdminLayout = () => {
               Admin
             </Badge>
           </div>
-          
+
           <div className="flex items-center space-x-4 relative">
             {/* Notifications */}
             <button className="relative p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-gray-700">
               <FaBell className="h-5 w-5" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-            
+
             {/* Profile Button */}
             <button
               ref={dropdownButtonRef}
@@ -137,7 +137,7 @@ const AdminLayout = () => {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3 mt-4">
                     <div className="flex items-center text-sm text-gray-300 bg-gray-700/50 p-3 rounded-lg">
                       <FaUserCircle className="mr-3 text-indigo-400 h-4 w-4" />
@@ -153,7 +153,7 @@ const AdminLayout = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-2">
                   <button
                     onClick={handleLogout}

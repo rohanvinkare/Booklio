@@ -103,22 +103,17 @@ export const Header = () => {
             <AnimatePresence>
                 {popupOpen && (
                     <>
-                        <motion.div
-                            className="fixed inset-0 bg-black/40 z-40"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                        {/* Backdrop */}
+                        <div
+                            className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
                             onClick={() => setPopupOpen(false)}
                         />
 
                         {/* Slide-in Drawer */}
-                        <motion.div
+                        <div
                             ref={popupRef}
-                            initial={{ x: "100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "100%" }}
-                            transition={{ type: "tween", duration: 0.3 }}
-                            className="fixed top-0 right-0 h-full w-[80vw] max-w-xs z-50 bg-[#111] shadow-lg p-4 overflow-y-auto rounded-l-xl"
+                            className={`fixed top-0 right-0 h-full w-[80vw] max-w-xs z-50 bg-[#111] shadow-lg p-4 overflow-y-auto rounded-l-xl transform transition-transform duration-300 ${popupOpen ? 'translate-x-0' : 'translate-x-full'
+                                }`}
                         >
                             <div className="flex justify-between items-center mb-4">
                                 <p className="text-lg font-semibold">Menu</p>
@@ -126,6 +121,7 @@ export const Header = () => {
                                     <X size={22} />
                                 </button>
                             </div>
+
                             <div className="flex flex-col space-y-2">
                                 {isLoggedIn ? (
                                     <>
@@ -135,15 +131,6 @@ export const Header = () => {
                                         <Link to="/shop" onClick={() => setPopupOpen(false)}>
                                             <InteractiveHoverButton className="w-full">Store</InteractiveHoverButton>
                                         </Link>
-                                        {/* <button
-                                            onClick={() => {
-                                                handleLogout();
-                                                setPopupOpen(false);
-                                            }}
-                                        >
-                                            <InteractiveHoverButton className="w-full">Logout</InteractiveHoverButton>
-                                        </button> */}
-
                                         <InteractiveHoverButton
                                             className="w-full"
                                             onClick={() => {
@@ -168,10 +155,14 @@ export const Header = () => {
                                     </>
                                 )}
                             </div>
-                        </motion.div>
+                        </div>
                     </>
                 )}
             </AnimatePresence>
+
+
+
+
         </header>
     );
 };

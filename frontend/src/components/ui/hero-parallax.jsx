@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { Link } from "react-router-dom";
 
+
 export const HeroParallax = ({
   products
 }) => {
@@ -58,35 +59,27 @@ export const HeroParallax = ({
 
 
 
+
 export const Header = () => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const timeout = setTimeout(() => setMounted(true), 1000); // After LCP
-    return () => clearTimeout(timeout);
-  }, []);
+  const [mounted, setMounted] = useState(true); // ← mount immediately
 
   return (
     <div className="max-w-7xl relative mx-auto py-24 md:py-48 px-4 w-full">
-      <motion.h1
-        initial={{ opacity: 1, y: 0 }}
-        animate={mounted ? { opacity: 1, y: 0 } : false}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-3xl md:text-6xl font-extrabold text-white drop-shadow-lg leading-tight"
+      <h1
+        className={`text-3xl md:text-6xl font-extrabold text-white drop-shadow-lg leading-tight ${mounted ? "animate-fade-up" : "opacity-0"
+          }`}
       >
         What will you discover today?
-      </motion.h1>
-      <motion.p
-        initial={{ opacity: 1, y: 0 }}
-        animate={mounted ? { opacity: 1, y: 0 } : false}
-        transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
-        className="mt-6 max-w-xl text-base md:text-xl text-gray-200 drop-shadow-md"
+      </h1>
+      <p
+        className={`mt-6 max-w-xl text-base md:text-xl text-gray-200 drop-shadow-md ${mounted ? "animate-fade-up delay-200" : "opacity-0"
+          }`}
       >
         Your shelf is alive — full of ideas, adventures, and voices waiting to be heard. Scroll down. Flip through. Let Booklio surprise you.
-      </motion.p>
+      </p>
     </div>
   );
 };
-
 
 
 // export const ProductCard = ({
@@ -122,8 +115,19 @@ export const Header = () => {
 // };
 
 
+
 export const ProductCard = ({ product, translate, index }) => {
-  const isLCPImage = index === 0;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isSoulCard = product.title === "Soul";
+  const shouldPrioritize = isSoulCard && isMobile;
 
   return (
     <motion.div
@@ -138,13 +142,13 @@ export const ProductCard = ({ product, translate, index }) => {
           <img
             src={product.thumbnail}
             alt={product.title}
-            loading={isLCPImage ? "eager" : "lazy"}
-            fetchpriority={isLCPImage ? "high" : "auto"}
+            loading={shouldPrioritize ? "eager" : "lazy"}
+            fetchpriority={shouldPrioritize ? "high" : "auto"}
             decoding="async"
-            width="256" // 16rem
-            height="384" // 24rem
+            width="256"
+            height="384"
             className="h-full w-full object-cover rounded-xl"
-            style={{ display: "block" }} // Prevent CLS
+            style={{ display: "block" }}
           />
         </picture>
       </Link>
@@ -159,3 +163,4 @@ export const ProductCard = ({ product, translate, index }) => {
     </motion.div>
   );
 };
+

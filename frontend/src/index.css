@@ -91,3 +91,17 @@
     }
   }
 }
+
+@keyframes scrollX {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-carousel {
+  animation: scrollX 50s linear infinite;
+  animation-play-state: running;
+}

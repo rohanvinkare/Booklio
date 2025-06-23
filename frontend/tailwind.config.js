@@ -62,11 +62,16 @@ export const theme = {
       shimmer: {
         '0%': { backgroundPosition: '-200% 0' },
         '100%': { backgroundPosition: '200% 0' },
-      }
+      },
+      'fade-up': {
+        '0%': { opacity: 0, transform: 'translateY(16px)' },
+        '100%': { opacity: 1, transform: 'translateY(0)' },
+      },
     },
     animation: {
       "carousel-move": "carousel-move var(--duration,80s) infinite",
       shimmer: 'shimmer 2s infinite linear',
+      'fade-up': 'fade-up 0.4s ease-out forwards',
     },
     fontFamily: {
       'sf-pro-display': ["SF Pro Display", "arial", "sans-serif"],

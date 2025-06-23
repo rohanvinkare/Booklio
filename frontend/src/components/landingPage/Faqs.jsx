@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
 
 export const Faqs = () => {
     const [openIndex, setOpenIndex] = useState(null);
@@ -81,7 +81,8 @@ export const Faqs = () => {
                                     </svg>
                                 </button>
 
-                                <AnimatePresence initial={false}>
+
+                                {/* <AnimatePresence initial={false}>
                                     {openIndex === index && (
                                         <motion.div
                                             key="content"
@@ -95,7 +96,17 @@ export const Faqs = () => {
                                             </p>
                                         </motion.div>
                                     )}
-                                </AnimatePresence>
+                                </AnimatePresence> */}
+
+                                <div
+                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                                        }`}
+                                >
+                                    <p className="mt-2 text-gray-600 dark:text-neutral-400 text-sm md:text-base">
+                                        {faq.answer}
+                                    </p>
+                                </div>
+
                             </div>
                         ))}
                     </div>

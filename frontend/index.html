@@ -47,6 +47,15 @@
 
     <!-- Preload Vite JS entrypoint -->
     <link rel="preload" as="script" href="/src/main.jsx" type="module" />
+
+    <!-- ===== For mobile mode performance loading this first ===== -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/modern-%26-minimal-encrypted-soul-wattpad.jpg"
+      fetchpriority="high"
+    />
+
   </head>
   <body>
     <div id="root"></div>
