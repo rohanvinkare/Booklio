@@ -113,7 +113,7 @@
 
 import { useRef } from "react";
 import useMeasure from "react-use-measure";
-import Card from "@/components/landingPage/Card";
+import Card from "@/components/landingPage/desktop/Card";
 
 const images = [
   'https://res.cloudinary.com/djwfg6dgl/image/upload/v1750068113/atomicHabits_exuqua.png',

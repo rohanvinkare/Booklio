@@ -1,7 +1,7 @@
 "use client";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { AuroraText } from "@/components/magicui/aurora-text";
-import GradientText from '../ui/GradientText'
+import GradientText from '../../ui/GradientText'
 
 const Testimonials = () => {
     return (
@@ -47,17 +47,17 @@ const Testimonials = () => {
                             <div className="flex items-center gap-x-4">
                                 <img
                                     className="size-8 rounded-full"
-                                    src="https://randomuser.me/api/portraits/women/68.jpg"
+                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShsAo9zZQubo15vgySEqoVcusmf8aWEcCze2qm3t2dtYUKQD2TxKaTMLeHmGmyI2_ZvoM&usqp=CAU"
                                     alt="Reviewer"
                                     loading="lazy"
                                     decoding="async"
                                 />
                                 <div>
                                     <div className="font-semibold text-gray-800 dark:text-neutral-200">
-                                        Ananya Singh
+                                        Rohan Vinkare
                                     </div>
                                     <div className="text-xs text-gray-500 dark:text-neutral-500">
-                                        Founder @ PaperPages
+                                        Founder @ Booklio
                                     </div>
                                 </div>
                             </div>
@@ -97,7 +97,7 @@ const Testimonials = () => {
                             <li className="flex flex-col -m-0.5 p-4 sm:p-8">
                                 <div className="flex items-center gap-2 text-3xl sm:text-5xl font-bold text-gray-800 mb-2 dark:text-neutral-200">
                                     <AuroraText>4.9</AuroraText>
-                                    <div className="h-16 w-16 sm:h-16 sm:w-16">
+                                    <div className="w-8 h-8 sm:w-16 sm:h-16">
                                         <img
                                             src="/icons/star.png"
                                             alt="star"
@@ -369,3 +369,5 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
+
+

@@ -1,8 +1,13 @@
-import { HeroParallax } from "../ui/hero-parallax";
+import { HeroParallax } from "@/components/ui/hero-parallax.jsx";
 
 export function HeroParallaxDemo() {
-    return <HeroParallax products={products} />;
+    return (
+
+        <HeroParallax products={products} />
+
+    );
 }
+
 export const products = [
     {
         title: "Hope",
@@ -55,9 +60,9 @@ export const products = [
         thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/cover-book-crown-design-template-01522d547cb082f76d5437bf6c6d3f4b.webp?ts=1721685688",
     },
     {
-        title: "Dragon Hide",
+        title: "Road To Success",
         link: "/shop/listing",
-        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/kindle-book-cover-fantasy-design-template-c6e3521885a44688939c1c2505cd0494_screen.jpg?ts=1737145969",
+        thumbnail: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/road-to-success-book-cover-template-design-abfb359021b5f09bdc9b54b8df402379_screen.jpg?ts=1737391613",
     },
     {
         title: "Rise",
@@ -132,3 +137,5 @@ export const products = [
 
 ];
 
+
+export default HeroParallaxDemo;

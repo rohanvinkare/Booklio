@@ -80,7 +80,7 @@ export const theme = {
       'climate-crisis': ["Climate Crisis", "sans-serif"],
       'darker-grotesque': ["Darker Grotesque", "sans-serif"],
       'gloock': ["Gloock", "serif"],
-      'unbounded': ["Unbounded", "sans-serif"],
+      'unbounded': ['"Unbounded"', 'system-ui', 'sans-serif'],
     },
     fontSize: {
       xs: "0.75rem",

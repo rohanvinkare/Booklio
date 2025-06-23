@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
 
 export const Faqs = () => {
     const [openIndex, setOpenIndex] = useState(null);
@@ -38,80 +37,70 @@ export const Faqs = () => {
     ];
 
     const toggleAccordion = (index) => {
-        setOpenIndex(openIndex === index ? null : index);
+        setOpenIndex((prev) => (prev === index ? null : index));
     };
 
     return (
-        <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-            <div className="grid md:grid-cols-5 gap-10">
+        <section className="max-w-5xl px-4 py-12 mx-auto sm:px-6 lg:px-8">
+            <div className="grid gap-10 md:grid-cols-5">
+                {/* Header */}
                 <div className="md:col-span-2">
-                    <div className="max-w-xs">
-                        <h2 className="text-2xl font-bold md:text-4xl md:leading-tight dark:text-white">
-                            Frequently <br /> asked questions
-                        </h2>
-                        <p className="mt-1 hidden md:block text-gray-600 dark:text-neutral-400">
-                            Everything you need to know about Booklio.
-                        </p>
-                    </div>
+                    <h2 className="text-2xl font-bold md:text-4xl md:leading-tight dark:text-white">
+                        Frequently <br /> asked questions
+                    </h2>
+                    <p className="mt-3 text-sm text-gray-600 dark:text-neutral-400 hidden md:block">
+                        Everything you need to know about Booklio.
+                    </p>
                 </div>
 
+                {/* Accordion */}
                 <div className="md:col-span-3">
                     <div className="divide-y divide-gray-200 dark:divide-neutral-700">
-                        {faqs.map((faq, index) => (
-                            <div key={index} className="py-4">
-                                <button
-                                    onClick={() => toggleAccordion(index)}
-                                    className="w-full flex items-center justify-between gap-x-3 text-left md:text-lg font-semibold text-gray-800 dark:text-neutral-200 hover:text-gray-500 dark:hover:text-neutral-400 transition"
-                                >
-                                    {faq.question}
-                                    <svg
-                                        className={`transition-transform duration-300 size-5 text-gray-600 dark:text-neutral-400 ${openIndex === index ? "rotate-180" : ""
-                                            }`}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
+                        {faqs.map((faq, index) => {
+                            const isOpen = openIndex === index;
+                            return (
+                                <div key={index} className="py-5">
+                                    <button
+                                        onClick={() => toggleAccordion(index)}
+                                        className="w-full flex justify-between items-start text-left text-gray-800 dark:text-neutral-200 font-medium transition hover:text-blue-600 dark:hover:text-blue-400"
+                                        aria-expanded={isOpen}
+                                        aria-controls={`faq-${index}`}
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M19 9l-7 7-7-7"
-                                        />
-                                    </svg>
-                                </button>
-
-
-                                {/* <AnimatePresence initial={false}>
-                                    {openIndex === index && (
-                                        <motion.div
-                                            key="content"
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                        <span className="text-sm md:text-base">{faq.question}</span>
+                                        <svg
+                                            className={`ml-4 shrink-0 size-5 transition-transform duration-300 transform ${isOpen ? "rotate-180" : ""
+                                                } text-gray-600 dark:text-neutral-400`}
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
                                         >
-                                            <p className="mt-2 text-gray-600 dark:text-neutral-400 text-sm md:text-base">
-                                                {faq.answer}
-                                            </p>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence> */}
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M19 9l-7 7-7-7"
+                                            />
+                                        </svg>
+                                    </button>
 
-                                <div
-                                    className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-                                        }`}
-                                >
-                                    <p className="mt-2 text-gray-600 dark:text-neutral-400 text-sm md:text-base">
-                                        {faq.answer}
-                                    </p>
+                                    {/* Reserved space and better transitions */}
+                                    <div
+                                        id={`faq-${index}`}
+                                        className={`transition-all duration-300 ease-in-out overflow-hidden will-change-[max-height,opacity] ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                                            }`}
+                                    >
+                                        <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400 md:text-base">
+                                            {faq.answer}
+                                        </p>
+                                    </div>
                                 </div>
-
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
+
 };
+

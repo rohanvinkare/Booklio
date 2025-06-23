@@ -1,21 +1,20 @@
-import { useState, useEffect } from 'react'
-import LoadingBar from 'react-top-loading-bar'
-import { Header } from "@/components/landingPage/Header"
-import { ScrollToTopBtn } from "../common/ScrollToTop";
-import { Footer } from '@/components/landingPage/Footer'
-import { Outlet } from 'react-router-dom'
-import "@/styles.css"
+import { useState, useEffect, Suspense } from 'react';
+import LoadingBar from 'react-top-loading-bar';
+import { Header } from '@/components/landingPage/Header';
+import { ScrollToTopBtn } from '../common/ScrollToTop';
+import { Outlet } from 'react-router-dom';
+import '@/styles.css';
+import { Footer } from "@/components/landingPage/Footer";
 
 export const Format = () => {
-    const [progress, setProgress] = useState(0)
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
         setProgress(35);
-
-        setTimeout(() => {
-            setProgress(100);
-        }, 1000);
+        const timer = setTimeout(() => setProgress(100), 1000);
+        return () => clearTimeout(timer);
     }, []);
+
     return (
         <>
             <LoadingBar
@@ -23,15 +22,22 @@ export const Format = () => {
                 progress={progress}
                 onLoaderFinished={() => setProgress(0)}
             />
-            <Header />
 
-            <Outlet />
+            <div className="min-h-screen bg-[#060606] text-white flex flex-col">
+                <Header />
+                <main className="flex-grow">
+                    <Outlet />
+                </main>
+
+                <Suspense fallback={<div className="min-h-[360px] w-full" />}>
+                    <Footer />
+                </Suspense>
+
+            </div>
 
             <ScrollToTopBtn />
-            
-            <Footer />
         </>
     );
-}
+};
 
 export default Format;

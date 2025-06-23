@@ -4,7 +4,7 @@ import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Faqs } from "@/components/landingPage/Faqs";
-import VideoCarousel from "@/components/landingPage/VideoCarousel";
+import VideoCarousel from "@/components/landingPage/desktop/VideoCarousel";
 import { HeroParallaxDemo } from "@/components/store-view/HeroParallaxDemo";
 import { AnimatedPinDemo } from "@/components/store-view/AnimatedPinDemo";
 import { AuroraText } from "@/components/magicui/aurora-text";

@@ -50,7 +50,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import arrowUrl from "../../assets/arrow.svg";
+import arrowUrl from "@/assets/arrow.svg";
 
 const Card = ({ image }) => {
   const [hovered, setHovered] = useState(false);

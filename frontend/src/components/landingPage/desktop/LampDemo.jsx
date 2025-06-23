@@ -1,6 +1,6 @@
 
 import { motion } from "motion/react";
-import { LampContainer } from "../ui/lamp";
+import { LampContainer } from "@/components/ui/lamp";
 
 const LampDemo = () => {
     return (

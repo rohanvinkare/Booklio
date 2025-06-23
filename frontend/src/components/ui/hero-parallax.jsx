@@ -1,99 +1,11 @@
-// "use client";
-// import React, { useState, useEffect } from "react";
-// import { motion, useScroll, useTransform, useSpring } from "motion/react";
-// import { Link } from "react-router-dom";
-
-
-// export const HeroParallax = ({
-//   products
-// }) => {
-//   const firstRow = products.slice(0, 8);
-//   const secondRow = products.slice(8, 17);
-//   const thirdRow = products.slice(17, 26);
-//   const ref = React.useRef(null);
-//   const { scrollYProgress } = useScroll({
-//     target: ref,
-//     offset: ["start start", "end start"],
-//   });
-
-//   const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
-
-//   const translateX = useSpring(useTransform(scrollYProgress, [0, 1], [0, 1000]), springConfig);
-//   const translateXReverse = useSpring(useTransform(scrollYProgress, [0, 1], [0, -1000]), springConfig);
-//   const rotateX = useSpring(useTransform(scrollYProgress, [0, 0.2], [15, 0]), springConfig);
-//   const opacity = useSpring(useTransform(scrollYProgress, [0, 0.2], [0.2, 1]), springConfig);
-//   const rotateZ = useSpring(useTransform(scrollYProgress, [0, 0.2], [20, 0]), springConfig);
-//   const translateY = useSpring(useTransform(scrollYProgress, [0, 0.2], [-700, 500]), springConfig);
-//   return (
-//     <div
-//       ref={ref}
-//       className="h-[300vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]">
-//       <Header />
-//       <motion.div
-//         style={{
-//           rotateX,
-//           rotateZ,
-//           translateY,
-//           opacity,
-//         }}
-//         className="">
-//         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
-//           {firstRow.map((product) => (
-//             <ProductCard product={product} translate={translateX} key={product.title} />
-//           ))}
-//         </motion.div>
-//         <motion.div className="flex flex-row  mb-20 space-x-20 ">
-//           {secondRow.map((product) => (
-//             <ProductCard product={product} translate={translateXReverse} key={product.title} />
-//           ))}
-//         </motion.div>
-//         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
-//           {thirdRow.map((product) => (
-//             <ProductCard product={product} translate={translateX} key={product.title} />
-//           ))}
-//         </motion.div>
-//       </motion.div>
-//     </div>
-//   );
-// };
-
-
-
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useSpring } from "motion/react";
 import { Link } from "react-router-dom";
 
 export const HeroParallax = ({ products }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [showThirdRow, setShowThirdRow] = useState(true);
-
-  // 🔧 Detect mobile device
-  useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      setShowThirdRow(!mobile); // Only show instantly on desktop
-    };
-
-    handleResize(); // Initial check
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // 🔁 Delay 3rd row render on mobile
-  useEffect(() => {
-    if (isMobile) {
-      const timer = setTimeout(() => setShowThirdRow(true), 1200);
-      return () => clearTimeout(timer);
-    }
-  }, [isMobile]);
-
-  const firstRow = isMobile ? products.slice(0, 4) : products.slice(0, 8);
-  const secondRow = isMobile ? products.slice(4, 8) : products.slice(8, 17);
-  const thirdRow = isMobile ? products.slice(8, 12) : products.slice(17, 26);
-
   const ref = useRef(null);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -107,100 +19,65 @@ export const HeroParallax = ({ products }) => {
   const rotateZ = useSpring(useTransform(scrollYProgress, [0, 0.2], [20, 0]), springConfig);
   const translateY = useSpring(useTransform(scrollYProgress, [0, 0.2], [-700, 500]), springConfig);
 
+  const firstRow = products.slice(0, 8);
+  const secondRow = products.slice(8, 17);
+  const thirdRow = products.slice(17, 26);
+
   return (
     <div
       ref={ref}
-      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
+      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col [perspective:1000px] [transform-style:preserve-3d]"
     >
       <Header />
-      <motion.div
-        style={{ rotateX, rotateZ, translateY, opacity }}
-        className=""
-      >
+
+      <motion.div style={{ rotateX, rotateZ, translateY, opacity }}>
+        {/* First Row */}
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
-          {firstRow.map((product) => (
-            <ProductCard product={product} translate={translateX} key={product.title} />
+          {firstRow.map((product, index) => (
+            <ProductCard
+              product={product}
+              translate={translateX}
+              key={product.id || product.title?.en || product.title || index}
+            />
           ))}
         </motion.div>
+
+        {/* Second Row */}
         <motion.div className="flex flex-row mb-20 space-x-20">
-          {secondRow.map((product) => (
-            <ProductCard product={product} translate={translateXReverse} key={product.title} />
+          {secondRow.map((product, index) => (
+            <ProductCard
+              product={product}
+              translate={translateXReverse}
+              key={product.id || product.title?.en || product.title || index}
+            />
           ))}
         </motion.div>
-        {showThirdRow && (
-          <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
-            {thirdRow.map((product) => (
-              <ProductCard product={product} translate={translateX} key={product.title} />
-            ))}
-          </motion.div>
-        )}
+
+        {/* Third Row */}
+        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
+          {thirdRow.map((product, index) => (
+            <ProductCard
+              product={product}
+              translate={translateX}
+              key={product.id || product.title?.en || product.title || index}
+            />
+          ))}
+        </motion.div>
       </motion.div>
     </div>
   );
 };
 
-
-
-
-
-
-
-
-export const Header = () => {
-  const [mounted, setMounted] = useState(true); // ← mount immediately
-
-  return (
-    <div className="max-w-7xl relative mx-auto py-24 md:py-48 px-4 w-full">
-      <h1
-        className={`text-3xl md:text-6xl font-extrabold text-white drop-shadow-lg leading-tight ${mounted ? "animate-fade-up" : "opacity-0"
-          }`}
-      >
-        What will you discover today?
-      </h1>
-      <p
-        className={`mt-6 max-w-xl text-base md:text-xl text-gray-200 drop-shadow-md ${mounted ? "animate-fade-up delay-200" : "opacity-0"
-          }`}
-      >
-        Your shelf is alive — full of ideas, adventures, and voices waiting to be heard. Scroll down. Flip through. Let Booklio surprise you.
-      </p>
-    </div>
-  );
-};
-
-
-// export const ProductCard = ({
-//   product,
-//   translate
-// }) => {
-//   return (
-//     <motion.div
-//       style={{
-//         x: translate,
-//       }}
-//       whileHover={{
-//         y: -20,
-//       }}
-//       key={product.title}
-//       className="group/product h-[24rem] w-[16rem] relative shrink-0 rounded-xl overflow-hidden shadow-md">
-//       <Link to={product.link} className="block group-hover/product:shadow-2xl">
-//         <img
-//           src={product.thumbnail}
-//           alt={product.title}
-//           loading="lazy"
-//           decoding="async"
-//           className="object-cover absolute h-full w-full inset-0 rounded-xl"
-//         />
-//       </Link>
-//       <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black/60 pointer-events-none transition-opacity duration-300"></div>
-//       <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-semibold text-lg transition-opacity duration-300">
-//         {product.title}
-//       </h2>
-//     </motion.div>
-
-//   );
-// };
-
-
+export const Header = () => (
+  <div className="max-w-7xl relative mx-auto py-24 md:py-48 px-4 w-full">
+    <h1 className="text-3xl md:text-6xl font-extrabold text-white drop-shadow-lg leading-tight animate-fade-up">
+      What will you discover today?
+    </h1>
+    <p className="mt-6 max-w-xl text-base md:text-xl text-gray-200 drop-shadow-md animate-fade-up delay-200">
+      Your shelf is alive — full of ideas, adventures, and voices waiting to be heard. Scroll down. Flip through. Let Booklio surprise you.
+    </p>
+  </div>
+);
 
 
 
@@ -208,22 +85,18 @@ export const ProductCard = ({ product, translate }) => {
   const imgRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  // 🚀 Preload in background using IntersectionObserver
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // Only load once
+          observer.disconnect(); // load only once
         }
       },
-      { rootMargin: "200px" } // Preload slightly before visible
+      { rootMargin: "300px" } // preload just before it scrolls into view
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
+    if (imgRef.current) observer.observe(imgRef.current);
     return () => {
       if (imgRef.current) observer.unobserve(imgRef.current);
     };
@@ -231,38 +104,34 @@ export const ProductCard = ({ product, translate }) => {
 
   return (
     <motion.div
-      key={product.title}
+      ref={imgRef}
       style={{ x: translate }}
       whileHover={{ y: -20 }}
       className="group/product relative shrink-0 w-[14rem] sm:w-[16rem] h-[22rem] sm:h-[24rem] rounded-xl overflow-hidden shadow-md"
-      ref={imgRef}
     >
       <Link to={product.link} className="block group-hover/product:shadow-2xl h-full w-full">
         <picture className="block h-full w-full">
           <source
-            srcSet={isVisible ? product.thumbnail : ""}
             type="image/webp"
+            srcSet={isVisible ? product.thumbnail : undefined}
           />
           <img
-            src={isVisible ? product.thumbnail : ""}
-            alt={product.title}
+            src={isVisible ? product.thumbnail : undefined}
+            alt={typeof product.title === "string" ? product.title : product.title?.en || "Book"}
             loading="lazy"
             decoding="async"
-            fetchpriority="auto"
+            fetchpriority="low"  // deprioritize loading
             width="256"
             height="384"
             className="h-full w-full object-cover rounded-xl transition-opacity duration-300"
-            style={{
-              display: "block",
-              opacity: isVisible ? 1 : 0,
-            }}
+            style={{ display: "block", opacity: isVisible ? 1 : 0 }}
           />
         </picture>
       </Link>
 
       <div className="absolute inset-0 opacity-0 group-hover/product:opacity-80 bg-black/60 transition-opacity duration-300 pointer-events-none" />
       <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white font-semibold text-base sm:text-lg transition-opacity duration-300">
-        {product.title}
+        {typeof product.title === "string" ? product.title : product.title?.en || "Untitled"}
       </h2>
     </motion.div>
   );
