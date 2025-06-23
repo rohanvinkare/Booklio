@@ -55,7 +55,7 @@ function Landing() {
         {isMobile && (
           <>
             <Suspense fallback={<div className="h-[600px]" />}>
-              <div className="relative z-10 isolate bg-white dark:bg-[#0B0B0F]">
+              <div className="relative z-10 isolate bg-[#060606] dark:bg-[#0B0B0F]">
                 <Mobile_HeroSection />
               </div>
             </Suspense>

@@ -7,7 +7,7 @@ const MobileReviews = () => {
                 {/* Review 1 */}
                 <div className="py-6">
                     <blockquote>
-                        <span className="text-sm text-gray-800 dark:text-neutral-200">
+                        <span className="text-sm  text-neutral-400">
                             I'm absolutely floored by the level of care and attention to detail Booklio has put into this platform. We'll definitely be repeat users.
                         </span>
                         <footer className="mt-3">
@@ -26,7 +26,7 @@ const MobileReviews = () => {
                 {/* Review 2 */}
                 <div className="py-6">
                     <blockquote>
-                        <span className="text-sm text-gray-800 dark:text-neutral-200">
+                        <span className="text-sm  text-neutral-400">
                             Booklio has been a game-changer. It boosted our book sales and helped us focus more on what matters.
                         </span>
                         <footer className="mt-3">
