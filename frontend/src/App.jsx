@@ -3,7 +3,6 @@ import { lazy, Suspense } from "react";
 
 // Common
 import CheckAuth from "./common/checkAuth";
-import useTokenValidationOnce from "@/common/useTokenValidationOnce";
 import Loader from "@/components/Loader";
 
 // Lazy imports
@@ -51,9 +50,6 @@ const preloadSellerLogin = () => import("./components/auth/seller/sellerLogin");
 const preloadUserHome = () => import("./components/userDashboard/UserHome");
 
 function App() {
-
-  useTokenValidationOnce(); //  This will check token only once per session
-
   return (
     <div className="flex flex-col overflow-hidden bg-black">
       <Routes>
