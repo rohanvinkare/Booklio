@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 
 // Common
 import CheckAuth from "./common/checkAuth";
+import useTokenValidationOnce from "@/common/useTokenValidationOnce";
 import Loader from "@/components/Loader";
 
 // Lazy imports
@@ -41,22 +42,27 @@ const Format = lazy(() => import("./common/Format"));
 const Landing = lazy(() => import("./pages/landingPage/Landing"));
 const UnauthPage = lazy(() => import("./pages/unauth/Unauth"));
 const NotFound = lazy(() => import("./pages/notFound/NotFound"));
-const Team = lazy(() => import("./pages/Team"));
+// const Team = lazy(() => import("./pages/Team"));
 const About = lazy(() => import("./pages/About"));
+const ProfileHero = lazy(() => import("@/pages/ProfileHero.jsx"));
 
 // 🔷 Preload (optional but powerful)
 const preloadSellerLogin = () => import("./components/auth/seller/sellerLogin");
 const preloadUserHome = () => import("./components/userDashboard/UserHome");
 
 function App() {
+
+  useTokenValidationOnce(); //  This will check token only once per session
+
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-black">
       <Routes>
         {/* Base Layout */}
         <Route path="/" element={<Suspense fallback={<Loader />}><Format /></Suspense>}>
           <Route index element={<Suspense fallback={<Loader />}><Landing /></Suspense>} />
-          <Route path="team" element={<Suspense fallback={<Loader />}><Team /></Suspense>} />
+          {/* <Route path="team" element={<Suspense fallback={<Loader />}><Team /></Suspense>} /> */}
           <Route path="about" element={<Suspense fallback={<Loader />}><About /></Suspense>} />
+          <Route path="team" element={<Suspense fallback={<Loader />}><ProfileHero /></Suspense>} />
         </Route>
 
         {/* Auth */}
@@ -94,8 +100,21 @@ function App() {
           element={<CheckAuth allowedRoles={["user"]}><Suspense fallback={<Loader />}><ShoppingLayout /></Suspense></CheckAuth>}
         >
           <Route index element={<Suspense fallback={<Loader />}><ShoppingHome /></Suspense>} />
-          <Route path="listing" element={<Suspense fallback={<Loader />}><ShopListing /></Suspense>} />
+          {/* <Route path="listing" element={<Suspense fallback={<Loader />}><ShopListing /></Suspense>} /> */}
         </Route>
+
+        <Route
+          path="/shop/listing"
+          element={
+            <CheckAuth allowedRoles={["user"]}>
+              <Suspense fallback={<Loader />}>
+                <ShopListing />
+              </Suspense>
+            </CheckAuth>
+          }
+        />
+
+
 
         {/* Book details */}
         <Route path="/seller/:sellerId/isbn/:isbn" element={<Suspense fallback={<Loader />}><ShoppingLayout /></Suspense>}>

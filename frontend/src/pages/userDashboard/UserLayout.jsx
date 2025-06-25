@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { profileData } from "@/store/user/profile";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "@/components/userDashboard/navbar";
 import { Footer } from "@/components/landingPage/Footer";
@@ -8,19 +8,14 @@ import { Footer } from "@/components/landingPage/Footer";
 const UserLayout = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.userProfile?.profile);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (userData) {
-        setLoading(false);
-        return;
-      }
+      if (userData) return;
 
       const token = localStorage.getItem("accessToken");
       if (!token) {
         console.error("No access token found");
-        setLoading(false);
         return;
       }
 
@@ -38,28 +33,25 @@ const UserLayout = () => {
         }
       } catch (err) {
         console.error("Failed to fetch user data", err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchUserData();
   }, [dispatch, userData]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen text-white">
-        Loading...
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-[#060606] text-white">
+    <div
+      className="flex flex-col min-h-screen text-white"
+      style={{
+        background: `radial-gradient(circle at center, rgba(13,11,30,0.7) 0%, rgba(0,0,0,0.9) 65%, #000000 100%)`,
+      }}
+    >
       {userData && <Navbar userData={userData} />}
+
       <div className="flex-1 p-6">
         <Outlet context={userData || {}} />
       </div>
+
       <Footer />
     </div>
   );

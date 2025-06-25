@@ -123,7 +123,7 @@ const Testimonials = () => {
                 {/* Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Card */}
-                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-900 dark:border-neutral-700">
+                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs  dark:bg-neutral-900 dark:border-neutral-700 bg-gradient-to-b from-black via-[#1a0c2b] to-[#060606] rounded-3xl">
                         <div className="flex-auto p-4 md:p-6">
                             <svg
                                 className="w-20 h-auto sm:w-24 text-gray-700 dark:text-neutral-300"
@@ -200,7 +200,7 @@ const Testimonials = () => {
                     {/* End Card */}
 
                     {/* Card */}
-                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-900 dark:border-neutral-700">
+                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs  dark:bg-neutral-900 dark:border-neutral-700 bg-gradient-to-b from-black via-[#1a0c2b] to-[#060606] rounded-3xl">
                         <div className="flex-auto p-4 md:p-6">
                             <svg
                                 className="w-20 h-auto sm:w-24 text-gray-700 dark:text-neutral-300"
@@ -237,7 +237,7 @@ const Testimonials = () => {
                     {/* End Card */}
 
                     {/* Card */}
-                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-900 dark:border-neutral-700">
+                    <div className="flex flex-col bg-white border border-gray-200 shadow-2xs  dark:bg-neutral-900 dark:border-neutral-700 bg-gradient-to-b from-black via-[#1a0c2b] to-[#060606] rounded-3xl">
                         <div className="flex-auto p-4 md:p-6">
                             <svg
                                 className="w-20 h-auto sm:w-24 text-gray-700 dark:text-neutral-300"

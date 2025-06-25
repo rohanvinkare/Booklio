@@ -7,7 +7,7 @@ import Testimonials from "@/components/landingPage/desktop/Testimonials";
 import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Desktop
-const HeroParallaxDemo = lazy(() => import("@/components/store-view/HeroParallaxDemo"));
+const HeroParallaxDemo = lazy(() => import("@/components/landingPage/desktop/HeroParallaxDemo"));
 const LampDemo = lazy(() => import("@/components/landingPage/desktop/LampDemo.jsx"));
 const TimelineDemo = lazy(() => import("@/components/landingPage/desktop/TimelineDemo"));
 
@@ -21,8 +21,11 @@ function Landing() {
   const isMobile = useIsMobile();
 
   return (
-    <main className="bg-[#060606]">
-      <div className="bg-[#060606] relative z-10 mb-6">
+    <main className="bg-black">
+      <div className="relative z-10 mb-6">
+
+        {/*===================== For laptop ========================= */}
+
         {!isMobile && (
           <>
             <Suspense fallback={<div style={{ height: "100vh" }} />}>
@@ -37,24 +40,42 @@ function Landing() {
               <TimelineDemo />
             </Suspense>
 
-            <Usps />
+
+            <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+              {/* Blurry gradient background layer */}
+              <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#000000]/50 via-[#0d0b1e]/40 to-[#000000]/60 backdrop-blur-md" />
+
+              {/* Content */}
+              <div className="relative z-10">
+                <Usps />
+              </div>
+            </section>
+
+
             <VideoCarousel />
 
-            <div className="mt-24 mb-12">
-              <Testimonials />
+
+            <div className="bg-gradient-to-b from-black via-[#0d0b1e] to-black py-24">
+              <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
+
+                <Testimonials />
+                <div className="mt-24">
+                  <Faqs />
+                </div>
+              </div>
             </div>
 
-
-            <Faqs />
 
           </>
         )}
 
 
-
+        {/*===================== For Mobile ========================= */}
         {isMobile && (
           <>
             <Suspense fallback={<div className="h-[600px]" />}>
+
+
               <div className="relative z-10 isolate bg-[#060606] dark:bg-[#0B0B0F]">
                 <Mobile_HeroSection />
               </div>
@@ -64,17 +85,25 @@ function Landing() {
               <FeaturesSection />
             </Suspense>
 
+
             <Suspense fallback={<div className="h-[500px]" />}>
               <BooklioMobileCards />
             </Suspense>
 
-            <Suspense fallback={<div className="h-[500px]" />}>
-              <MobileReviews />
-            </Suspense>
 
-            <Suspense fallback={<div className="h-[600px]" />}>
-              <Faqs />
-            </Suspense>
+            <div className="bg-gradient-to-b from-black via-[#0d0b1e] to-black py-24">
+              <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
+
+                <Suspense fallback={<div className="h-[500px]" />}>
+                  <MobileReviews />
+                </Suspense>
+
+                <Suspense fallback={<div className="h-[600px]" />}>
+                  <Faqs />
+                </Suspense>
+
+              </div>
+            </div>
 
           </>
         )}

@@ -23,7 +23,7 @@ export const Format = () => {
                 onLoaderFinished={() => setProgress(0)}
             />
 
-            <div className="min-h-screen bg-[#060606] text-white flex flex-col">
+            <div className="min-h-screen bg-black text-white flex flex-col">
                 <Header />
                 <main className="flex-grow">
                     <Outlet />

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => {
     return (
-        <footer className="bg-[#060606] text-gray-300">
+
+        <footer className="bg-transparent text-gray-300">
             <div className="container mx-auto px-5 py-12 sm:py-16 min-h-[300px]"> {/* ✅ Prevent collapse */}
                 {/* Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-8 text-center sm:text-left">
@@ -25,8 +26,8 @@ export const Footer = () => {
                             to="/team"
                             className="flex justify-center sm:justify-start items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors group"
                         >
-                            <Users className="h-5 w-5 group-hover:scale-110 transition-transform" /> {/* ✅ Set size explicitly */}
-                            <span className="text-sm">Our Team</span>
+                            <Users className="h-5 w-5 group-hover:scale-110 transition-transform text-red-600" /> {/* ✅ Set size explicitly */}
+                            <span className="text-sm font-bold text-white/90">About Devloper </span>
                         </Link>
                     </div>
 

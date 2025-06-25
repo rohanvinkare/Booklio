@@ -68,9 +68,8 @@ export const Faqs = () => {
                   >
                     <span className="text-sm md:text-base">{faq.question}</span>
                     <svg
-                      className={`ml-4 shrink-0 size-5 transition-transform duration-300 transform ${
-                        isOpen ? "rotate-180" : ""
-                      } text-gray-500`}
+                      className={`ml-4 shrink-0 size-5 transition-transform duration-300 transform ${isOpen ? "rotate-180" : ""
+                        } text-gray-500`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -79,6 +78,7 @@ export const Faqs = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
+                        color="white"
                         d="M19 9l-7 7-7-7"
                       />
                     </svg>
@@ -87,11 +87,10 @@ export const Faqs = () => {
                   {/* Reserved space and better transitions */}
                   <div
                     id={`faq-${index}`}
-                    className={`transition-all duration-300 ease-in-out overflow-hidden will-change-[max-height,opacity] ${
-                      isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-                    }`}
+                    className={`transition-all duration-300 ease-in-out overflow-hidden will-change-[max-height,opacity] ${isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                      }`}
                   >
-                    <p className="mt-2 text-sm text-gray-400  md:text-base">
+                    <p className="mt-2 text-sm text-gray-300  md:text-base">
                       {faq.answer}
                     </p>
                   </div>

@@ -1,45 +1,24 @@
 import { useOutletContext } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { orderData } from "@/store/user/order"; //  Your redux slice
+import { orderData } from "@/store/user/order";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import {
-  Package,
-  MapPin,
-  Mail,
-  Phone,
-  ShieldCheck,
-  ShieldX,
-  Clock,
-  ChevronRight,
-  Loader,
-  CheckCircle2, XCircle, Truck, IndianRupee
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { toast } from "react-hot-toast";
-import { BorderBeam } from "@/components/magicui/border-beam";
-import { NumberTicker } from "@/components/magicui/number-ticker";
+import ProfileCard from "@/components/userDashboard/ProfileCard";
+import StatsSection from "@/components/userDashboard/StatsSection";
+import RecentOrders from "@/components/userDashboard/RecentOrders";
+
+// Lazy-load dialogs
+const OrderDetailsDialog = lazy(() => import("@/components/userDashboard/OrderDetailsDialog"));
+const AllOrdersDialog = lazy(() => import("@/components/userDashboard/AllOrdersDialog"));
+const CancelOrderDialog = lazy(() => import("@/components/userDashboard/CancelOrderDialog"));
 
 const UserHome = () => {
   const userData = useOutletContext();
   const dispatch = useDispatch();
 
-  const orders = useSelector((state) => state.userOrder.value); //  Redux order state
+  const orders = useSelector((state) => state.userOrder.value);
   const [loading, setLoading] = useState(true);
-  const [address, setAddress] = useState(
-    "No address provided. Add your address below."
-  );
+  const [address, setAddress] = useState("No address provided. Add your address below.");
   const [showAllOrders, setShowAllOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,8 +39,7 @@ const UserHome = () => {
 
         if (data.success) {
           const fetchedOrders = data.orderData[0]?.orders || [];
-
-          dispatch(orderData(fetchedOrders)); // Store in Redux
+          dispatch(orderData(fetchedOrders));
           const firstOrderAddress = fetchedOrders[0]?.shippingAddress;
           if (firstOrderAddress) {
             setAddress(
@@ -77,669 +55,80 @@ const UserHome = () => {
     };
 
     if (userData.userId && orders.length === 0) {
-      fetchOrders(); // Only fetch if Redux doesn't have orders
+      fetchOrders();
     } else {
       setLoading(false);
     }
   }, [userData.userId, orders.length, dispatch]);
 
-
-  //----------- claculating total orders and spent -----------
-  const statusTotals = orders.reduce((totals, order) => {
-    const status = order.status.toLowerCase(); // normalize just in case
-    if (!totals[status]) {
-      totals[status] = 0;
-    }
-    totals[status] += order.price;
-    return totals;
-  }, {});
-
-  const totalOrders = orders.length;
-  const totalPending = statusTotals.pending || 0;
-  const totalCompleted = statusTotals.completed || 0;
-  const totalCancelled = statusTotals.cancelled || 0;
-  const totalPlaced = statusTotals.placed || 0;
-
-  const recentOrders = orders.slice(-3);
-
-  //----------------------------------------------------------------------
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
     if (showAllOrders) setShowAllOrders(false);
   };
 
-  const handleCancelOrder = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/order/api/v1/cancel-order`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            orderId: selectedOrder?.orderId,
-          }),
-        }
-      );
-
-      const contentType = response.headers.get("content-type");
-      const data = contentType?.includes("application/json")
-        ? await response.json()
-        : { success: false, message: "Invalid response format" };
-
-      if (response.ok && data.success) {
-        toast.success("Order cancelled successfully!");
-
-        // Update Redux store
-        const updatedOrders = orders.map((order) =>
-          order.orderId === selectedOrder.orderId
-            ? { ...order, status: "cancelled" }
-            : order
-        );
-        dispatch(orderData(updatedOrders));
-
-        setSelectedOrder({ ...selectedOrder, status: "cancelled" });
-        setShowCancelConfirmation(false);
-      } else {
-        toast.error(data.message || "Failed to cancel order");
-      }
-    } catch (error) {
-      console.error("Error cancelling order:", error);
-      toast.error("Something went wrong. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
+  const handleCancelSuccess = (cancelledOrderId) => {
+    const updatedOrders = orders.map((order) =>
+      order.orderId === cancelledOrderId
+        ? { ...order, status: "cancelled" }
+        : order
+    );
+    dispatch(orderData(updatedOrders));
+    setSelectedOrder((prev) =>
+      prev?.orderId === cancelledOrderId ? { ...prev, status: "cancelled" } : prev
+    );
+    setShowCancelConfirmation(false);
   };
 
-
   return (
-    <div className="min-h-screen p-6 md:p-10">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Profile Header */}
+    <div className="min-h-screen px-4 pt-6 pb-10 sm:px-6 md:px-10 bg-[#060606] text-white">
+      <div className="max-w-screen-xl mx-auto space-y-8">
+        {/* Grid Layout: Profile + Stats + Orders */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left: Profile */}
+          <ProfileCard userData={userData} address={address} />
 
-          {/* Profile Card */}
-          <div className="relative w-full max-w-md mx-auto px-2 sm:px-4">
-            <div className="relative overflow-hidden rounded-xl">
-              <Card className="bg-[#060606]/80 border-blue-950/60 w-full h-full">
-                <CardContent className="p-4 sm:p-6 m-2 sm:m-3">
-                  {/* Avatar & Info Section */}
-                  <div className="flex flex-col items-center">
-                    <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-blue-500 shadow-lg">
-                      <AvatarImage src={userData.image} alt={userData.name} />
-                      <AvatarFallback className="bg-blue-500 text-xl">
-                        {userData.name?.[0]?.toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <h2 className="mt-3 sm:mt-4 text-xl sm:text-2xl font-bold text-white">{userData.name}</h2>
-                    <div className="mt-1 sm:mt-2 flex items-center">
-                      {userData.is_verified ? (
-                        <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2" />
-                      ) : (
-                        <ShieldX className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 mr-2" />
-                      )}
-                      <span className={`text-xs sm:text-sm ${userData.is_verified ? "text-green-400" : "text-red-400"}`}>
-                        {userData.is_verified ? "Verified Account" : "Not Verified"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Contact Info */}
-                  <div className="mt-5 sm:mt-6 space-y-3 sm:space-y-4">
-                    <div className="flex items-center text-gray-300">
-                      <Mail className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-blue-600 drop-shadow-[0_0_6px_#3b82f6]" />
-                      <span className="text-xs sm:text-sm text-white">{userData.email}</span>
-                    </div>
-                    <div className="flex items-center text-gray-300">
-                      <Phone className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-green-500 drop-shadow-[0_0_6px_#22c55e]" />
-                      <span className="text-xs sm:text-sm text-white">{userData.mobile}</span>
-                    </div>
-                    <div className="flex items-center text-gray-300">
-                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3 text-red-700 drop-shadow-[0_0_6px_#ec4899] flex-shrink-0" />
-                      <span className="text-xs sm:text-sm text-white">{address}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Beam effect inside and constrained */}
-              <div className="absolute inset-0 pointer-events-none">
-                <BorderBeam
-                  size={100}
-                  duration={8}
-                  colorFrom="#40ffaa"
-                  colorTo="#4079ff"
-                  className="rounded-xl w-full h-full"
-                />
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="md:col-span-2">
-            {/* Stats Cards */}
-            <Card className="bg-[#060606] border-blue-950">
-
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Total Orders */}
-                  <div className="flex items-center space-x-4">
-                    <Package className="w-10 h-10 text-blue-500" />
-                    <div>
-                      <p className="text-sm text-gray-400">Total Orders</p>
-                      <h3 className="text-3xl font-bold text-white mt-1">
-                        {loading ? "..." : (
-                          <NumberTicker
-                            value={totalOrders}
-                            className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-white"
-                          />
-                        )}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Total Spent */}
-                  {/* <div className="flex items-center space-x-4">
-                    <CreditCard className="w-10 h-10 text-green-500" />
-                    <div>
-                      <p className="text-sm text-gray-400">Total Spent</p>
-                      <h3 className="text-3xl font-bold text-white mt-1 flex items-center gap-2">
-                        {loading ? "..." : (
-                          <>
-                            <IndianRupee className="w-5 h-5 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
-                            <NumberTicker
-                              value={totalSpent}
-                              className="whitespace-pre-wrap text-4xl font-medium tracking-tighter text-white"
-                            />
-                          </>
-                        )}
-                      </h3>
-                    </div>
-                  </div> */}
-
-                  {/* Pending */}
-                  <div className="flex items-center space-x-4">
-                    <Clock className="w-10 h-10 text-yellow-400" />
-                    <div>
-                      <p className="text-sm text-gray-400">Pending</p>
-                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
-                        {loading ? "..." : (
-                          <>
-                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
-                            <NumberTicker
-                              value={totalPending}
-                              className="text-2xl font-medium tracking-tight text-white"
-                            />
-                          </>
-                        )}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Completed */}
-                  <div className="flex items-center space-x-4">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-400" />
-                    <div>
-                      <p className="text-sm text-gray-400">Completed</p>
-                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
-                        {loading ? "..." : (
-                          <>
-                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
-                            <NumberTicker
-                              value={totalCompleted}
-                              className="text-2xl font-medium tracking-tight text-white"
-                            />
-                          </>
-                        )}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Cancelled */}
-                  <div className="flex items-center space-x-4">
-                    <XCircle className="w-10 h-10 text-red-500" />
-                    <div>
-                      <p className="text-sm text-gray-400">Cancelled</p>
-                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
-                        {loading ? "..." : (
-                          <>
-                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
-                            <NumberTicker
-                              value={totalCancelled}
-                              className="text-2xl font-medium tracking-tight text-white"
-                            />
-                          </>
-                        )}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Placed */}
-                  <div className="flex items-center space-x-4">
-                    <Truck className="w-10 h-10 text-cyan-400" />
-                    <div>
-                      <p className="text-sm text-gray-400">Placed</p>
-                      <h3 className="text-xl font-bold text-white mt-1 flex items-center gap-1">
-                        {loading ? "..." : (
-                          <>
-                            <IndianRupee className="w-4 h-4 text-green-400 drop-shadow-[0_0_4px_#00ff88]" />
-                            <NumberTicker
-                              value={totalPlaced}
-                              className="text-2xl font-medium tracking-tight text-white"
-                            />
-                          </>
-                        )}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-
-
-
-
-            </Card>
-
-            {/* Recent Orders Section */}
-            <Card className="bg-[#060606] border-blue-950 mt-6">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold text-white">Recent Orders</h3>
-                  <Button
-                    variant="ghost"
-                    className="text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
-                    onClick={() => setShowAllOrders(true)}
-                  >
-                    View All <ChevronRight className="ml-1 w-4 h-4" />
-                  </Button>
-                </div>
-
-                {loading ? (
-                  <div className="flex justify-center items-center py-10">
-                    <Loader className="animate-spin text-gray-400" size={32} />
-                  </div>
-                ) : recentOrders.length > 0 ? (
-                  <div className="space-y-4">
-                    {recentOrders.map((order) => (
-                      <motion.div
-                        key={order.orderId}
-                        initial={{ opacity: 0, translateY: 10 }}
-                        animate={{ opacity: 1, translateY: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <Card
-                          className="bg-[#060606] border-gray-600 hover:bg-gray-700 transition-colors cursor-pointer"
-                          onClick={() => handleOrderClick(order)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex flex-col sm:flex-row justify-between gap-4">
-                              <div className="flex items-start space-x-4">
-                                <div className="bg-blue-500/10 p-3 rounded-full">
-                                  <Package className="w-5 h-5 text-blue-500" />
-                                </div>
-                                <div>
-                                  <div className="flex items-center gap-3">
-                                    <h4 className="text-white font-semibold">
-                                      {order.seller.storeName}
-                                    </h4>
-
-
-                                    <span
-                                      className={`text-xs px-2 py-1 rounded-full font-semibold capitalize
-                                             ${order.status === "completed"
-                                          ? "bg-green-500/10 text-green-400"
-                                          : order.status === "pending"
-                                            ? "bg-yellow-500/10 text-yellow-400"
-                                            : order.status === "cancelled"
-                                              ? "bg-red-500/10 text-red-400"
-                                              : order.status === "placed"
-                                                ? "bg-blue-500/10 text-blue-400"
-                                                : "bg-gray-500/10 text-gray-300"
-                                        }`}
-                                    >
-                                      {order.status}
-                                    </span>
-
-
-                                  </div>
-                                  <p className="text-sm text-emerald-400/90 mt-1 font-medium">
-                                    <span className="text-gray-300">Book Title:</span>{" "}
-                                    {order.bookInfo?.data?.volumeInfo?.title || "N/A"}
-                                  </p>
-                                  <p className="text-sm text-gray-400 mt-1">
-                                    Delivered to: {order.shippingAddress?.city}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-end justify-between sm:flex-col sm:items-end gap-2">
-                                <p className="text-green-500 font-semibold">₹{order.price}</p>
-                                <p className="text-sm text-gray-400">
-                                  <Clock className="w-4 h-4 inline mr-1 text-white/80" />
-                                  {new Date(order.createdAt).toLocaleDateString()}
-                                </p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center text-gray-400 py-10">
-                    <Package className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>No orders found</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          {/* Right: Stats + Recent Orders */}
+          <div className="md:col-span-2 space-y-6">
+            <StatsSection orders={orders} loading={loading} />
+            <RecentOrders
+              orders={orders}
+              loading={loading}
+              onOrderClick={handleOrderClick}
+              onViewAll={() => setShowAllOrders(true)}
+            />
           </div>
         </div>
 
-        {/* Order Details Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[90vh]  bg-[#060606] text-white border-blue-950">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold mb-2">
-                Order Details
-              </DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Order ID: {selectedOrder?.orderId}
-              </DialogDescription>
-            </DialogHeader>
+        {/* Dialogs - wrapped in Suspense */}
+        <Suspense fallback={null}>
+          <OrderDetailsDialog
+            isOpen={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            order={selectedOrder}
+            loading={loading}
+            onCancel={() => setShowCancelConfirmation(true)}
+          />
+        </Suspense>
 
-            <ScrollArea className="h-[70vh] pr-4">
-              <div className="space-y-6">
-                {/* Order Status */}
-                <div className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Package className="w-5 h-5 text-blue-500" />
-                    <span className="text-white font-medium">Order Status</span>
-                  </div>
+        <Suspense fallback={null}>
+          <AllOrdersDialog
+            isOpen={showAllOrders}
+            onOpenChange={setShowAllOrders}
+            orders={orders}
+            loading={loading}
+            onOrderClick={handleOrderClick}
+          />
+        </Suspense>
 
-
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
-                    ${selectedOrder?.status === "completed"
-                        ? "bg-green-500/10 text-green-400"
-                        : selectedOrder?.status === "pending"
-                          ? "bg-yellow-500/10 text-yellow-400"
-                          : selectedOrder?.status === "cancelled"
-                            ? "bg-red-500/10 text-red-400"
-                            : selectedOrder?.status === "placed"
-                              ? "bg-blue-500/10 text-blue-400"
-                              : "bg-gray-500/10 text-gray-300"
-                      }`}
-                  >
-                    {selectedOrder?.status}
-                  </span>
-
-
-                </div>
-
-                {/* Book Details */}
-                <div className="p-4 bg-[#060606] border-blue-950 rounded-lg">
-                  <h3 className="text-lg font-semibold text-white mb-4">Book Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Title</p>
-                      <p className="text-white">{selectedOrder?.bookInfo?.data?.volumeInfo?.title}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Author</p>
-                      <p className="text-white">{selectedOrder?.bookInfo?.data?.volumeInfo?.authors}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">ISBN</p>
-                      <p className="text-white">{selectedOrder?.isbn}</p>
-                    </div>
-
-                    <div className="flex flex-col items-start space-y-2">
-                      <p className="text-gray-400">Quantity</p>
-                      <div className="flex items-center space-x-2">
-                        <img src="icons/stock.png" alt="Stock" className="w-7 h-7" loading="lazy"
-                          decoding="async" />
-                        <p className="text-green-500 text-xl font-bold">{selectedOrder?.quantity}</p>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Shipping Details */}
-                <div className="p-4 bg-[#060606] border-blue-950 rounded-lg">
-                  <h3 className="text-lg font-semibold text-white mb-4">Shipping Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-gray-400">Street</p>
-                      <p className="text-white">{selectedOrder?.shippingAddress?.street}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">City</p>
-                      <p className="text-white">{selectedOrder?.shippingAddress?.city}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">State</p>
-                      <p className="text-white">{selectedOrder?.shippingAddress?.state}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Country</p>
-                      <p className="text-white">{selectedOrder?.shippingAddress?.country}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Zip Code</p>
-                      <p className="text-white">{selectedOrder?.shippingAddress?.zipCode}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Details */}
-                <div className="p-4 bg-[#060606] rounded-lg">
-                  <h3 className="text-lg font-semibold text-white mb-4">Payment Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <div className="flex flex-col items-start space-y-1">
-                      <p className="text-gray-400">Total Amount</p>
-                      <div className="flex items-center space-x-2">
-                        <img src="icons/rs.png" alt="rs" className="w-7 h-7" loading="lazy"
-                          decoding="async" />
-                        <p className="text-green-500 font-mono text-lg">₹{selectedOrder?.price}</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-3 text-gray-400">Payment Status</p>
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold capitalize
-                         ${selectedOrder?.status === "completed"
-                            ? "bg-green-500/10 text-green-400"
-                            : selectedOrder?.status === "pending"
-                              ? "bg-yellow-500/10 text-yellow-400"
-                              : selectedOrder?.status === "cancelled"
-                                ? "bg-red-500/10 text-red-400"
-                                : selectedOrder?.status === "placed"
-                                  ? "bg-blue-500/10 text-blue-400"
-                                  : "bg-gray-500/10 text-gray-300"
-                          }`}
-                      >
-                        {selectedOrder?.status}
-                      </span>
-                    </div>
-
-                    <div>
-                      <p className="text-gray-400">Order Date</p>
-                      <p className="text-white">
-                        {selectedOrder?.createdAt && new Date(selectedOrder.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                {selectedOrder?.status === "pending" && (
-                  <div className="flex justify-end gap-4 mt-6">
-                    <Button
-                      variant="destructive"
-                      className="bg-red-600 hover:bg-red-700 text-white"
-                      onClick={() => setShowCancelConfirmation(true)}
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <Loader className="w-4 h-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        "Cancel Order"
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-          </DialogContent>
-        </Dialog>
-
-        {/* All Orders Dialog */}
-        <Dialog open={showAllOrders} onOpenChange={setShowAllOrders}>
-          <DialogContent className="max-w-4xl max-h-[80vh] bg-[#060606] text-white border-blue-950">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold mb-4">All Orders</DialogTitle>
-            </DialogHeader>
-            <div className="overflow-y-auto max-h-[60vh] pr-4 space-y-4 scrollbar-thin scrollbar-thumb-white scrollbar-track-black scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-
-              {loading ? (
-                <div className="flex justify-center items-center py-10">
-                  <Loader className="animate-spin text-gray-400" size={32} />
-                </div>
-              ) : orders.length > 0 ? (
-                orders.map((order) => (
-                  <motion.div
-                    key={order.orderId}
-                    initial={{ opacity: 0, translateY: 10 }}
-                    animate={{ opacity: 1, translateY: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Card
-                      className="bg-[#060606] border-blue-950 hover:bg-gray-700/80 transition-colors cursor-pointer"
-                      onClick={() => handleOrderClick(order)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex flex-col sm:flex-row justify-between gap-4">
-                          <div className="flex items-start space-x-4">
-                            <div className="bg-blue-500/10 p-3 rounded-full">
-                              <Package className="w-6 h-6 text-blue-500" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-3">
-                                <h4 className="text-white font-semibold">
-                                  {order.seller.storeName}
-                                </h4>
-
-
-                                <span
-                                  className={`text-sm font-semibold capitalize px-2 py-1 rounded-full
-                                     ${order.status === "completed"
-                                      ? "bg-green-500/10 text-green-400"
-                                      : order.status === "pending"
-                                        ? "bg-yellow-500/10 text-yellow-400"
-                                        : order.status === "cancelled"
-                                          ? "bg-red-500/10 text-red-400"
-                                          : order.status === "placed"
-                                            ? "bg-blue-500/10 text-blue-400"
-                                            : "bg-gray-500/10 text-gray-300"
-                                    }`}
-                                >
-                                  {order.status}
-                                </span>
-
-
-                              </div>
-                              <p className="text-sm text-emerald-400 mt-1 font-medium">
-                                <span className="text-gray-200">Book Title:</span>{" "}
-                                {order.bookInfo?.data?.volumeInfo?.title || "N/A"}
-                              </p>
-
-                              <p className="text-sm text-gray-400 mt-2 mb-2 leading-tight">
-                                Seller: <span className="text-gray-300">{order.seller.name}</span> |
-                                Contact: <span className="text-gray-300">{order.seller.mobile}</span>
-                              </p>
-
-                              <p className="text-sm text-gray-400 mt-1">
-                                Delivered to: <span className="text-gray-200">{order.shippingAddress?.city}</span>
-                              </p>
-
-
-                            </div>
-                          </div>
-                          <div className="flex items-end justify-between sm:flex-col sm:items-end gap-2">
-                            <p className="text-white font-semibold">₹{order.price}</p>
-                            <p className="text-sm text-gray-400">
-                              <Clock className="w-4 h-4 inline mr-1" />
-                              {new Date(order.createdAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="text-center text-gray-400">
-                  <Package className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>No orders found</p>
-                </div>
-              )}
-            </div>
-
-
-          </DialogContent>
-        </Dialog>
-
-
-        {/* Cancel Order Confirmation Dialog */}
-        <Dialog open={showCancelConfirmation} onOpenChange={setShowCancelConfirmation}>
-          <DialogContent className="max-w-md bg-gray-800 text-white border-gray-700">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold mb-2">
-                Cancel Order
-              </DialogTitle>
-              <DialogDescription className="text-gray-400">
-                Are you sure you want to cancel this order? This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex justify-end gap-4 mt-6">
-              <Button
-                variant="outline"
-                className="border-gray-600 hover:bg-gray-700"
-                onClick={() => setShowCancelConfirmation(false)}
-                disabled={loading}
-              >
-                No, Keep Order
-              </Button>
-              <Button
-                variant="destructive"
-                className="bg-red-600 hover:bg-red-700 text-white"
-                onClick={handleCancelOrder}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Yes, Cancel Order"
-                )}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Suspense fallback={null}>
+          <CancelOrderDialog
+            isOpen={showCancelConfirmation}
+            onOpenChange={setShowCancelConfirmation}
+            orderId={selectedOrder?.orderId}
+            onCancelSuccess={handleCancelSuccess}
+          />
+        </Suspense>
       </div>
     </div>
   );

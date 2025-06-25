@@ -45,12 +45,17 @@ const genreData = [
     },
 ];
 
+
 export function AnimatedPinDemo() {
     return (
         <div className="w-full px-4 py-8 flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl">
                 {genreData.map((genre, index) => (
-                    <Link key={index} to={genre.href} className="w-fit">
+                    <Link
+                        key={index}
+                        to={genre.href}
+                        className="flex justify-center sm:justify-start w-full"
+                    >
                         <PinContainer title={genre.title} href={genre.href}>
                             <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/80 w-[18rem] h-[18rem] bg-[#060606] rounded-lg shadow-md">
                                 <h3 className="!pb-2 !m-0 font-bold text-base text-slate-100 z-10">
@@ -60,9 +65,7 @@ export function AnimatedPinDemo() {
 
                                 <div
                                     className="flex flex-1 w-full rounded-lg mt-4 bg-cover bg-center"
-                                    style={{
-                                        backgroundImage: `url(${genre.image})`,
-                                    }}
+                                    style={{ backgroundImage: `url(${genre.image})` }}
                                 />
                             </div>
                         </PinContainer>

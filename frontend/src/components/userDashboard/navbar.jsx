@@ -47,7 +47,7 @@ const Navbar = ({ userData }) => {
   }, [popupOpen]);
 
   return (
-    <nav className="bg-[#060606] text-white shadow-md sticky top-0 z-[60]">
+    <nav className="bg-transparent text-white shadow-md sticky top-0 z-[60]">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/shop">
           <GradientText

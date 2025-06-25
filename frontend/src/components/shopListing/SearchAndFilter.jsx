@@ -33,3 +33,4 @@ const SearchAndFilter = ({ searchQuery, setSearchQuery, bookData, selectedGenres
 };
 
 export default SearchAndFilter;
+

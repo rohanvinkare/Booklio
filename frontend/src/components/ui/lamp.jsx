@@ -11,7 +11,7 @@ export const LampContainer = ({ children, className }) => {
       style={{ backgroundColor: "#060606" }}
     >
       {/* Top Gradient Fade */}
-      <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-[#060606] via-transparent to-transparent z-20" />
+      <div className="absolute top-0 w-full h-32 bg-gradient-to-b from-black via-transparent to-transparent z-20" />
 
       {/* Lamp Glow Section */}
       <div className="relative flex w-full flex-1 scale-y-125 items-center justify-center isolate z-0">
@@ -74,3 +74,5 @@ export const LampContainer = ({ children, className }) => {
     </div>
   );
 };
+
+

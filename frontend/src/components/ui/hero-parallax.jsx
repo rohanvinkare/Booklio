@@ -24,9 +24,14 @@ export const HeroParallax = ({ products }) => {
   const thirdRow = products.slice(17, 26);
 
   return (
+    // <div
+    //   ref={ref}
+    //   className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col [perspective:1000px] [transform-style:preserve-3d]"
+    // >
+
     <div
       ref={ref}
-      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col [perspective:1000px] [transform-style:preserve-3d]"
+      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col [perspective:1000px] [transform-style:preserve-3d] bg-gradient-to-b from-black via-[#0d0b1e] to-black"
     >
       <Header />
 

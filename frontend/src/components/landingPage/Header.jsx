@@ -10,8 +10,8 @@ import { Menu, X } from "lucide-react";
 export const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [popupOpen, setPopupOpen] = useState(false);
-    const navigate = useNavigate();
     const popupRef = useRef(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
@@ -27,7 +27,7 @@ export const Header = () => {
         navigate("/");
     };
 
-    // Close popup on outside click
+    // Close drawer on outside click
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (popupRef.current && !popupRef.current.contains(e.target)) {
@@ -40,7 +40,10 @@ export const Header = () => {
 
     return (
         <header className="bg-[#060606] text-white relative z-[60]">
-            {/* Sticky only on mobile */}
+            {/* Optional solid background shield */}
+            <div className="absolute inset-0 bg-[#060606] z-[-1]" />
+
+            {/* Sticky for mobile */}
             <div className="sticky top-0 z-50 bg-[#060606] md:relative md:top-auto">
                 <Container className="flex justify-between items-center min-h-[--header-row-height] py-3 px-4">
                     <Link to="/">
@@ -54,7 +57,7 @@ export const Header = () => {
                         </GradientText>
                     </Link>
 
-                    {/* Desktop Menu */}
+                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-2 text-sm">
                         {isLoggedIn ? (
                             <>
@@ -64,14 +67,9 @@ export const Header = () => {
                                 <Link to="/shop">
                                     <InteractiveHoverButton>Store</InteractiveHoverButton>
                                 </Link>
-
-                                {/* <button onClick={handleLogout}>
-                                    <InteractiveHoverButton>Logout</InteractiveHoverButton>
-                                </button> */}
                                 <InteractiveHoverButton onClick={handleLogout}>
                                     Logout
                                 </InteractiveHoverButton>
-
                             </>
                         ) : (
                             <>
@@ -99,20 +97,20 @@ export const Header = () => {
                 </Container>
             </div>
 
-            {/* Backdrop */}
+            {/* Mobile Slide Drawer */}
             <AnimatePresence>
                 {popupOpen && (
                     <>
-                        {/* Backdrop */}
+                        {/* Dimmed Backdrop */}
                         <div
                             className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
                             onClick={() => setPopupOpen(false)}
                         />
 
-                        {/* Slide-in Drawer */}
+                        {/* Drawer */}
                         <div
                             ref={popupRef}
-                            className={`fixed top-0 right-0 h-full w-[80vw] max-w-xs z-50 bg-[#111] shadow-lg p-4 overflow-y-auto rounded-l-xl transform transition-transform duration-300 ${popupOpen ? 'translate-x-0' : 'translate-x-full'
+                            className={`fixed top-0 right-0 h-full w-[80vw] max-w-xs z-50 bg-[#111] shadow-lg p-4 overflow-y-auto rounded-l-xl transform transition-transform duration-300 ${popupOpen ? "translate-x-0" : "translate-x-full"
                                 }`}
                         >
                             <div className="flex justify-between items-center mb-4">
@@ -159,10 +157,6 @@ export const Header = () => {
                     </>
                 )}
             </AnimatePresence>
-
-
-
-
         </header>
     );
 };
