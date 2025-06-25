@@ -8,8 +8,8 @@ const app = express();
 
 // Only connect DB and Redis if not in test mode
 if (process.env.NODE_ENV !== 'test') {
-    connectDB();
-    connectRedis();
+  connectDB();
+  connectRedis();
 }
 
 app.set("view engine", "ejs");
@@ -48,11 +48,11 @@ app.use("/", orderRoute);
 app.use("/", tokenRoute);
 
 app.get('/health', (req, res) => {
-    res.status(200).send('Hello Booklio!');
+  res.status(200).send('Hello Booklio!');
 });
 
 app.get("/", (req, res) => {
-    res.send(`
+  res.send(`
       <html>
         <head>
           <style>
@@ -88,7 +88,7 @@ app.get("/", (req, res) => {
           <div>
             <h1>Welcome to Booklio</h1>
             <p>Your go-to platform for book lovers</p>
-            <a href="https://booklio-backend.codenix.space/">View API Documentation</a>
+            <a href="https://booklio-backend.codenix.space/api-docs/">View API Documentation</a>
           </div>
         </body>
       </html

@@ -35,7 +35,7 @@ npm uninstall @testing-library/react @testing-library/jest-dom @vitest/coverage-
 deepcheck     =>> this can be used to check used and not used packages 
 
 
-
+npx serve dist --single   ==> to serve all routs on refresh dont fall 
 
 
 

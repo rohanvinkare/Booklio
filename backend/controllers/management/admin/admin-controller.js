@@ -1150,7 +1150,7 @@ const paycutFunc = async (req, res) => {
 
     // Extract totals for each status
     const pendingPayCut = payCuts.find((entry) => entry._id === "pending");
-    const canceledPayCut = payCuts.find((entry) => entry._id === "canceled");
+    const canceledPayCut = payCuts.find((entry) => entry._id === "cancelled");
     const completedPayCut = payCuts.find((entry) => entry._id === "completed");
 
 

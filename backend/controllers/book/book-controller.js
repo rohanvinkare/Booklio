@@ -428,7 +428,7 @@ const removeSellerFromBook = async (req, res) => {
     const existingOrders = await Order.findOne({
       isbn: isbn,
       sellerId: sellerId,
-      status: { $nin: ["canceled"] }, // Ignore canceled and completed orders
+      status: { $nin: ["cancelled"] }, // Ignore cancelled and completed orders
     });
 
     if (existingOrders) {
