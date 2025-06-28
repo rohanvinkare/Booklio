@@ -7,7 +7,7 @@ const adminUsersSlice = createSlice({
     },
     reducers: {
         usersData: (state, action) => {
-            console.log("Action payload: ", action.payload);
+            // console.log("Action payload: ", action.payload);
             state.value = action.payload || [];
         }
     },

@@ -30,10 +30,10 @@ const AuthLogin = () => {
       });
 
       const result = await response.json();
-      console.log("Token check response:", result);
+      // console.log("Token check response:", result);
 
       if (result.success && result.data.credDecode.role === "user") {
-        console.log(result)
+        // console.log(result)
         // localStorage.setItem("role", result.data.credDecode.role);
         toast.success("Redirecting...");
         // Store user data in Redux
@@ -63,7 +63,7 @@ const AuthLogin = () => {
   // Login submission logic
   const onSubmit = async (data) => {
     try {
-      console.log("Submitting Login Data:", data);
+      // console.log("Submitting Login Data:", data);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user/api/v1/login`, {
         method: "POST",
@@ -82,7 +82,7 @@ const AuthLogin = () => {
       }
 
       const result = await response.json();
-      console.log("Response from API:", result);
+      // console.log("Response from API:", result);
 
       // Check for the accessToken in the response
       if (result.accessToken) {

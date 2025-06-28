@@ -7,7 +7,7 @@ const adminBooksSlice = createSlice({
     },
     reducers: {
         booksData: (state, action) => {
-            console.log("Action payload: ", action.payload);
+            // console.log("Action payload: ", action.payload);
             state.value = action.payload || []; // Properly update "value"
         }
     },

@@ -7,7 +7,7 @@ const adminManagementsSlice = createSlice({
   },
   reducers: {
     managementsData: (state,action) => {
-      console.log("Action payload: ", action.payload);
+      // console.log("Action payload: ", action.payload);
       state.value = action.payload || []; // Properly update "value"
     },
    

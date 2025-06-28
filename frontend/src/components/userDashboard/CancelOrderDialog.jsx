@@ -33,7 +33,7 @@ const CancelOrderDialog = ({ isOpen, onOpenChange, orderId, onCancelSuccess }) =
                 onOpenChange(false);
             } else {
                 toast.error(data.msg || "Failed to cancel order");
-                console.log(data.msg)
+                // console.log(data.msg)
             }
         } catch (error) {
             console.error("Error cancelling order:", error);

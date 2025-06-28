@@ -32,7 +32,7 @@ const ShoppingHome = lazy(() => import("./pages/store-view/ShopHome"));
 const ShoppingLayout = lazy(() => import("./pages/shopingLayout/layout.jsx"));
 const ShopListing = lazy(() => import("./pages/shopListing/ShopListing.jsx"));
 const BookDetails = lazy(() => import("./components/store-view/BookDetails"));
-const PlaceOrder = lazy(() => import("./components/store-view/PlaceOrder"));
+const PlaceOrder = lazy(() => import("./components/store-view/palceOrder/PlaceOrder"));
 
 const UserLayout = lazy(() => import("./pages/userDashboard/UserLayout"));
 const UserHome = lazy(() => import("./components/userDashboard/UserHome"));
@@ -41,7 +41,6 @@ const Format = lazy(() => import("./common/Format"));
 const Landing = lazy(() => import("./pages/landingPage/Landing"));
 const UnauthPage = lazy(() => import("./pages/unauth/Unauth"));
 const NotFound = lazy(() => import("./pages/notFound/NotFound"));
-// const Team = lazy(() => import("./pages/Team"));
 const About = lazy(() => import("./pages/About"));
 const ProfileHero = lazy(() => import("@/pages/ProfileHero.jsx"));
 
@@ -56,7 +55,6 @@ function App() {
         {/* Base Layout */}
         <Route path="/" element={<Suspense fallback={<Loader />}><Format /></Suspense>}>
           <Route index element={<Suspense fallback={<Loader />}><Landing /></Suspense>} />
-          {/* <Route path="team" element={<Suspense fallback={<Loader />}><Team /></Suspense>} /> */}
           <Route path="about" element={<Suspense fallback={<Loader />}><About /></Suspense>} />
           <Route path="team" element={<Suspense fallback={<Loader />}><ProfileHero /></Suspense>} />
         </Route>
@@ -96,7 +94,6 @@ function App() {
           element={<CheckAuth allowedRoles={["user"]}><Suspense fallback={<Loader />}><ShoppingLayout /></Suspense></CheckAuth>}
         >
           <Route index element={<Suspense fallback={<Loader />}><ShoppingHome /></Suspense>} />
-          {/* <Route path="listing" element={<Suspense fallback={<Loader />}><ShopListing /></Suspense>} /> */}
         </Route>
 
         <Route

@@ -7,11 +7,11 @@ const OrderSlice = createSlice({
   },
   reducers: {
     orderData: (state, action) => {
-      console.log("Action payload: ", action.payload);
+      // console.log("Action payload: ", action.payload);
       state.value = action.payload || [];
     },
     clearOrderData: (state) => {
-      console.log("Clearing order data");
+      // console.log("Clearing order data");
       state.value = [];
     },
   },

@@ -10,12 +10,12 @@ import sellerAuthReducer from './authSlice/seller/'
 
 import sellerReducer from './sellerSlice'
 
-import shopProductsSlice from "./shop/products-slice";
-import shopCartSlice from "./shop/cart-slice";
-import shopAddressSlice from "./shop/address-slice";
-import shopOrderSlice from "./shop/order-slice";
-import shopSearchSlice from "./shop/search-slice";
-import shopReviewSlice from "./shop/review-slice";
+// import shopProductsSlice from "./shop/products-slice";
+// import shopCartSlice from "./shop/cart-slice";
+// import shopAddressSlice from "./shop/address-slice";
+// import shopOrderSlice from "./shop/order-slice";
+// import shopSearchSlice from "./shop/search-slice";
+// import shopReviewSlice from "./shop/review-slice";
 
 
 import BooksReducer from './user/books'
@@ -45,12 +45,12 @@ const store = configureStore({
         userProfile: userProfileReducer,
         userOrder: userOrderReducer,
 
-        shopProducts: shopProductsSlice,
-        shopCart: shopCartSlice,
-        shopAddress: shopAddressSlice,
-        shopOrder: shopOrderSlice,
-        shopSearch: shopSearchSlice,
-        shopReview: shopReviewSlice,
+        // shopProducts: shopProductsSlice,
+        // shopCart: shopCartSlice,
+        // shopAddress: shopAddressSlice,
+        // shopOrder: shopOrderSlice,
+        // shopSearch: shopSearchSlice,
+        // shopReview: shopReviewSlice,
     },
 });
 

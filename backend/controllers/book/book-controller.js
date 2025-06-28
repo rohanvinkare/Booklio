@@ -949,6 +949,99 @@ const booksBySeller = async (req, res) => {
 };
 
 
+/**
+ * public seller info and specific book data with price
+ */
+/**
+ * @swagger
+ * /book/api/v1/books-by-seller/{sellerId}/{isbn}:
+ *   get:
+ *     tags:
+ *       - Books
+ *     summary: Get a specific book with price and stock info for a given seller.
+ *     description: Retrieves a book with the given ISBN, along with seller-specific price and stock details, and seller profile info.
+ *     parameters:
+ *       - in: path
+ *         name: sellerId
+ *         required: true
+ *         description: The ID of the seller.
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: isbn
+ *         required: true
+ *         description: The ISBN of the book.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Book and seller info successfully retrieved.
+ *       404:
+ *         description: Seller or book not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+
+const booksBySellerWithPrice = async (req, res) => {
+  try {
+    const { sellerId, isbn } = req.params;
+
+    // Step 1: Validate seller existence
+    const seller = await Seller.findOne({ sellerId });
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        msg: `Seller with sellerId ${sellerId} not found`,
+      });
+    }
+
+    // Step 2: Fetch the book that contains this seller in spCluster
+    const book = await Book.findOne({
+      isbn,
+      spCluster: { $elemMatch: { sellerId } },
+    });
+
+    if (!book) {
+      return res.status(404).json({
+        success: false,
+        msg: `Book with ISBN ${isbn} not found for sellerId ${sellerId}`,
+      });
+    }
+
+    // Step 3: Extract only the matched seller's entry
+    const sellerEntry = book.spCluster.find(
+      (entry) => entry.sellerId === sellerId
+    );
+
+    if (!sellerEntry) {
+      return res.status(404).json({
+        success: false,
+        msg: `Seller entry not found in book's spCluster`,
+      });
+    }
+
+    // Step 4: Return the filtered data
+    return res.status(200).json({
+      success: true,
+      msg: `Book with ISBN ${isbn} and sellerId ${sellerId} found`,
+      book: {
+        isbn: book.isbn,
+        genre: book.genre,
+        data: book.data,
+        price: sellerEntry.price,
+        stock: sellerEntry.stock,
+      },
+      sellerInfo: seller,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: error.message || "Internal server error",
+    });
+  }
+};
+
 
 /**
  * Book info And all the seller selling it
@@ -1127,6 +1220,7 @@ module.exports = {
   allSeller,
   booksBySeller,
   sellersByBook,
+  booksBySellerWithPrice,
 
   addBookGoogleAPI,
   removeSellerFromBook,
