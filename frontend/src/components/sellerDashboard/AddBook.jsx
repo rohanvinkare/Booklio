@@ -3,12 +3,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import Papa from 'papaparse';
 import { FaUpload, FaCheck, FaTimes, FaExclamationTriangle } from "react-icons/fa";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 
 const BookStatusList = ({ books, processedBooks }) => {
   return (
@@ -16,59 +11,56 @@ const BookStatusList = ({ books, processedBooks }) => {
       {books.map((book, index) => {
         const processedBook = processedBooks.find(pb => pb.isbn === book.isbn);
         const isThirteenDigit = book.isbn.replace(/[\s-]/g, '').length === 13;
-        
+
         let status = 'pending';
         let icon = null;
         let message = '';
-        
+
         if (isThirteenDigit) {
           status = 'skipped';
           icon = <FaExclamationTriangle className="text-yellow-400" />;
           message = '13-digit ISBN not accepted';
         } else if (processedBook) {
           status = processedBook.status;
-          icon = processedBook.status === 'success' ? 
-            <FaCheck className="text-green-400" /> : 
+          icon = processedBook.status === 'success' ?
+            <FaCheck className="text-green-400" /> :
             <FaTimes className="text-red-400" />;
           message = processedBook.error || 'Added successfully';
         }
 
         return (
-          <div 
-            key={index}
-            className={`flex items-center justify-between p-2 rounded-lg ${
-              status === 'success' ? 'bg-green-500/10' : 
-              status === 'failed' ? 'bg-red-500/10' :
-              status === 'skipped' ? 'bg-yellow-500/10' :
-              'bg-gray-700/50'
-            }`}
+          <div
+            key={index} 
+            className={`flex items-center justify-between p-2 rounded-lg ${status === 'success' ? 'bg-green-500/10' :
+                status === 'failed' ? 'bg-red-500/10' :
+                  status === 'skipped' ? 'bg-yellow-500/10' :
+                    'bg-gray-700/50'
+              }`}
           >
             <div className="flex items-center space-x-2">
               {icon || <div className="w-4 h-4" />}
               <div>
                 <span className="text-sm text-gray-300">ISBN: {book.isbn}</span>
                 {message && (
-                  <p className={`text-xs ${
-                    status === 'success' ? 'text-green-400' :
-                    status === 'failed' ? 'text-red-400' :
-                    status === 'skipped' ? 'text-yellow-400' :
-                    'text-gray-400'
-                  } mt-1`}>
+                  <p className={`text-xs ${status === 'success' ? 'text-green-400' :
+                      status === 'failed' ? 'text-red-400' :
+                        status === 'skipped' ? 'text-yellow-400' :
+                          'text-gray-400'
+                    } mt-1`}>
                     {message}
                   </p>
                 )}
               </div>
             </div>
-            <span className={`text-xs ${
-              status === 'success' ? 'text-green-400' :
-              status === 'failed' ? 'text-red-400' :
-              status === 'skipped' ? 'text-yellow-400' :
-              'text-gray-400'
-            }`}>
+            <span className={`text-xs ${status === 'success' ? 'text-green-400' :
+                status === 'failed' ? 'text-red-400' :
+                  status === 'skipped' ? 'text-yellow-400' :
+                    'text-gray-400'
+              }`}>
               {status === 'success' ? 'Added' :
-               status === 'failed' ? 'Failed' :
-               status === 'skipped' ? 'Skipped' :
-               'Pending'}
+                status === 'failed' ? 'Failed' :
+                  status === 'skipped' ? 'Skipped' :
+                    'Pending'}
             </span>
           </div>
         );
@@ -208,8 +200,8 @@ const AddBook = () => {
               setProcessedBooks(prev => [...prev, { isbn: book.isbn, status: 'success' }]);
             } catch (error) {
               failureCount++;
-              setProcessedBooks(prev => [...prev, { 
-                isbn: book.isbn, 
+              setProcessedBooks(prev => [...prev, {
+                isbn: book.isbn,
                 status: 'failed',
                 error: error.message
               }]);
@@ -257,7 +249,7 @@ const AddBook = () => {
   return (
     <div className="max-w-6xl mx-auto bg-[#232323] shadow-md rounded-lg p-8 mt-8">
       <h2 className="text-2xl font-semibold text-center mb-8">Add Books to Inventory</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Left Column - Single Book Form */}
         <div className="space-y-6">
@@ -328,9 +320,8 @@ const AddBook = () => {
 
               <button
                 type="submit"
-                className={`w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none transition-colors ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none transition-colors ${loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 disabled={loading}
               >
                 {loading ? "Adding..." : "Add Book"}
@@ -366,7 +357,7 @@ const AddBook = () => {
                   />
                 </label>
               </div>
-              
+
               {csvFile && (
                 <div className="text-sm text-gray-300">
                   Selected file: <span className="font-medium">{csvFile.name}</span>
@@ -376,9 +367,8 @@ const AddBook = () => {
               <button
                 onClick={addBooksFromCSV}
                 disabled={!csvFile || loading}
-                className={`w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none transition-colors ${
-                  (!csvFile || loading) ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none transition-colors ${(!csvFile || loading) ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {loading ? "Processing..." : "Import from CSV"}
               </button>
@@ -395,19 +385,19 @@ const AddBook = () => {
               Processing Books
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="mt-4">
             <div className="flex justify-between text-sm text-gray-300 mb-2">
               <span className="font-medium">Processing book {currentProgress.current} of {currentProgress.total}</span>
               <span className="font-medium">{Math.round((currentProgress.current / currentProgress.total) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2.5">
-              <div 
+              <div
                 className="bg-blue-500 h-2.5 rounded-full transition-all duration-1000 ease-in-out"
                 style={{ width: `${(currentProgress.current / currentProgress.total) * 100}%` }}
               ></div>
             </div>
-            
+
             <BookStatusList books={books} processedBooks={processedBooks} />
           </div>
         </DialogContent>

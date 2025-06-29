@@ -1,18 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { FaBook, FaBookOpen, FaStoreAlt, FaStoreAltSlash, FaUpload, FaUser, FaCalendar, FaLanguage, FaInfoCircle, FaStore, FaRupeeSign, FaTag } from "react-icons/fa";
 import { IoCloseCircle } from "react-icons/io5";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 

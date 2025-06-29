@@ -9,13 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const SellerAccount = () => {
   const { sellerData } = useOutletContext();

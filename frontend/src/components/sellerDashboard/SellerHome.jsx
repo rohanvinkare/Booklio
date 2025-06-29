@@ -3,28 +3,10 @@ import { useOutletContext } from "react-router-dom";
 import { fetchSellerBooks, fetchSellerOrders } from "../../store/sellerSlice";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  FaChartLine,
-  FaRegCheckCircle,
-  FaMoneyCheck,
-  FaRupeeSign,
-  FaBook,
-  FaShoppingCart
-} from "react-icons/fa";
+import { FaChartLine, FaRegCheckCircle, FaMoneyCheck, FaRupeeSign, FaBook, FaShoppingCar} from "react-icons/fa";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar, Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler } from "chart.js";
 
 // Register Chart.js components
 ChartJS.register(
@@ -344,15 +326,14 @@ const SellerHome = () => {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        order.status === "completed" 
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${order.status === "completed"
                           ? "bg-green-500/20 text-green-400"
                           : order.status === "cancelled"
-                          ? "bg-red-500/20 text-red-400"
-                          : order.status === "shipped"
-                          ? "bg-blue-500/20 text-blue-400"
-                          : "bg-yellow-500/20 text-yellow-400"
-                      }`}>
+                            ? "bg-red-500/20 text-red-400"
+                            : order.status === "shipped"
+                              ? "bg-blue-500/20 text-blue-400"
+                              : "bg-yellow-500/20 text-yellow-400"
+                        }`}>
                         {order.status === "pending" ? "Placed" : order.status}
                       </span>
                     </td>
@@ -470,7 +451,7 @@ const SellerHome = () => {
               },
               scales: {
                 x: {
-                  ticks: { 
+                  ticks: {
                     color: "#aaa",
                     maxRotation: 45,
                     minRotation: 45

@@ -2,20 +2,8 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSellerOrders } from "../../store/sellerSlice";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"; // Fixed typo in import path
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Fixed typo in import path
 
 const SellerOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -76,7 +64,7 @@ const SellerOrders = () => {
               <TableCell className="py-3 px-6 font-semibold">
                 {order.quantity}
               </TableCell>
-              <TableCell 
+              <TableCell
                 className={`py-3 px-6 text-${getStatusColor(order.status)}-500 font-semibold`}
               >
                 {order.status}
