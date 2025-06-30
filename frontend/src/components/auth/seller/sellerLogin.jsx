@@ -14,10 +14,102 @@ import TrueFocus from '@/components/ui/TrueFocus';
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
+// const SellerLogin = () => {
+//   const { register, handleSubmit, formState: { errors } } = useForm();
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   // Function to check token validity for seller
+//   const checkTokenValidity = async (token) => {
+//     try {
+//       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token-check`, {
+//         method: "POST",
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+
+//       const result = await response.json();
+//       // console.log("Token check response:", result);
+
+
+//       if (result.success && result.data.credDecode.role === "seller") {
+//         toast.success("Redirecting...");
+//         localStorage.setItem("role", result.data.credDecode.role);
+//         // Store seller data in Redux
+//         // console.log(result.data.credDecode)
+//         dispatch(addSellerData(result.data.credDecode));
+//         navigate("/seller");
+//       } else {
+//         localStorage.removeItem("accessToken");
+//         localStorage.removeItem("role");
+//       }
+//     } catch (error) {
+//       console.error("Error during token validation:", error.message);
+//       toast.error("Error validating token. Please log in again.");
+//       localStorage.removeItem("accessToken");
+//       localStorage.removeItem("role");
+//     }
+//   };
+
+//   // to see password
+//   const [showPassword, setShowPassword] = useState(false);
+
+//   // On component mount, check if a token exists in localStorage
+//   useEffect(() => {
+//     const token = localStorage.getItem("accessToken");
+//     if (token) {
+//       checkTokenValidity(token);
+//     }
+//   }, []);
+
+//   // Login submission logic for seller
+//   const onSubmit = async (data) => {
+//     try {
+//       // console.log("Submitting Seller Login Data:", data);
+
+//       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/seller/api/v1/login`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           email: data.email,
+//           password: data.password,
+//         }),
+//       });
+
+//       if (!response.ok) {
+//         const errorData = await response.json();
+//         throw new Error(errorData.msg || "Login failed.");
+//       }
+
+//       const result = await response.json();
+//       // console.log("Response from API:", result);
+
+//       // Check for the accessToken in the response
+//       if (result.accessToken) {
+//         localStorage.setItem("accessToken", result.accessToken);
+//         // console.log(result);
+//         localStorage.setItem("role", result.sellerData.role);
+//         dispatch(addSellerData(result));
+//         toast.success("Login successful!");
+//         navigate("/seller");
+//       } else {
+//         throw new Error("Access token not found in the response.");
+//       }
+//     } catch (error) {
+//       console.error("Login error:", error.message);
+//       toast.error(error.message || "An unexpected error occurred during login.");
+//     }
+//   };
+
 const SellerLogin = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   // Function to check token validity for seller
   const checkTokenValidity = async (token) => {
@@ -29,15 +121,12 @@ const SellerLogin = () => {
         },
       });
 
-      const result = await response.json();
-      // console.log("Token check response:", result);
+      const text = await response.text();
+      const result = text ? JSON.parse(text) : null;
 
-
-      if (result.success && result.data.credDecode.role === "seller") {
+      if (result?.success && result.data?.credDecode?.role === "seller") {
         toast.success("Redirecting...");
         localStorage.setItem("role", result.data.credDecode.role);
-        // Store seller data in Redux
-        // console.log(result.data.credDecode)
         dispatch(addSellerData(result.data.credDecode));
         navigate("/seller");
       } else {
@@ -52,10 +141,6 @@ const SellerLogin = () => {
     }
   };
 
-  // to see password
-  const [showPassword, setShowPassword] = useState(false);
-
-  // On component mount, check if a token exists in localStorage
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
@@ -66,8 +151,6 @@ const SellerLogin = () => {
   // Login submission logic for seller
   const onSubmit = async (data) => {
     try {
-      // console.log("Submitting Seller Login Data:", data);
-
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/seller/api/v1/login`, {
         method: "POST",
         headers: {
@@ -79,19 +162,16 @@ const SellerLogin = () => {
         }),
       });
 
+      const text = await response.text();
+      const result = text ? JSON.parse(text) : null;
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.msg || "Login failed.");
+        throw new Error(result?.msg || "Login failed.");
       }
 
-      const result = await response.json();
-      // console.log("Response from API:", result);
-
-      // Check for the accessToken in the response
-      if (result.accessToken) {
+      if (result?.accessToken) {
         localStorage.setItem("accessToken", result.accessToken);
-        // console.log(result);
-        localStorage.setItem("role", result.sellerData.role);
+        localStorage.setItem("role", result.sellerData?.role);
         dispatch(addSellerData(result));
         toast.success("Login successful!");
         navigate("/seller");

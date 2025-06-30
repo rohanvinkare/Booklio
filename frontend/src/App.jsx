@@ -21,12 +21,12 @@ const SellersList = lazy(() => import('./components/adminDashboard/SellersList')
 const ManagementList = lazy(() => import('./components/adminDashboard/ManagementList'));
 const AdminSales = lazy(() => import('./components/adminDashboard/AdminSales'));
 
-const SellerLayout = lazy(() => import("./pages/sellerDashboard/sellerLayout"));
-const SellerHome = lazy(() => import("./components/sellerDashboard/SellerHome"));
-const SellerBooksList = lazy(() => import("./components/sellerDashboard/SellerBooksList"));
-const AddBook = lazy(() => import("./components/sellerDashboard/AddBook"));
-const SellerAccount = lazy(() => import("./components/sellerDashboard/SellerAccount"));
-const SellerOrders = lazy(() => import("./components/sellerDashboard/SellerOrders"));
+const SellerLayout = lazy(() => import("@/pages/sellerDashboard/sellerLayout"));
+const SellerHome = lazy(() => import("@/components/sellerDashboard/SellerHome"));
+const SellerBooksList = lazy(() => import("@/components/sellerDashboard/ListBooks/SellerBooksList"));
+const AddBook = lazy(() => import("@/components/sellerDashboard/AddBook/AddBook"));
+const SellerAccount = lazy(() => import("@/components/sellerDashboard/Profile/SellerAccount"));
+const SellerOrders = lazy(() => import("@/components/sellerDashboard/SellerOrder/SellerOrders"));
 
 const ShoppingHome = lazy(() => import("./pages/store-view/ShopHome"));
 const ShoppingLayout = lazy(() => import("./pages/shopingLayout/layout.jsx"));

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const BookCard = ({ book, onClick, handleBuyNowClick }) => {
     const price = book.spCluster?.[0]?.price;
-    const thumbnail = book.data.volumeInfo?.imageLinks?.thumbnail;
+    const thumbnail = book.data.volumeInfo?.imageLinks?.thumbnail || "https://eazysale.in/wp-content/uploads/2024/09/genericBookCover.jpg";
     const title = book.data.volumeInfo?.title || "Unknown Title";
     const description =
         book.data.volumeInfo?.description || "No description available";
