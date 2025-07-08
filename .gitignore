@@ -8,8 +8,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment Variables
-.env
+
 
 # Directory for local environment variables
 .env.development.local
@@ -37,4 +36,7 @@ build/
 
 frontendold
 
-.vscode/
+# Local environment files
+*.local
+.env
+frontend/.env
