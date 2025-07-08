@@ -23,21 +23,23 @@ export const Format = () => {
                 onLoaderFinished={() => setProgress(0)}
             />
 
-            <div className="min-h-screen bg-black text-white flex flex-col">
+            <div className="flex flex-col min-h-screen text-white">
+                {/* Sticky header will work now */}
                 <Header />
-                <main className="flex-grow">
+
+
+                <main className="flex-grow flex flex-col">
                     <Outlet />
+                    <Suspense fallback={<div className="min-h-[360px] w-full" />}>
+                        <Footer />
+                    </Suspense>
                 </main>
-
-                <Suspense fallback={<div className="min-h-[360px] w-full" />}>
-                    <Footer />
-                </Suspense>
-
             </div>
 
             <ScrollToTopBtn />
         </>
     );
 };
+
 
 export default Format;

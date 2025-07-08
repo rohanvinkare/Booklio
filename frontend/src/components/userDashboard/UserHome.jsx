@@ -81,7 +81,7 @@ const UserHome = () => {
   };
 
   return (
-    <div className="min-h-screen px-4 pt-6 pb-10 sm:px-6 md:px-10 bg-[#060606] text-white">
+    <div className="min-h-screen px-4 pt-6 pb-10 sm:px-6 md:px-10 bg-transparent text-white">
       <div className="max-w-screen-xl mx-auto space-y-8">
         {/* Grid Layout: Profile + Stats + Orders */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

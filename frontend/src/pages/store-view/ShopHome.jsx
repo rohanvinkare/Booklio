@@ -38,7 +38,7 @@ function ShoppingHome() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-gray-100">
+    <div className="min-h-screen  text-gray-100">
       <section className="mb-24 bg-gradient-to-b from-[#000000] via-[#0d0b1e] to-black">
         {/* Hero section */}
         <StoreHeroSection />
@@ -60,7 +60,7 @@ function ShoppingHome() {
         </div>
 
         {/* FAQ Section */}
-        <section className="py-16 mt-12 bg-[#060606]">
+        <section className="py-16 mt-12">
           <div className="container mx-auto px-4">
             <Faqs />
           </div>

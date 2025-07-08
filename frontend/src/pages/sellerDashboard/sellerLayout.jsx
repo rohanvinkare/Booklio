@@ -80,7 +80,7 @@ const SellerLayout = () => {
   };
 
   if (error) return <div className="text-red-500">{error}</div>;
-  if (!sellerData) return <div className="flex items-center justify-center h-screen text-white bg-[#1E1E1E]">Loading...</div>;
+  // if (!sellerData) return <div className="flex items-center justify-center h-screen text-white bg-[#1E1E1E]">Loading...</div>;
 
   return (
     <div className="flex h-screen bg-gradient-to-b from-black via-[#0d0b1e] to-black text-white relative">

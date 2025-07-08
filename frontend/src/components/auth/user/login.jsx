@@ -19,6 +19,9 @@ const AuthLogin = () => {
   const navigate = useNavigate();
   const reduxData = useSelector((state) => state.auth.userDetails);
 
+  const [loading, setLoading] = useState(false);
+
+
   // Function to check token validity
   const checkTokenValidity = async (token) => {
     try {
@@ -61,19 +64,53 @@ const AuthLogin = () => {
   }, []);
 
   // Login submission logic
-  const onSubmit = async (data) => {
-    try {
-      // console.log("Submitting Login Data:", data);
+  // const onSubmit = async (data) => {
+  //   try {
+  //     // console.log("Submitting Login Data:", data);
 
+  //     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user/api/v1/login`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         email: data.email,
+  //         password: data.password,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.msg || "Login failed.");
+  //     }
+
+  //     const result = await response.json();
+  //     // console.log("Response from API:", result);
+
+  //     // Check for the accessToken in the response
+  //     if (result.accessToken) {
+  //       localStorage.setItem("accessToken", result.accessToken);
+  //       // console.log(result)
+  //       localStorage.setItem("role", result.user.role);
+  //       dispatch(addData(result));
+  //       toast.success("Login successful!");
+  //       navigate("/shop");
+  //     } else {
+  //       throw new Error("Access token not found in the response.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Login error:", error.message);
+  //     toast.error(error.message || "An unexpected error occurred during login.");
+  //   }
+  // };
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/user/api/v1/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, password: data.password }),
       });
 
       if (!response.ok) {
@@ -82,12 +119,9 @@ const AuthLogin = () => {
       }
 
       const result = await response.json();
-      // console.log("Response from API:", result);
 
-      // Check for the accessToken in the response
       if (result.accessToken) {
         localStorage.setItem("accessToken", result.accessToken);
-        // console.log(result)
         localStorage.setItem("role", result.user.role);
         dispatch(addData(result));
         toast.success("Login successful!");
@@ -96,10 +130,13 @@ const AuthLogin = () => {
         throw new Error("Access token not found in the response.");
       }
     } catch (error) {
-      console.error("Login error:", error.message);
       toast.error(error.message || "An unexpected error occurred during login.");
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-center items-center px-4 sm:px-6 md:px-8 bg-[#000003]">
@@ -187,12 +224,21 @@ const AuthLogin = () => {
               </div>
 
               {/* Submit Button */}
-              <Button
+              {/* <Button
                 type="submit"
                 className="w-1/3 ml-[33%] bg-white hover:bg-white/70 hover:opacity-90 text-black font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02]"
               >
                 Sign In
+              </Button> */}
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-1/3 ml-[33%] bg-white hover:bg-white/70 hover:opacity-90 text-black font-semibold py-3 rounded-lg transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? "Loging In..." : "Login"}
               </Button>
+
             </form>
           </CardContent>
 

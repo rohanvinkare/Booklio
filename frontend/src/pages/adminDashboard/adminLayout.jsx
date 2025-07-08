@@ -1,9 +1,10 @@
 import Sidebar from "@/components/adminDashboard/Sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet,Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaSignOutAlt, FaUserCircle, FaRegEnvelope, FaUserShield, FaBell } from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
+import GradientText from "@/components/ui/GradientText";
 
 const AdminLayout = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -82,7 +83,9 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
+    // <div className="flex min-h-screen bg-gray-900">
+      <div className="flex h-screen bg-gray-900 overflow-hidden">
+
       {/* Sidebar */}
       <Sidebar />
 
@@ -91,7 +94,21 @@ const AdminLayout = () => {
         {/* Header */}
         <header className="bg-gray-800 shadow-lg px-8 py-4 flex justify-between items-center border-b border-gray-700">
           <div className="flex items-center space-x-2">
-            <h1 className="text-3xl font-unbounded font-bold text-indigo-400">Booklio</h1>
+
+            {/* <h1 className="text-3xl font-unbounded font-bold text-indigo-400">Booklio</h1> */}
+
+            <Link to="/">
+              <GradientText
+                colors={["#40ffaa", "#4079ff", "#40ffaa"]}
+                animationSpeed={10}
+                showBorder={false}
+                className="font-unbounded text-4xl font-semibold"
+              >
+                Booklio
+              </GradientText>
+            </Link>
+
+
             <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
               Admin
             </Badge>
@@ -168,7 +185,8 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        <main className="flex-grow p-8 bg-gray-900 overflow-y-auto">
+        {/* <main className="flex-grow p-8 bg-gray-900 overflow-y-auto"> */}
+        <main className="flex-grow p-8 bg-gray-900 overflow-y-auto h-screen">
           <Outlet />
         </main>
       </div>

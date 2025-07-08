@@ -15,10 +15,10 @@ const SellerRegister = lazy(() => import("./components/auth/seller/sellerRegiste
 
 const AdminLayout = lazy(() => import("./pages/adminDashboard/adminLayout"));
 const AdminHome = lazy(() => import('./components/adminDashboard/AdminHome'));
-const BooksList = lazy(() => import('./components/adminDashboard/BooksList'));
+const BooksList = lazy(() => import('./components/adminDashboard/booklisting/BooksList'));
 const UsersList = lazy(() => import('./components/adminDashboard/UsersList'));
-const SellersList = lazy(() => import('./components/adminDashboard/SellersList'));
-const ManagementList = lazy(() => import('./components/adminDashboard/ManagementList'));
+const SellersList = lazy(() => import('./components/adminDashboard/sellerlisting/SellersList'));
+const ManagementList = lazy(() => import('./components/adminDashboard/managmentlisting/ManagementList'));
 const AdminSales = lazy(() => import('./components/adminDashboard/AdminSales'));
 
 const SellerLayout = lazy(() => import("@/pages/sellerDashboard/sellerLayout"));

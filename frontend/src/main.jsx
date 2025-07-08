@@ -11,7 +11,7 @@ import ScrollToTop from '@/components/ScrollToTop.jsx';
 createRoot(document.getElementById('root')).render(
   <ClickSpark
     sparkColor='#fff'
-    sparkSize={14}
+    sparkSize={10}
     sparkRadius={25}
     sparkCount={9}
     duration={500}

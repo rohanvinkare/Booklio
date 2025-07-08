@@ -1,25 +1,31 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchSellersData } from "@/store/adminSlice/sellerData";
+import { fetchBooksData } from "@/store/adminSlice/booksData";
+
 import {
   Card,
   CardHeader,
   CardContent,
   CardFooter,
-} from "@/components/ui/card"; // ShadCN card components
+} from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { MdDeleteForever } from "react-icons/md";
-import { FaFacebook, FaInstagram, FaLinkedin, FaBook, FaRupeeSign, FaChartLine, FaUser, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import {
+  FaFacebook, FaInstagram, FaLinkedin,
+  FaBook, FaRupeeSign, FaChartLine,
+  FaUser, FaEnvelope, FaMapMarkerAlt,
+} from "react-icons/fa";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
 } from "@/components/ui/dialog";
-import toast from "react-hot-toast"; // Import React Hot Toast
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-
-// Helper function to generate random color
+// 🔵 Random Avatar Color
 const getRandomColor = () => {
   const letters = "0123456789ABCDEF";
   let color = "#";
@@ -29,52 +35,45 @@ const getRandomColor = () => {
   return color;
 };
 
-const capitalize = (word) => {
-  return word?.toUpperCase();
-};
+const capitalize = (word) => word?.toUpperCase();
 
 const SellersList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // ✅ Pull seller data from Redux (via /get-batch-data)
   const members = useSelector((state) => state.adminSellersData.value);
+  const books = useSelector((state) => state.adminBooksData.value);
+
   const [selectedSeller, setSelectedSeller] = useState(null);
   const [sellerStats, setSellerStats] = useState({});
   const [sellerOrders, setSellerOrders] = useState({});
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/admin/api/v1/get-seller-data/`
-        );
-        const data = await response.json();
-
-        if (data.success && data.sellerData) {
-          const allMembers = data.sellerData || [];
-          dispatch(sellersData(allMembers)); // Dispatch member data to Redux
-        } else {
-          console.error("Unexpected API response structure or error");
-          dispatch(sellersData([])); // Fallback to empty array
-        }
-      } catch (error) {
-        console.error("Error fetching members:", error);
-        dispatch(sellersData([])); // Fallback to empty array
-      }
-    };
-
-    fetchMembers();
+    dispatch(fetchSellersData());
+    if (!books || books.length === 0) {
+      dispatch(fetchBooksData()); // ✅ NEW
+    }
   }, [dispatch]);
 
-  // Fetch orders for all sellers
+  // 📦 Fetch orders for each seller
   const fetchAllSellerOrders = async () => {
     try {
-      const ordersPromises = members.map(seller =>
+      const ordersPromises = members.map((seller) =>
         fetch(`${import.meta.env.VITE_BASE_URL}/order/seller-order-list/${seller.sellerId}`)
-          .then(res => res.json())
-          .then(data => ({
-            sellerId: seller.sellerId,
-            orders: data.success ? data.data[0]?.orders || [] : []
-          }))
+          .then((res) => res.json())
+          .then((data) => {
+            const hasOrders =
+              data?.success &&
+              Array.isArray(data.data) &&
+              data.data.length > 0 &&
+              Array.isArray(data.data[0]?.orders);
+
+            return {
+              sellerId: seller.sellerId,
+              orders: hasOrders ? data.data[0].orders : [],
+            };
+          })
       );
 
       const ordersResults = await Promise.all(ordersPromises);
@@ -88,26 +87,27 @@ const SellersList = () => {
     }
   };
 
-  // Calculate seller stats
+
   const calculateSellerStats = () => {
     const stats = {};
     Object.entries(sellerOrders).forEach(([sellerId, orders]) => {
       const totalRevenue = orders.reduce((sum, order) => sum + order.price, 0);
-      const totalProfit = totalRevenue * 0.95; // 95% of revenue goes to seller (5% platform fee)
+      const totalProfit = totalRevenue * 0.95;
       const booksSold = orders.reduce((sum, order) => sum + order.quantity, 0);
 
       stats[sellerId] = {
         totalRevenue,
         totalProfit,
         booksSold,
-        orders: orders.length
+        orders: orders.length,
       };
     });
     setSellerStats(stats);
   };
 
+
   useEffect(() => {
-    if (members.length > 0) {
+    if (Array.isArray(members) && members.length > 0) {
       fetchAllSellerOrders();
     }
   }, [members]);
@@ -120,76 +120,57 @@ const SellersList = () => {
 
   const handleDelete = async (sellerId) => {
     try {
-      const token = localStorage.getItem("accessToken"); // Get the token from localStorage
-      if (!token) {
-        console.error("No token found in localStorage");
-        return;
-      }
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/admin/api/v1/delete-seller`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ sellerId }), // Send the sellerId in the request body
-        }
-      );
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/admin/api/v1/delete-seller`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sellerId }),
+      });
 
       const data = await response.json();
       if (data.success) {
-        // If the deletion was successful, re-fetch the seller data
-        dispatch(
-          sellersData(members.filter((member) => member._id !== sellerId))
-        );
-        console.log("Seller deleted successfully");
-        toast.success("Seller deleted successfully!"); // Show success toast
+        toast.success("Seller deleted successfully!");
+        dispatch(fetchBatchData()); // Refresh data after delete
       } else if (data.type === "cors") {
-        navigate('/auth/admin/login')
-      }
-      else {
-        console.error("Error deleting seller:", data.message || data.error);
+        navigate("/auth/admin/login");
+      } else {
         toast.error("Failed to delete seller.");
       }
     } catch (error) {
-      console.error("Error occurred during delete:", error);
       toast.error("An error occurred while deleting.");
     }
   };
 
   const confirmDelete = (sellerId) => {
-    toast(
-      (t) => (
-        <div className="flex flex-col text-black rounded-lg">
-          <span className="text-gray-800 font-semibold text-lg mb-3">
-            Are you sure you want to delete this seller?
-          </span>
-          <div className="flex justify-between space-x-4">
-            <Button
-              onClick={() => {
-                handleDelete(sellerId);
-                toast.dismiss(t.id); // Dismiss the toast after delete
-              }}
-              className="flex-1 px-4 py-2 bg-red-600 text-black rounded-md hover:bg-red-700 transition-colors"
-            >
-              Yes, Delete
-            </Button>
-            <Button
-              onClick={() => toast.dismiss(t.id)} // Dismiss the toast if cancel
-              className="flex-1 px-4 py-2 bg-gray-400 text-black rounded-md hover:bg-gray-500 transition-colors"
-            >
-              Cancel
-            </Button>
-          </div>
+    toast((t) => (
+      <div className="flex flex-col text-black rounded-lg">
+        <span className="text-gray-800 font-semibold text-lg mb-3">
+          Are you sure you want to delete this seller?
+        </span>
+        <div className="flex justify-between space-x-4">
+          <Button
+            onClick={() => {
+              handleDelete(sellerId);
+              toast.dismiss(t.id);
+            }}
+            className="flex-1 px-4 py-2 bg-red-600 text-black rounded-md hover:bg-red-700 transition-colors"
+          >
+            Yes, Delete
+          </Button>
+          <Button
+            onClick={() => toast.dismiss(t.id)}
+            className="flex-1 px-4 py-2 bg-gray-400 text-black rounded-md hover:bg-gray-500 transition-colors"
+          >
+            Cancel
+          </Button>
         </div>
-      ),
-      {
-        duration: Infinity, // Keeps the toast visible until action is taken
-        position: "top-center",
-      }
-    );
+      </div>
+    ), { duration: Infinity, position: "top-center" });
   };
 
   if (!members || members.length === 0) {
@@ -489,3 +470,4 @@ const SellersList = () => {
 };
 
 export default SellersList;
+

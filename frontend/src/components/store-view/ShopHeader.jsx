@@ -40,7 +40,7 @@ function ShoppingHeader() {
   }, [popupOpen]);
 
   return (
-    <header className="bg-[#060606] text-white fixed top-0 w-full z-[60]">
+    <header className="bg-black text-white fixed top-0 w-full z-[60]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 sm:h-20 items-center justify-between">
           {/* Logo */}
