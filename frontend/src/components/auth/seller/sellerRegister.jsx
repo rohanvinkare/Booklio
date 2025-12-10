@@ -65,7 +65,7 @@ function SellerRegister() {
 
   const onSubmit = async (data) => {
     try {
-      console.log("Seller Registration Data:", data);
+      // console.log("Seller Registration Data:", data);
 
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/seller/api/v4/register`, {
         method: "POST",
@@ -101,7 +101,7 @@ function SellerRegister() {
       }
 
       const result = await response.json();
-      console.log("Registration Response:", result);
+      // console.log("Registration Response:", result);
 
       // Show success toast for 3 seconds
       toast.success("Registration successful! \nPlease verify your email to activate your account.", {
@@ -402,9 +402,9 @@ function SellerRegister() {
 
   return (
     <div className="w-full flex flex-col justify-center items-center max-w-md space-y-2">
-      <a href="/">
+      <Link to="/">
         <p className="text-[4rem] text-blue-500 font-bold font-unbounded">Booklio</p>
-      </a>
+      </Link>
       <div className="bg-white w-[140%] shadow-md rounded-lg">
         <Card>
           <CardHeader>

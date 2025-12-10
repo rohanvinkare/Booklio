@@ -1,150 +1,156 @@
 import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
 
-import AuthLayout from "./pages/auth/authLayout";
-import AuthLogin from "./components/auth/user/login";
-import AuthRegisters from "./components/auth/user/register";
-import AdminLogin from "./components/auth/admin/adminLogin";
-import SellerLogin from "./components/auth/seller/sellerLogin";
-import SellerRegister from "./components/auth/seller/sellerRegister";
-
-import AdminLayout from "./pages/adminDashboard/adminLayout";
-import AdminHome from './components/adminDashboard/AdminHome'
-import BooksList from './components/adminDashboard/BooksList'
-import UsersList from './components/adminDashboard/UsersList'
-import SellersList from './components/adminDashboard/SellersList'
-import ManagementList from './components/adminDashboard/ManagementList'
-
-import SellerHome from "./components/sellerDashboard/SellerHome";
-import SellerLayout from "./pages/sellerDashboard/sellerLayout";
-import SellerBooksList from "./components/sellerDashboard/SellerBooksList";
-import AddBook from "./components/sellerDashboard/AddBook";
-import SellerAccount from "./components/sellerDashboard/SellerAccount";
-
-import UnauthPage from "./pages/unauth/Unauth";
-import NotFound from "./pages/notFound/NotFound"
-
+// Common
 import CheckAuth from "./common/checkAuth";
+import Loader from "@/components/Loader";
 
-import ShoppingHome from "./pages/shopping-view/ShopHome";
-import ShoppingLayout from "./components/shopping-view/layout";
-import ShopListing from "./components/shopping-view/ShopListing";
-import BookDetails from "./components/shopping-view/BookDetails";
-import SellerOrders from "./components/sellerDashboard/SellerOrders";
+// Lazy imports
+const AuthLayout = lazy(() => import("./pages/auth/authLayout"));
+const AuthLogin = lazy(() => import("./components/auth/user/login"));
+const AuthRegisters = lazy(() => import("./components/auth/user/register"));
+const AdminLogin = lazy(() => import("./components/auth/admin/adminLogin"));
+const SellerLogin = lazy(() => import("./components/auth/seller/sellerLogin"));
+const SellerRegister = lazy(() => import("./components/auth/seller/sellerRegister"));
 
-import Format from "./common/Format";
-import Landing from "./pages/landingPage/Landing";
-import PlaceOrder from "./components/shopping-view/PlaceOrder";
-import UserLayout from "./pages/userDashboard/UserLayout";
-import UserHome from "./components/userDashboard/UserHome";
-import AdminSales from "./components/adminDashboard/AdminSales";
-import { Team } from "./pages/Team";
-import { About } from "./pages/About";
+const AdminLayout = lazy(() => import("./pages/adminDashboard/adminLayout"));
+const AdminHome = lazy(() => import('./components/adminDashboard/AdminHome'));
+const BooksList = lazy(() => import('./components/adminDashboard/booklisting/BooksList'));
+const UsersList = lazy(() => import('./components/adminDashboard/UsersList'));
+const SellersList = lazy(() => import('./components/adminDashboard/sellerlisting/SellersList'));
+const ManagementList = lazy(() => import('./components/adminDashboard/managmentlisting/ManagementList'));
+const AdminSales = lazy(() => import('./components/adminDashboard/AdminSales'));
+
+const SellerLayout = lazy(() => import("@/pages/sellerDashboard/sellerLayout"));
+const SellerHome = lazy(() => import("@/components/sellerDashboard/SellerHome"));
+const SellerBooksList = lazy(() => import("@/components/sellerDashboard/ListBooks/SellerBooksList"));
+const AddBook = lazy(() => import("@/components/sellerDashboard/AddBook/AddBook"));
+const SellerAccount = lazy(() => import("@/components/sellerDashboard/Profile/SellerAccount"));
+const SellerOrders = lazy(() => import("@/components/sellerDashboard/SellerOrder/SellerOrders"));
+
+const ShoppingHome = lazy(() => import("./pages/store-view/ShopHome"));
+const ShoppingLayout = lazy(() => import("./pages/shopingLayout/layout.jsx"));
+const ShopListing = lazy(() => import("./pages/shopListing/ShopListing.jsx"));
+const BookDetails = lazy(() => import("./components/store-view/BookDetails"));
+const PlaceOrder = lazy(() => import("./components/store-view/palceOrder/PlaceOrder"));
+
+const UserLayout = lazy(() => import("./pages/userDashboard/UserLayout"));
+const UserHome = lazy(() => import("./components/userDashboard/UserHome"));
+
+const Format = lazy(() => import("./common/Format"));
+const Landing = lazy(() => import("./pages/landingPage/Landing"));
+const UnauthPage = lazy(() => import("./pages/unauth/Unauth"));
+const NotFound = lazy(() => import("./pages/notFound/NotFound"));
+const About = lazy(() => import("./pages/About"));
+const ProfileHero = lazy(() => import("@/pages/ProfileHero.jsx"));
+
+// 🔷 Preload (optional but powerful)
+const preloadSellerLogin = () => import("./components/auth/seller/sellerLogin");
+const preloadUserHome = () => import("./components/userDashboard/UserHome");
 
 function App() {
-
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-black">
       <Routes>
-        {/* Base */}
-        <Route path='/' element={<Format />} >
-          <Route index element={<Landing />} />
-          <Route path="team" element={<Team />} />
-          <Route path="about" element={<About />} />
+        {/* Base Layout */}
+        <Route path="/" element={<Suspense fallback={<Loader />}><Format /></Suspense>}>
+          <Route index element={<Suspense fallback={<Loader />}><Landing /></Suspense>} />
+          <Route path="about" element={<Suspense fallback={<Loader />}><About /></Suspense>} />
+          <Route path="team" element={<Suspense fallback={<Loader />}><ProfileHero /></Suspense>} />
         </Route>
 
         {/* Auth */}
-        <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<AuthLogin />} />
-          <Route path="register" element={<AuthRegisters />} />
-          <Route path="admin/login" element={<AdminLogin />} />
-          <Route path="seller/login" element={<SellerLogin />} />
-          <Route path="seller/register" element={<SellerRegister />} />
+        <Route path="/auth" element={<Suspense fallback={<Loader />}><AuthLayout /></Suspense>}>
+          <Route path="login" element={<Suspense fallback={<Loader />}><AuthLogin /></Suspense>} />
+          <Route path="register" element={<Suspense fallback={<Loader />}><AuthRegisters /></Suspense>} />
+          <Route path="admin/login" element={<Suspense fallback={<Loader />}><AdminLogin /></Suspense>} />
+          <Route
+            path="seller/login"
+            element={
+              <div onMouseEnter={preloadSellerLogin}>
+                <Suspense fallback={<Loader />}><SellerLogin /></Suspense>
+              </div>
+            }
+          />
+          <Route path="seller/register" element={<Suspense fallback={<Loader />}><SellerRegister /></Suspense>} />
         </Route>
 
         {/* Admin */}
         <Route
           path="/admin"
-          element={
-            <CheckAuth allowedRoles={["admin"]}>
-              <AdminLayout />
-            </CheckAuth>
-          }
+          element={<CheckAuth allowedRoles={["admin"]}><Suspense fallback={<Loader />}><AdminLayout /></Suspense></CheckAuth>}
         >
-          <Route path="" element={<AdminHome />} />
-          <Route path="sales" element={<AdminSales />} />
-          <Route path="books" element={<BooksList />} />
-          <Route path="users" element={<UsersList />} />
-          <Route path="sellers" element={<SellersList />} />
-          <Route path="management" element={<ManagementList />} />
+          <Route index element={<Suspense fallback={<Loader />}><AdminHome /></Suspense>} />
+          <Route path="sales" element={<Suspense fallback={<Loader />}><AdminSales /></Suspense>} />
+          <Route path="books" element={<Suspense fallback={<Loader />}><BooksList /></Suspense>} />
+          <Route path="users" element={<Suspense fallback={<Loader />}><UsersList /></Suspense>} />
+          <Route path="sellers" element={<Suspense fallback={<Loader />}><SellersList /></Suspense>} />
+          <Route path="management" element={<Suspense fallback={<Loader />}><ManagementList /></Suspense>} />
         </Route>
 
         {/* Shop */}
         <Route
           path="/shop"
-          element={
-            <CheckAuth allowedRoles={["user"]}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
+          element={<CheckAuth allowedRoles={["user"]}><Suspense fallback={<Loader />}><ShoppingLayout /></Suspense></CheckAuth>}
         >
-          <Route path='' element={<ShoppingHome />} />
-          <Route path='listing' element={<ShopListing />} />
+          <Route index element={<Suspense fallback={<Loader />}><ShoppingHome /></Suspense>} />
         </Route>
 
-        {/* Book details */}
         <Route
-          path="/seller/:sellerId/isbn/:isbn"
+          path="/shop/listing"
           element={
-            <ShoppingLayout />
+            <CheckAuth allowedRoles={["user"]}>
+              <Suspense fallback={<Loader />}>
+                <ShopListing />
+              </Suspense>
+            </CheckAuth>
           }
-        >
-          <Route index element={<BookDetails />} />
+        />
+
+
+
+        {/* Book details */}
+        <Route path="/seller/:sellerId/isbn/:isbn" element={<Suspense fallback={<Loader />}><ShoppingLayout /></Suspense>}>
+          <Route index element={<Suspense fallback={<Loader />}><BookDetails /></Suspense>} />
         </Route>
 
         {/* Place Order */}
-        <Route
-          path="placeOrder"
-          element={
-            <ShoppingLayout />
-          }
-        >
-          <Route path="" element={<PlaceOrder />} />
+        <Route path="placeOrder" element={<Suspense fallback={<Loader />}><ShoppingLayout /></Suspense>}>
+          <Route index element={<Suspense fallback={<Loader />}><PlaceOrder /></Suspense>} />
         </Route>
 
-        {/* Seller */}
+        {/* Seller Dashboard */}
         <Route
           path="/seller"
-          element={
-            <CheckAuth allowedRoles={["seller"]}>
-              <SellerLayout />
-            </CheckAuth>
-          }
+          element={<CheckAuth allowedRoles={["seller"]}><Suspense fallback={<Loader />}><SellerLayout /></Suspense></CheckAuth>}
         >
-          <Route path="" element={<SellerHome />} />
-          <Route path="books" element={<SellerBooksList />} />
-          <Route path="add-book" element={<AddBook />} />
-          <Route path="Orders" element={<SellerOrders />} />
-          <Route path="Account" element={<SellerAccount />} />
+          <Route index element={<Suspense fallback={<Loader />}><SellerHome /></Suspense>} />
+          <Route path="books" element={<Suspense fallback={<Loader />}><SellerBooksList /></Suspense>} />
+          <Route path="add-book" element={<Suspense fallback={<Loader />}><AddBook /></Suspense>} />
+          <Route path="Orders" element={<Suspense fallback={<Loader />}><SellerOrders /></Suspense>} />
+          <Route path="Account" element={<Suspense fallback={<Loader />}><SellerAccount /></Suspense>} />
         </Route>
 
-
-        {/* User */}
+        {/* User Dashboard */}
         <Route
           path="/user"
-          element={
-            <CheckAuth allowedRoles={["user"]}>
-              <UserLayout />
-            </CheckAuth>
-          }
+          element={<CheckAuth allowedRoles={["user"]}><Suspense fallback={<Loader />}><UserLayout /></Suspense></CheckAuth>}
         >
-          <Route path="" element={<UserHome />} />
+          <Route
+            index
+            element={
+              <div onMouseEnter={preloadUserHome}>
+                <Suspense fallback={<Loader />}><UserHome /></Suspense>
+              </div>
+            }
+          />
         </Route>
 
-        {/* Unauth & Notfound */}
-        <Route path="/unauth-page" element={<UnauthPage />} />
-        <Route path="*" element={<NotFound />} />
+        {/* Misc Pages */}
+        <Route path="/unauth-page" element={<Suspense fallback={<Loader />}><UnauthPage /></Suspense>} />
+        <Route path="*" element={<Suspense fallback={<Loader />}><NotFound /></Suspense>} />
       </Routes>
-    </div >
+    </div>
   );
 }
 

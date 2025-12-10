@@ -2,24 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
 
-    <!-- Fonts -->
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://thumbs.dreamstime.com/b/set-book-icons-flat-design-style-isolated-black-background-set-book-icons-flat-design-style-isolated-black-162021592.jpg"
+    />
+
+    <!-- Responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booklio</title>
+
+    <!-- ✅ Preconnect for faster font fetch -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Darker+Grotesque:wght@300..900&family=Gloock&family=Unbounded:wght@200..900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.cdnfonts.com/css/helvetica-neue-55"
-      rel="stylesheet"
-    />
 
-    <link href="./dist/output.css" rel="stylesheet" />
+    <!-- ✅ Preload + non-blocking apply for ALL Google Fonts -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Darker+Grotesque:wght@300..900&family=Gloock&family=Unbounded:wght@200..900&display=swap"
+      onload="this.onload=null;this.rel='stylesheet';"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Darker+Grotesque:wght@300..900&family=Gloock&family=Unbounded:wght@200..900&display=swap"
+      />
+    </noscript>
+
+    <!-- ❌ REMOVE this extra render-blocking font link -->
+    <!-- You already included Unbounded in the above combined link -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet" /> -->
+
+    <!-- ✅ Preload + async load your Vite CSS -->
+    <link rel="preload" as="style" href="/assets/index.css" />
+    <link
+      rel="stylesheet"
+      href="/assets/index.css"
+      media="print"
+      onload="this.onload=null;this.media='all';"
+    />
+    <noscript><link rel="stylesheet" href="/assets/index.css" /></noscript>
+
+    <!-- ✅ Preload JS entrypoint (already async via module) -->
+    <link rel="modulepreload" href="/src/main.jsx" />
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

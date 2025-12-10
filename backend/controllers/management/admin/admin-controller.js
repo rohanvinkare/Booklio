@@ -1044,6 +1044,7 @@ const getAllData = async (req, res) => {
 
     // Send the response with all data combined
     return res.status(200).json({
+     success: true,
       users,
       sellers,
       management,
@@ -1150,7 +1151,7 @@ const paycutFunc = async (req, res) => {
 
     // Extract totals for each status
     const pendingPayCut = payCuts.find((entry) => entry._id === "pending");
-    const canceledPayCut = payCuts.find((entry) => entry._id === "canceled");
+    const canceledPayCut = payCuts.find((entry) => entry._id === "cancelled");
     const completedPayCut = payCuts.find((entry) => entry._id === "completed");
 
 

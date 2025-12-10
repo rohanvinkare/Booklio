@@ -17,7 +17,7 @@ async function connectRedis() {
         redisConnected = false;
     });
 
-    redisClient.on('connect', () => {   
+    redisClient.on('connect', () => {
         console.log('Redis connected');
         redisConnected = true;
     });
@@ -78,7 +78,7 @@ module.exports = {
     connectRedis,
     getCache,
     setCache,
-    delCache, 
+    delCache,
     disconnectRedis,
     redisConnected
 };

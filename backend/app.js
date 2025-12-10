@@ -8,8 +8,8 @@ const app = express();
 
 // Only connect DB and Redis if not in test mode
 if (process.env.NODE_ENV !== 'test') {
-    connectDB();
-    connectRedis();
+  connectDB();
+  connectRedis();
 }
 
 app.set("view engine", "ejs");
@@ -48,52 +48,88 @@ app.use("/", orderRoute);
 app.use("/", tokenRoute);
 
 app.get('/health', (req, res) => {
-    res.status(200).send('Hello Booklio!');
+  res.status(200).send('Hello Booklio!');
 });
 
 app.get("/", (req, res) => {
-    res.send(`
-      <html>
-        <head>
-          <style>
-            body {
-              background-color: black;
-              color: white;
-              display: flex;
-              flex-direction: column;
-              height: 100vh;
-              justify-content: center;
-              align-items: center;
-              font-family: Arial, sans-serif;
-              font-size: 2rem;
-              text-align: center;
-            }
-            a {
-              margin-top: 20px;
-              color: #4CAF50;
-              text-decoration: none;
-              font-size: 1.2rem;
-              border: 2px solid #4CAF50;
-              padding: 10px 20px;
-              border-radius: 5px;
-              transition: 0.3s;
-            }
-            a:hover {
-              background-color: #4CAF50;
-              color: black;
-            }
-          </style>
-        </head>
-        <body>
-          <div>
-            <h1>Welcome to Booklio</h1>
-            <p>Your go-to platform for book lovers</p>
-            <a href="https://booklio.onrender.com/api-docs/">View API Documentation</a>
-          </div>
-        </body>
-      </html>
-    `);
+  res.send(`
+    <html>
+      <head>
+        <style>
+          body {
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            text-align: center;
+          }
+
+          h1 {
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+          }
+
+          p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+          }
+
+          .btn-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+          }
+
+          .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: black;
+            transition: 0.25s;
+          }
+
+          .dev {
+            background: #ff9800;
+            border: 2px solid #ff9800;
+          }
+
+          .prod {
+            background: #4caf50;
+            border: 2px solid #4caf50;
+          }
+
+          .btn:hover {
+            transform: scale(1.07);
+            opacity: 0.9;
+          }
+        </style>
+      </head>
+
+      <body>
+        <h1>Welcome to Booklio</h1>
+        <p>Select your API environment</p>
+
+        <div class="btn-container">
+          <a class="btn dev" href="https://booklio-backend-dev.codenix.space/api-docs/">
+            DEV Swagger
+          </a>
+
+          <a class="btn prod" href="https://booklio-backend.codenix.space/api-docs/">
+            PROD Swagger
+          </a>
+        </div>
+
+      </body>
+    </html>
+  `);
 });
+
 
 
 setupSwagger(app);

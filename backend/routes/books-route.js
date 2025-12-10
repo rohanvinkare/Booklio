@@ -61,6 +61,10 @@ router.get("/book/api/v1/all-seller", bookController.allSeller);
 //-----------Get the specific seller info and the book he is selling
 router.get("/book/api/v1/books-by-seller/:sellerId", bookController.booksBySeller);
 
+
+//-----------Get the specific seller info and the price he is selling with book
+router.get("/book/api/v1/books-by-seller/:sellerId/:isbn", bookController.booksBySellerWithPrice);
+
 //----------Get the all the sellers selling the book
 router.get("/book/api/v1/sellers-by-book/:isbn", bookController.sellersByBook);
 

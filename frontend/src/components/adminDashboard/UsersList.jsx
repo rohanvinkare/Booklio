@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { MdModeEditOutline } from "react-icons/md";
 import { MdDeleteForever } from "react-icons/md";
-import { FaUser, FaEnvelope, FaPhone, FaUserCircle, FaCalendarAlt, FaMapMarkerAlt, FaBook, FaShoppingCart, FaHeart, FaStar } from "react-icons/fa";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { FaEnvelope, FaPhone, FaUserCircle, FaCalendarAlt, FaMapMarkerAlt, FaBook, FaShoppingCart, FaHeart, FaStar } from "react-icons/fa";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import toast from "react-hot-toast";
 
 const getRandomColor = () => {

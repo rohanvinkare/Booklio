@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Async thunk to fetch seller books
+// Thunk to fetch books by seller
 export const fetchSellerBooks = createAsyncThunk(
   "seller/fetchSellerBooks",
   async (sellerId, { rejectWithValue }) => {
@@ -10,14 +10,19 @@ export const fetchSellerBooks = createAsyncThunk(
         `${import.meta.env.VITE_BASE_URL}/book/api/v1/books-by-seller/${sellerId}`
       );
       const data = await response.json();
-      return data;
+
+      if (data.success) {
+        return data; // data should have a "books" array
+      } else {
+        return rejectWithValue("Failed to fetch books.");
+      }
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// Async thunk to fetch seller orders
+// Thunk to fetch seller orders
 export const fetchSellerOrders = createAsyncThunk(
   "seller/fetchSellerOrders",
   async (sellerId, { rejectWithValue }) => {
@@ -30,12 +35,14 @@ export const fetchSellerOrders = createAsyncThunk(
         response.data.success &&
         Array.isArray(response.data.data[0]?.orders)
       ) {
-        return response.data.data[0].orders; // Store only orders
+
+        return response.data.data[0].orders;
+
       } else {
-        return rejectWithValue("No Orders Available");
+        return rejectWithValue("No orders available.");
       }
     } catch (error) {
-      return rejectWithValue(error.message || "Error fetching orders");
+      return rejectWithValue(error.message || "Error fetching orders.");
     }
   }
 );
@@ -43,13 +50,17 @@ export const fetchSellerOrders = createAsyncThunk(
 const sellerSlice = createSlice({
   name: "seller",
   initialState: {
-    sellerBookData: null,
+    sellerBookData: null,     // { success: true, books: [...] }
     sellerOrders: [],
     mostOrderedBook: null,
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearSellerBookData: (state) => {
+      state.sellerBookData = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Fetch Seller Books
@@ -73,7 +84,7 @@ const sellerSlice = createSlice({
         state.loading = false;
         state.sellerOrders = action.payload;
 
-        // Compute most ordered book
+        // Determine most ordered book
         const isbnCount = {};
         let maxIsbn = null;
         let maxCount = 0;
@@ -87,9 +98,10 @@ const sellerSlice = createSlice({
           }
         });
 
-        // Find details of the most ordered book
         if (maxIsbn) {
-          state.mostOrderedBook = action.payload.find((order) => order.isbn === maxIsbn);
+          state.mostOrderedBook = action.payload.find(
+            (order) => order.isbn === maxIsbn
+          );
         }
       })
       .addCase(fetchSellerOrders.rejected, (state, action) => {
@@ -99,4 +111,6 @@ const sellerSlice = createSlice({
   },
 });
 
+export const { clearSellerBookData } = sellerSlice.actions;
 export default sellerSlice.reducer;
+

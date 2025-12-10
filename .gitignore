@@ -8,8 +8,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment Variables
-.env
+
 
 # Directory for local environment variables
 .env.development.local
@@ -34,8 +33,10 @@ Thumbs.db
 dist/
 build/
 
-# Ignore npm package-lock
-package-lock.json
-yarn.lock
 
 frontendold
+
+# Local environment files
+*.local
+.env
+frontend/.env

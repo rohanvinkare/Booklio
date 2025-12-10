@@ -307,7 +307,7 @@ const placeOrder = async (req, res) => {
 
 //----------------------------------- To Cancel The Order
 /**
- * To Cancel the order means changing the status to canceled entry will not be deleted
+ * To Cancel the order means changing the status to cancelled entry will not be deleted
  */
 
 /**
@@ -315,7 +315,7 @@ const placeOrder = async (req, res) => {
  * /order/api/v1/cancel-order:
  *   post:
  *     summary: Cancel an order
- *     description: Updates the order status to "canceled" without deleting the entry.
+ *     description: Updates the order status to "cancelled" without deleting the entry.
  *     tags: [Order]
  *     security:
  *       - BearerAuth: []
@@ -331,9 +331,9 @@ const placeOrder = async (req, res) => {
  *                 description: ID of the order to cancel
  *     responses:
  *       200:
- *         description: Order successfully canceled
+ *         description: Order successfully cancelled
  *       400:
- *         description: Order already canceled or validation error
+ *         description: Order already cancelled or validation error
  *       404:
  *         description: Order not found
  *       500:
@@ -363,30 +363,30 @@ const cancelOrder = async (req, res) => {
       });
     }
 
-    // Check if the order status is already canceled
-    if (order.status === "canceled") {
+    // Check if the order status is already cancelled
+    if (order.status === "cancelled") {
       return res.status(400).json({
         success: false,
-        msg: `Order with ID ${orderId} is already canceled!`,
+        msg: `Order with ID ${orderId} is already cancelled!`,
       });
     }
 
     // Cancel the order
-    order.status = "canceled";
+    order.status = "cancelled";
     await order.save();
 
     // Find the associated PayCut entry
     const payCut = await PayCut.findOne({ orderId });
     if (payCut) {
       // Optionally, update the PayCut status or perform additional logic if needed
-      payCut.status = "canceled";
+      payCut.status = "cancelled";
       await payCut.save();
     }
 
     // Return success response
     return res.status(200).json({
       success: true,
-      msg: `Order with ID ${orderId} has been canceled successfully.`,
+      msg: `Order with ID ${orderId} has been cancelled successfully.`,
       order, // Optionally return the updated order details
       // payCut, // Optionally return the updated PayCut details
     });
