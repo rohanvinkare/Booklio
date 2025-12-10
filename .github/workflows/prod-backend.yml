@@ -81,4 +81,4 @@ jobs:
               --env-file /home/${{ secrets.EC2_USER }}/prod/.env \
               --link prod-redis:redis \
               -p 3000:3000 \
-              rohanv7/prod-booklio-backend:latest
+              rohanv7/prod-booklio-backend:latest 

@@ -68,4 +68,4 @@ jobs:
               --env-file /home/${{ secrets.EC2_USER }}/dev/.env \
               --link dev-redis:redis \
               -p 3001:3000 \
-              rohanv7/dev-booklio-backend:latest
+              rohanv7/dev-booklio-backend:latest 
