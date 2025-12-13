@@ -25,6 +25,3 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </ClickSpark>
 )
-
-
-
